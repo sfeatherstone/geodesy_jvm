@@ -1,6 +1,5 @@
 package uk.co.wedgetech.geodesy
 
-import jdk.nashorn.internal.objects.Global.undefined
 import java.math.BigDecimal
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -163,12 +162,12 @@ data class OsGridRef(val easting : Double, val northing: Double) {
             val Md = (35 / 24) * n3 * Math.sin(3 * (φ - φ0)) * Math.cos(3 * (φ + φ0));
             M = b * F0 * (Ma - Mb + Mc - Md);              // meridional arc
 
-        } while (N - N0 - M >= 0.00001);  // ie until < 0.01mm
+        } while ((N - N0 - M) >= 0.00001);  // ie until < 0.01mm
 
         val cosφ = Math.cos(φ)
         val sinφ = Math.sin(φ);
-        val ν = a * F0 / Math.sqrt(1 - e2 * sinφ * sinφ);            // nu = transverse radius of curvature
-        val ρ = a * F0 * (1 - e2) / Math.pow(1 - e2 * sinφ * sinφ, 1.5); // rho = meridional radius of curvature
+        val ν = a * F0 / Math.sqrt(1 - (e2 * sinφ * sinφ));            // nu = transverse radius of curvature
+        val ρ = a * F0 * (1 - e2) / Math.pow(1 - (e2 * sinφ * sinφ), 1.5); // rho = meridional radius of curvature
         val η2 = ν / ρ - 1;                                    // eta = ?
 
         val tanφ = Math.tan(φ);
@@ -194,8 +193,8 @@ data class OsGridRef(val easting : Double, val northing: Double) {
         val dE5 = dE3*dE2
         val dE6 = dE4*dE2
         val dE7 = dE5*dE2;
-        φ = φ - VII * dE2 + VIII * dE4 - IX * dE6;
-        val λ = λ0 + X * dE - XI * dE3 + XII * dE5 - XIIA * dE7;
+        φ -= (VII * dE2) + (VIII * dE4) - (IX * dE6);
+        val λ = λ0 + (X * dE) - (XI * dE3) + (XII * dE5) - (XIIA * dE7);
 
         var point = LatLon (φ.radiansToDegrees(), λ.radiansToDegrees(), LatLon.OSGB36);
         if (datum != LatLon.OSGB36) point = point.convertDatum(datum);
@@ -223,15 +222,10 @@ data class OsGridRef(val easting : Double, val northing: Double) {
 
         // use digits = 0 to return numeric format (in metres, allowing for decimals & for northing > 1e6)
         if (digits == 0) {
-            val eInt = Math.floor(e).toInt()
-            val eDec = e-eInt;
-            val nInt = Math.floor(n).toInt()
-            val nDec = n-nInt;
-            return ""
-            //TODO fix
-/*            val ePad = ("000000" + eInt).slice(-6) + (eDec > 0 ? eDec.toFixed(3).slice(1) : '');
-            val nPad = (nInt < 1e6 ? ('000000'+nInt).slice(-6) : nInt) + (nDec>0 ? nDec.toFixed(3).slice(1) : '')
-            return ePad + ',' + nPad;*/
+            //Format "000000.010,1000000.010" or "000000,000000" if whole numbers
+            return (if (Math.floor(e)==e) "%06d".format(Math.floor(e).toInt()) else "%010.3f".format(e)) +
+                    "," +
+                    (if (Math.floor(n)==n) "%06d".format(Math.floor(n).toInt()) else "%010.3f".format(n))
         }
 
         // get the 100km-grid indices
@@ -251,27 +245,24 @@ data class OsGridRef(val easting : Double, val northing: Double) {
         val letterPair = "${(l1 + 'A'.toInt()).toChar()}${(l2 + 'A'.toInt()).toChar()}";
 
         // strip 100km-grid indices from easting & northing, and reduce precision
-        e = Math.floor((e % 100000) / Math.pow(10.0, 5.0 - digits / 2.0));
-        n = Math.floor((n % 100000) / Math.pow(10.0, 5.0 - digits / 2.0));
+        val halfDigits : Int = digits / 2
+        e = Math.floor((e % 100000) / Math.pow(10.0, 5.0 - halfDigits));
+        n = Math.floor((n % 100000) / Math.pow(10.0, 5.0 - halfDigits));
 
         // pad eastings & northings with leading zeros (just in case, allow up to 16-digit (mm) refs)
-        val eStr = "%.0f".format(e) 
-        val nStr = "%.0f".format(n)
+        val formatString = "%0${halfDigits}.0f"
+        val eStr = formatString.format(e)
+        val nStr = formatString.format(n)
         val sb = StringBuilder()
                 .append(letterPair)
                 .append(" ")
-                .append("0".repeat((digits/2) - eStr.length))
                 .append(eStr)
                 .append(" ")
-                .append("0".repeat((digits/2) - nStr.length))
                 .append(nStr)
 
         return sb.toString();
     };
-
-
 }
-
 
 /**
  * Parses grid reference to OsGridRef object.
