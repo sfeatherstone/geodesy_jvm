@@ -39,5 +39,13 @@ class OsGridRefTest {
         assertEquals( "TL 51409 13177", OsGridRef(551409.0, 213177.0 ).toString(10))
     }
 
+    @Test fun testToString0Digits(){
+        assertEquals( "651409,313177", OsGridRef(651409.0, 313177.0 ).toString(0) )
+        assertEquals( "000000,000000", OsGridRef(0.0, 0.0 ).toString(0) )
+        assertEquals( "000000.100,000000.100", OsGridRef(0.1, 0.1 ).toString(0) )
+        assertEquals( "000000.100,1200000.100", OsGridRef(0.1, 1200000.1 ).toString(0) )
+        assertEquals( "000000,1200000", OsGridRef(0.0, 1200000.0 ).toString(0) )
+    }
+
 
 }
