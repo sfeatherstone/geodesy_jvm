@@ -44,11 +44,11 @@ object Dms {
      */
     fun parseDMS (dmsStr: String): Double {
         // strip off any sign or compass dir'n & split out separate d/m/s
-        var dms = dmsStr.trim().replace("^-", "")
+        var dms = dmsStr.trim().replace(Regex("^-"), "")
                 .replace(Regex("[NSEW]$/i") , "")
                 .split(Regex("[^0-9.]+"));
 
-        if (dms.size > 1 && dms[dms.lastIndex].isNullOrBlank()) dms = dms.subList(0,dms.lastIndex - 1);  // from trailing symbol
+        if (dms.size > 1 && dms[dms.lastIndex].isNullOrBlank()) dms = dms.subList(0,dms.lastIndex);  // from trailing symbol
 
         if (dms[0] == "") return Double.NaN;
 
@@ -67,9 +67,7 @@ object Dms {
             else ->
                 return Double.NaN;
         }
-        if ( Regex("^-|[WS]$/i").matches(dmsStr.trim())) deg = -deg; // take '-', west and south as -ve
-
-        return deg;
+        return if ( Regex("^-|[WSws]$").containsMatchIn(dmsStr.trim())) -deg else deg // take '-', west and south as -ve
     };
 
 
@@ -190,7 +188,7 @@ object Dms {
     fun toBrng(deg: Double, format: String, dp: Int = 0): String
     {
         val degNormalised = (deg + 360) % 360;  // normalise -ve values to 180°..360°
-        var brng = Dms.toDMS(degNormalised, format, dp);
+        val brng = Dms.toDMS(degNormalised, format, dp);
         return if (brng == null) "–" else brng.replace("360", "0");  // just in case rounding took us up to 360°!
     };
 
