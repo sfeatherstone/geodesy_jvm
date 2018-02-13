@@ -81,7 +81,7 @@ object Dms {
      *   Dms.separator = '\u202f';        // narrow no-break space
      *   var pʹ = new LatLon(51.2, 0.33); // 51° 12′ 00.0″ N, 000° 19′ 48.0″ E
      */
-    val separator = "";
+    var separator: String = "";
 
 
     /**
@@ -95,11 +95,11 @@ object Dms {
      * @param   {number} [dp=0|2|4] - Number of decimal places to use – default 0 for dms, 2 for dm, 4 for d.
      * @returns {string} Degrees formatted as deg/min/secs according to specified format.
      */
-    fun toDMS(deg: Double, format: String = "dms", dp: Int = -1): String?
+    fun toDMS(deg: Double, format: String = "dms", dp: Int? = null): String?
     {
         if (deg == Double.NaN) return null;  // give up here if we can't make a number from deg
 
-        var _dp = if (dp == -1) {
+        val _dp = if (dp == null) {
             when(format) {
                 "d", "deg" -> 4
                 "dm","deg+min" -> 2
@@ -108,42 +108,53 @@ object Dms {
             }
         } else dp
 
-        val degees = Math.abs(deg);  // (unsigned result ready for appending compass dir'n)
-
-        fun default(): String {
-            val extra :String = if (degees < 10.0) "00" else if (degees < 100.0) "0" else "0"
-            return "${extra}${degees.format(dp)}°"
-        }
+        val degrees : Double = Math.abs(deg % 360.0);  // (unsigned result ready for appending compass dir'n)
 
         return when (format) {
-            //TODO fix with tests
-/*            "dm","deg+min" -> {
-                val d = Math.floor(degees);                       // get component deg
-                val m = ((deg * 60.0) % 60).format(dp)           // get component min & round/right-pad
-                if (m == 60) {
-                    m = 0; d++; }               // check for rounding up
-                d = ('000' + d).slice(-3);                   // left-pad with leading zeros
-                if (m < 10) m = '0' + m;                     // left-pad with leading zeros (note may include decimals)
-                dms = d + '°' + Dms.separator + m + '′';
-            }
-            "dms", "deg+min+sec" -> {
-                d = Math.floor(deg);                       // get component deg
-                m = Math.floor((deg * 3600) / 60) % 60;        // get component min
-                s = (deg * 3600 % 60).toFixed(dp);           // get component sec & round/right-pad
-                if (s == 60) {
-                    s = (0).toFixed(dp); m++; } // check for rounding up
-                if (m == 60) {
-                    m = 0; d++; }               // check for rounding up
-                d = ('000' + d).slice(-3);                   // left-pad with leading zeros
+            "dm","deg+min" -> toDegreesMinutes(degrees, _dp)
+            "dms", "deg+min+sec" -> toDegreesMinutesSeconds(degrees, _dp)
+            "d", "deg" -> toDegrees(degrees, _dp)
+            else -> toDegrees(degrees, _dp)
+        }
+    }
+
+    fun toDegrees(degrees: Double, dp: Int) : String {
+        val formatStr = if (dp==0) "%03.0f°" else "%0${dp+4}.0${dp}f°"
+        return formatStr.format(degrees)
+    }
+
+    fun toDegreesMinutes(degrees: Double, dp: Int) : String {
+        var d = Math.floor(degrees).toInt()                // get component deg
+        var m = ((degrees * 60.0) % 60).toFixed(dp)           // get component min & round/right-pad
+        if (m == 60.0) {
+            m = 0.0
+            d++
+        }               // check for rounding up
+        val degsLength = if (dp==0) 2 else dp + 4
+        return "%03d°%s%0${degsLength}.${dp}f′".format(d, Dms.separator, m)
+    }
+
+    fun toDegreesMinutesSeconds(degrees: Double, dp: Int) : String {
+        var d = Math.floor(degrees).toInt()                       // get component deg
+        var m = (Math.floor((degrees * 3600) / 60) % 60).toInt()  // get component min
+        var s = (degrees * 3600 % 60).toFixed(dp);           // get component sec & round/right-pad
+        if (s == 60.0) {
+            s = 0.0
+            m++
+        } // check for rounding up
+
+        if (m >= 60) {
+            m -= 60
+            d++
+        }               // check for rounding up
+
+        val minsLength = if (dp==0) 2 else dp + 3
+
+/*                d = ('000' + d).slice(-3);                   // left-pad with leading zeros
                 m = ('00' + m).slice(-2);                    // left-pad with leading zeros
                 if (s < 10) s = '0' + s;                     // left-pad with leading zeros (note may include decimals)
-                dms = d + '°' + Dms.separator + m + '′' + Dms.separator + s + '″';
-            }
-*/
-            "d", "deg" -> default()
-            else -> default()
-
-            }
+                dms = d + '°' + Dms.separator + m + '′' + Dms.separator + s + '″'*/
+        return "%03d°%s%02d′%s%0${minsLength}.${dp}f″".format(d, Dms.separator, m, Dms.separator, s);
     }
 
 
@@ -225,5 +236,6 @@ object Dms {
     };
 
     fun Double.format(digits: Int) = java.lang.String.format("%.${digits}f", this)?:""
+
 
 }

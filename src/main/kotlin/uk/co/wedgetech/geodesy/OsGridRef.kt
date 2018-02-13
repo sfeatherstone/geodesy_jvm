@@ -107,13 +107,10 @@ data class OsGridRef(val easting : Double, val northing: Double) {
         val Δλ5 = Δλ4 * Δλ
         val Δλ6 = Δλ5 * Δλ;
 
-        var N = I + II * Δλ2 + III * Δλ4 + IIIA * Δλ6;
-        var E = E0 + IV * Δλ + V * Δλ3 + VI * Δλ5;
+        val N = I + II * Δλ2 + III * Δλ4 + IIIA * Δλ6;
+        val E = E0 + IV * Δλ + V * Δλ3 + VI * Δλ5;
 
-        N = N.roundDecimalPlaces(3); // round to mm precision
-        E = E.roundDecimalPlaces(3);
-
-        return OsGridRef(E, N); // gets truncated to SW corner of 1m grid square
+        return OsGridRef(E.toFixed(3), N.toFixed(3)); // gets truncated to SW corner of 1m grid square
     };
 
 
@@ -333,5 +330,3 @@ fun parse(gridrefInput: String) : OsGridRef
 };
 
 
-fun Double.roundDecimalPlaces(s : Int) =
-     BigDecimal(this).setScale(s, BigDecimal.ROUND_HALF_UP).toDouble()
