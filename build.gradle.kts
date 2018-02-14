@@ -30,7 +30,7 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib", "1.2.10"))
+    implementation(kotlin("stdlib", "1.2.21"))
     testImplementation("junit:junit:4.12")
 }
 
