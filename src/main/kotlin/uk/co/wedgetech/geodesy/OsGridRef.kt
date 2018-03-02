@@ -60,14 +60,14 @@ data class OsGridRef(val easting : Double, val northing: Double) {
         val osgbPoint = if (point.datum != LatLon.Companion.OSGB36) point.convertDatum(LatLon.Companion.OSGB36)
             else point
 
-        val φ = osgbPoint.lat.degreesToRadians();
-        val λ = osgbPoint.lon.degreesToRadians();
+        val φ = osgbPoint.lat.toRadians();
+        val λ = osgbPoint.lon.toRadians();
 
         val a = 6377563.396
         val b = 6356256.909;              // Airy 1830 major & minor semi-axes
         val F0 = 0.9996012717;                             // NatGrid scale factor on central meridian
-        val φ0 = (49.0).degreesToRadians()
-        val λ0 = (-2.0).degreesToRadians();  // NatGrid true origin is 49°N,2°W
+        val φ0 = (49.0).toRadians()
+        val λ0 = (-2.0).toRadians();  // NatGrid true origin is 49°N,2°W
         val N0 = -100000
         val E0 = 400000;                     // northing & easting of true origin, metres
         val e2 = 1 - (b * b) / (a * a);                          // eccentricity squared
@@ -139,8 +139,8 @@ data class OsGridRef(val easting : Double, val northing: Double) {
         val a = 6377563.396
         val b = 6356256.909;              // Airy 1830 major & minor semi-axes
         val F0 = 0.9996012717;                             // NatGrid scale factor on central meridian
-        val φ0 = (49.0).degreesToRadians()
-        val λ0 = (-2.0).degreesToRadians()  // NatGrid true origin is 49°N,2°W
+        val φ0 = (49.0).toRadians()
+        val λ0 = (-2.0).toRadians()  // NatGrid true origin is 49°N,2°W
         val N0 = -100000.0
         val E0 = 400000.0;                     // northing & easting of true origin, metres
         val e2 = 1 - (b * b) / (a * a);                          // eccentricity squared
@@ -193,7 +193,7 @@ data class OsGridRef(val easting : Double, val northing: Double) {
         φ -= (VII * dE2) + (VIII * dE4) - (IX * dE6);
         val λ = λ0 + (X * dE) - (XI * dE3) + (XII * dE5) - (XIIA * dE7);
 
-        var point = LatLon (φ.radiansToDegrees(), λ.radiansToDegrees(), LatLon.OSGB36);
+        var point = LatLon (φ.toDegrees(), λ.toDegrees(), LatLon.OSGB36);
         if (datum != LatLon.OSGB36) point = point.convertDatum(datum);
 
         return point;
@@ -276,9 +276,9 @@ data class OsGridRef(val easting : Double, val northing: Double) {
  * @example
  *   var grid = OsGridRef.parse('TG 51409 13177'); // grid: { easting: 651409, northing: 313177 }
  */
-fun parse(gridrefInput: String) : OsGridRef
+fun String.parseOsGridReference() : OsGridRef
 {
-    val gridref = gridrefInput.trim().toUpperCase();
+    val gridref = this.trim().toUpperCase();
 
     // check for fully numeric comma-separated gridref format
     //val gridRefRegEx = Regex(gridref)

@@ -25,7 +25,6 @@ import kotlin.math.roundToInt
  */
 
 // note Unicode Degree = U+00B0. Prime = U+2032, Double prime = U+2033
-object Dms {
 
     /**
      * Parses string representing degrees/minutes/seconds into numeric degrees.
@@ -42,9 +41,9 @@ object Dms {
      *     var lon = Dms.parseDMS('000° 00′ 05.31″ W');
      *     var p1 = new LatLon(lat, lon); // 51.4778°N, 000.0015°W
      */
-    fun parseDMS (dmsStr: String): Double {
+    fun String.parseDegreesMinutesSeconds(): Double {
         // strip off any sign or compass dir'n & split out separate d/m/s
-        var dms = dmsStr.trim().replace(Regex("^-"), "")
+        var dms = this.trim().replace(Regex("^-"), "")
                 .replace(Regex("[NSEW]$/i") , "")
                 .split(Regex("[^0-9.]+"));
 
@@ -67,7 +66,7 @@ object Dms {
             else ->
                 return Double.NaN;
         }
-        return if ( Regex("^-|[WSws]$").containsMatchIn(dmsStr.trim())) -deg else deg // take '-', west and south as -ve
+        return if ( Regex("^-|[WSws]$").containsMatchIn(this.trim())) -deg else deg // take '-', west and south as -ve
     };
 
 
@@ -81,7 +80,7 @@ object Dms {
      *   Dms.separator = '\u202f';        // narrow no-break space
      *   var pʹ = new LatLon(51.2, 0.33); // 51° 12′ 00.0″ N, 000° 19′ 48.0″ E
      */
-    var separator: String = "";
+    var narrowNoBreakSeparator = "\u202f"
 
 
     /**
@@ -95,9 +94,9 @@ object Dms {
      * @param   {number} [dp=0|2|4] - Number of decimal places to use – default 0 for dms, 2 for dm, 4 for d.
      * @returns {string} Degrees formatted as deg/min/secs according to specified format.
      */
-    fun toDMS(deg: Double, format: String = "dms", dp: Int? = null): String?
+    fun Double.toDMS(format: String = "dms", dp: Int? = null, separator : String = ""): String?
     {
-        if (deg == Double.NaN) return null;  // give up here if we can't make a number from deg
+        if (this == Double.NaN) return null;  // give up here if we can't make a number from deg
 
         val _dp = if (dp == null) {
             when(format) {
@@ -108,22 +107,22 @@ object Dms {
             }
         } else dp
 
-        val degrees : Double = Math.abs(deg % 360.0);  // (unsigned result ready for appending compass dir'n)
+        val degrees : Double = Math.abs(this % 360.0);  // (unsigned result ready for appending compass dir'n)
 
         return when (format) {
-            "dm","deg+min" -> toDegreesMinutes(degrees, _dp)
-            "dms", "deg+min+sec" -> toDegreesMinutesSeconds(degrees, _dp)
+            "dm","deg+min" -> toDegreesMinutes(degrees, _dp, separator)
+            "dms", "deg+min+sec" -> toDegreesMinutesSeconds(degrees, _dp, separator)
             "d", "deg" -> toDegrees(degrees, _dp)
             else -> toDegrees(degrees, _dp)
         }
     }
 
-    fun toDegrees(degrees: Double, dp: Int) : String {
+    internal fun toDegrees(degrees: Double, dp: Int) : String {
         val formatStr = if (dp==0) "%03.0f°" else "%0${dp+4}.0${dp}f°"
         return formatStr.format(degrees)
     }
 
-    fun toDegreesMinutes(degrees: Double, dp: Int) : String {
+    internal fun toDegreesMinutes(degrees: Double, dp: Int, separator : String) : String {
         var d = Math.floor(degrees).toInt()                // get component deg
         var m = ((degrees * 60.0) % 60).toFixed(dp)           // get component min & round/right-pad
         if (m == 60.0) {
@@ -131,10 +130,10 @@ object Dms {
             d++
         }               // check for rounding up
         val degsLength = if (dp==0) 2 else dp + 4
-        return "%03d°%s%0${degsLength}.${dp}f′".format(d, Dms.separator, m)
+        return "%03d°%s%0${degsLength}.${dp}f′".format(d, separator, m)
     }
 
-    fun toDegreesMinutesSeconds(degrees: Double, dp: Int) : String {
+    internal fun toDegreesMinutesSeconds(degrees: Double, dp: Int, separator: String) : String {
         var d = Math.floor(degrees).toInt()                       // get component deg
         var m = (Math.floor((degrees * 3600) / 60) % 60).toInt()  // get component min
         var s = (degrees * 3600 % 60).toFixed(dp);           // get component sec & round/right-pad
@@ -154,7 +153,7 @@ object Dms {
                 m = ('00' + m).slice(-2);                    // left-pad with leading zeros
                 if (s < 10) s = '0' + s;                     // left-pad with leading zeros (note may include decimals)
                 dms = d + '°' + Dms.separator + m + '′' + Dms.separator + s + '″'*/
-        return "%03d°%s%02d′%s%0${minsLength}.${dp}f″".format(d, Dms.separator, m, Dms.separator, s);
+        return "%03d°%s%02d′%s%0${minsLength}.${dp}f″".format(d, separator, m, separator, s);
     }
 
 
@@ -166,10 +165,10 @@ object Dms {
      * @param   {number} [dp=0|2|4] - Number of decimal places to use – default 0 for dms, 2 for dm, 4 for d.
      * @returns {string} Degrees formatted as deg/min/secs according to specified format.
      */
-    fun toLat(deg: Double, format: String, dp: Int = 0): String
+    fun Double.toLatitude(format: String, dp: Int = 0, separator: String = ""): String
     {
-        val lat = Dms.toDMS(deg, format, dp)
-        return if (lat == null) "–" else lat+Dms.separator+(if (deg<0) 'S' else 'N');  // knock off initial '0' for lat!
+        val lat = this.toDMS(format, dp, separator)
+        return if (lat == null) "–" else lat+separator+(if (this<0.0) 'S' else 'N');  // knock off initial '0' for lat!
     };
 
 
@@ -181,10 +180,10 @@ object Dms {
      * @param   {number} [dp=0|2|4] - Number of decimal places to use – default 0 for dms, 2 for dm, 4 for d.
      * @returns {string} Degrees formatted as deg/min/secs according to specified format.
      */
-    fun toLon(deg: Double, format: String, dp: Int = 0): String
+    fun Double.toLongitude(format: String, dp: Int = 0, separator : String = ""): String
     {
-        val lon = Dms.toDMS(deg, format, dp);
-        return if (lon == null) "–" else lon+Dms.separator+(if (deg<0) 'W' else 'E');
+        val lon = this.toDMS(format, dp, separator);
+        return if (lon == null) "–" else lon+separator+(if (this<0.0) 'W' else 'E');
     };
 
 
@@ -196,10 +195,10 @@ object Dms {
      * @param   {number} [dp=0|2|4] - Number of decimal places to use – default 0 for dms, 2 for dm, 4 for d.
      * @returns {string} Degrees formatted as deg/min/secs according to specified format.
      */
-    fun toBrng(deg: Double, format: String, dp: Int = 0): String
+    fun Double.toBearing(format: String, dp: Int = 0, separator : String = ""): String
     {
-        val degNormalised = (deg + 360) % 360;  // normalise -ve values to 180°..360°
-        val brng = Dms.toDMS(degNormalised, format, dp);
+        val degNormalised = (this + 360) % 360;  // normalise -ve values to 180°..360°
+        val brng = degNormalised.toDMS(format, dp, separator);
         return if (brng == null) "–" else brng.replace("360", "0");  // just in case rounding took us up to 360°!
     };
 
@@ -235,7 +234,5 @@ object Dms {
         return cardinals[(normalisedBearing * n / 360.0).roundToInt() % n * 16 / n];
     };
 
-    fun Double.format(digits: Int) = java.lang.String.format("%.${digits}f", this)?:""
 
 
-}

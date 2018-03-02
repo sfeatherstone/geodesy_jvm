@@ -44,9 +44,11 @@ class LatLon(val lat: Double, val lon :Double, val datum : Datum = WGS84) {
 }*/
 
     data class Ellipsoid(val a: Double, val b: Double, val f: Double)
+
     data class Transform(val tx: Double, val ty: Double, val tz: Double, val s: Double, val rx: Double, val ry: Double, val rz: Double) {
         fun inverse() = Transform(-tx, -ty, -tz, -s, -rx, -ry, -rz)
     }
+
     data class Datum(val ellipsoid: Ellipsoid, val transform: Transform)
 
     /**
@@ -130,9 +132,9 @@ class LatLon(val lat: Double, val lon :Double, val datum : Datum = WGS84) {
             transform = toDatum.transform;
         }
 
-        val oldCartesian = oldLatLon.toCartesian();                // convert polar to cartesian...
-        val newCartesian = oldCartesian.applyTransform(transform); // ...apply transform...
-        val newLatLon = newCartesian.toLatLonE(toDatum);           // ...and convert cartesian to polar
+        val oldCartesian = oldLatLon.toCartesian()                // convert polar to cartesian...
+        val newCartesian = oldCartesian.applyTransform(transform) // ...apply transform...
+        val newLatLon = newCartesian.toLatLonE(toDatum)           // ...and convert cartesian to polar
 
         return newLatLon;
     };
@@ -145,23 +147,23 @@ class LatLon(val lat: Double, val lon :Double, val datum : Datum = WGS84) {
      * @returns {Vector3d} Vector pointing to lat/lon point, with x, y, z in metres from earth centre.
      */
     fun toCartesian(): Vector3d {
-        val φ = lat.degreesToRadians()
-        val λ = lon.degreesToRadians()
-        val h = 0; // height above ellipsoid - not currently used
+        val φ = Math.toRadians(lat)
+        val λ = Math.toRadians(lon)
+        val h = 0  // height above ellipsoid - not currently used
         val a = this.datum.ellipsoid.a
-        val f = this.datum.ellipsoid.f;
+        val f = this.datum.ellipsoid.f
 
         val sinφ = Math.sin(φ)
-        val cosφ = Math.cos(φ);
+        val cosφ = Math.cos(φ)
         val sinλ = Math.sin(λ)
-        val cosλ = Math.cos(λ);
+        val cosλ = Math.cos(λ)
 
-        val eSq = 2 * f - f * f;                      // 1st eccentricity squared ≡ (a²-b²)/a²
-        val ν = a / Math.sqrt(1 - eSq * sinφ * sinφ); // radius of curvature in prime vertical
+        val eSq = 2 * f - f * f                      // 1st eccentricity squared ≡ (a²-b²)/a²
+        val ν = a / Math.sqrt(1 - eSq * sinφ * sinφ) // radius of curvature in prime vertical
 
-        val x = (ν + h) * cosφ * cosλ;
-        val y = (ν + h) * cosφ * sinλ;
-        val z = (ν * (1 - eSq) + h) * sinφ;
+        val x = (ν + h) * cosφ * cosλ
+        val y = (ν + h) * cosφ * sinλ
+        val z = (ν * (1 - eSq) + h) * sinφ
 
         return Vector3d(x, y, z)
     };
@@ -177,15 +179,12 @@ class LatLon(val lat: Double, val lon :Double, val datum : Datum = WGS84) {
      */
     fun toString(format: String, dp: Int = 0) : String
     {
-        return "${Dms.toLat(this.lat, format, dp)}, ${Dms.toLon(this.lon, format, dp)}";
+        return "${this.lat.toLatitude(format, dp)}, ${this.lon.toLongitude(format, dp)}"
     };
 
 }
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-fun Double.degreesToRadians() : Double = this * Math.PI / 180.0
-
-fun Double.radiansToDegrees() : Double = this * 180.0 / Math.PI
 
 
 

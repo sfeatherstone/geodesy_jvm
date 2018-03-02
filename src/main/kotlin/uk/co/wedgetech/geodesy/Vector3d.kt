@@ -218,7 +218,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
         val ν = a/Math.sqrt(1-e2*sinφ*sinφ); // length of the normal terminated by the minor axis
         var h = p*cosφ + z*sinφ - (a*a/ν);
 
-        return  LatLon(φ.radiansToDegrees(), λ.radiansToDegrees(), datum);
+        return  LatLon(φ.toDegrees(), λ.toDegrees(), datum);
     };
 
     /**
@@ -236,9 +236,9 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
 
         // transform parameters
         val s1 = t.s/1e6 + 1;            // scale: normalise parts-per-million to (s+1)
-        val rx = (t.rx/3600).degreesToRadians(); // x-rotation: normalise arcseconds to radians
-        val ry = (t.ry/3600).degreesToRadians(); // y-rotation: normalise arcseconds to radians
-        val rz = (t.rz/3600).degreesToRadians(); // z-rotation: normalise arcseconds to radians
+        val rx = (t.rx/3600).toRadians(); // x-rotation: normalise arcseconds to radians
+        val ry = (t.ry/3600).toRadians(); // y-rotation: normalise arcseconds to radians
+        val rz = (t.rz/3600).toRadians(); // z-rotation: normalise arcseconds to radians
 
         // apply transform
         val x2 = t.tx + x1*s1 - y1*rz + z1*ry;

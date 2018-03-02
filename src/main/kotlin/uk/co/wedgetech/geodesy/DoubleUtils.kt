@@ -7,7 +7,7 @@ import kotlin.math.round
 /***
  * [https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed] for Kotlin
  */
-fun Double.toFixed(s : Int) =
+inline fun Double.toFixed(s : Int) =
         BigDecimal(this).setScale(s, BigDecimal.ROUND_HALF_UP).toDouble()
 
 
@@ -19,3 +19,9 @@ fun Double.toFixed2(s : Int): Double {
     val power = (10.0).pow(s)
     return round(this * power)/power
 }
+
+
+fun Double.format(digits: Int) = java.lang.String.format("%.${digits}f", this)?:""
+
+inline fun Double.toRadians() : Double = Math.toRadians(this)
+inline fun Double.toDegrees() : Double = Math.toDegrees(this)
