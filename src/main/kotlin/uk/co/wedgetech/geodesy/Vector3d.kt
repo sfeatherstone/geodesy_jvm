@@ -63,7 +63,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      * @param   {number}   x - Factor to multiply this vector by.
      * @returns {Vector3d} Vector scaled by x.
      */
-    operator fun times(x :Float) = Vector3d (this.x * x, this.y * x, this.z * x);
+    operator fun times(x :Double) = Vector3d (this.x * x, this.y * x, this.z * x);
 
 
     /**
@@ -72,7 +72,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      * @param   {number}   x - Factor to divide this vector by.
      * @returns {Vector3d} Vector divided by x.
      */
-    operator fun div(x: Float) = Vector3d (this.x / x, this.y / x, this.z / x)
+    operator fun div(x: Double) = Vector3d (this.x / x, this.y / x, this.z / x)
 
 
     /**
@@ -104,7 +104,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      *
      * @returns {Vector3d} Negated vector.
      */
-    fun negate() =Vector3d (-this.x, -this.y, -this.z)
+    var negate = Vector3d (-this.x, -this.y, -this.z)
 
 
     /**
@@ -112,7 +112,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      *
      * @returns {number} Magnitude of this vector.
      */
-    fun length() = Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z)
+    var length : Double = Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z)
 
 
     /**
@@ -122,7 +122,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      * @returns {Vector3d} Normalised version of this vector.
      */
     fun unit() : Vector3d {
-        val norm = this.length();
+        val norm = this.length;
         if (norm == 1.0) return this;
         if (norm == 0.0) return this;
 
@@ -144,7 +144,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      */
     fun angleTo(v : Vector3d, n : Vector3d = Vector3d(0.0,0.0,0.0)) :Double {
         val sign = if (n == Vector3d(0.0,0.0,0.0)) 1.0 else this.cross(v).dot(n).sign
-        val sinθ = this.cross(v).length() * sign;
+        val sinθ = this.cross(v).length * sign;
         val cosθ = this.dot(v);
 
         return Math.atan2(sinθ, cosθ);
@@ -191,7 +191,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      *
      * @param {LatLon.datum.transform} datum - Datum to use when converting point.
      */
-    fun toLatLonE(datum: LatLon.Datum): LatLon {
+    fun toLatLonE(datum: LatLonDatum.Datum): LatLonDatum {
         val a = datum.ellipsoid.a
         val b = datum.ellipsoid.b
         val f = datum.ellipsoid.f;
@@ -218,7 +218,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
         val ν = a/Math.sqrt(1-e2*sinφ*sinφ); // length of the normal terminated by the minor axis
         var h = p*cosφ + z*sinφ - (a*a/ν);
 
-        return  LatLon(φ.toDegrees(), λ.toDegrees(), datum);
+        return  LatLonDatum(φ.toDegrees(), λ.toDegrees(), datum);
     };
 
     /**
@@ -228,7 +228,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      * @param   {number[]} t - Transform to apply to this point.
      * @returns {Vector3} Transformed point.
      */
-    fun applyTransform(t: LatLon.Transform) :Vector3d  {
+    fun applyTransform(t: LatLonDatum.Transform) :Vector3d  {
         // this point
         val x1 = this.x
         val y1 = this.y
@@ -248,8 +248,6 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
         return Vector3d(x2, y2, z2);
     };
 
-
-    fun Double.format(digits: Int) = java.lang.String.format("%.${digits}f", this)
     /**
      * String representation of vector.
      *
