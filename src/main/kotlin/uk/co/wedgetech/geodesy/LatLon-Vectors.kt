@@ -2,6 +2,7 @@ import uk.co.wedgetech.geodesy.LatLon
 import uk.co.wedgetech.geodesy.Vector3d
 import uk.co.wedgetech.geodesy.toDegrees
 import uk.co.wedgetech.geodesy.toRadians
+import java.util.*
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /*  Vector-based spherical geodetic (latitude/longitude) functions    (c) Chris Veness 2011-2017  */
@@ -396,6 +397,7 @@ fun LatLon.intersection(path1start: LatLon, path1brngEnd: LatLon, path2start: La
  *   var p1 = new LatLon(53.3206, -1.7297), p2 = new LatLon(53.1887, 0.1334);
  *   var d = pCurrent.crossTrackDistanceTo(p1, p2);  // -307.5 m
  */
+/*
 fun LatLon.crossTrackDistanceTo(pathStart: LatLon, pathBrngEnd, radius: Double = 6371e3): Double {
 
     var p = this.toVector();
@@ -410,7 +412,7 @@ fun LatLon.crossTrackDistanceTo(pathStart: LatLon, pathBrngEnd, radius: Double =
 
     return d;
 };
-
+*/
 
 /**
  * Returns how far ‘this’ point is along a path from from start-point, heading on bearing or towards
@@ -429,6 +431,7 @@ fun LatLon.crossTrackDistanceTo(pathStart: LatLon, pathBrngEnd, radius: Double =
  *   var p2 = new LatLon(53.1887,  0.1334);
  *   var d = pCurrent.alongTrackDistanceTo(p1, p2);  // 62.331 km
  */
+/*
 fun LatLon.alongTrackDistanceTo(pathStart, pathBrngEnd, radius: Double = 6371e3) {
     if (!(pathStart instanceof LatLon)) throw new TypeError('pathStart is not LatLon object');
 
@@ -446,7 +449,7 @@ fun LatLon.alongTrackDistanceTo(pathStart, pathBrngEnd, radius: Double = 6371e3)
 
     return d;
 };
-
+*/
 
 /**
  * Returns closest point on great circle segment between point1 & point2 to ‘this’ point.
@@ -530,34 +533,33 @@ fun LatLon.isBetween(point1: LatLon, point2: LatLon):Boolean {
  *   var p = new LatLon(45.1, 1.1);
  *   var inside = p.enclosedBy(bounds); // true
  */
-fun LatLon.enclosedBy(polygon: Array<LatLon>): Boolean {
+fun LatLon.enclosedBy(polygon_: Array<LatLon>): Boolean {
     // this method uses angle summation test; on a plane, angles for an enclosed point will sum
     // to 360°, angles for an exterior point will sum to 0°. On a sphere, enclosed point angles
     // will sum to less than 360° (due to spherical excess), exterior point angles will be small
     // but non-zero. TODO: are any winding number optimisations applicable to spherical surface?
 
     // close the polygon so that the last point equals the first point
-    var closed = polygon[0].equals(polygon[polygon.length-1]);
-    if (!closed) polygon.push(polygon[0]);
+    val polygon = if(polygon_[0] == polygon_[polygon_.size-1]) polygon_ else polygon_ + arrayOf(polygon_[0])
 
-    var nVertices = polygon.length - 1;
+    var nVertices = polygon.size - 1;
 
     var p = this.toVector();
 
     // get vectors from p to each vertex
-    var vectorToVertex = [];
-    for (var v=0; v<nVertices; v++) vectorToVertex[v] = p.minus(polygon[v].toVector());
-    vectorToVertex.push(vectorToVertex[0]);
+    var vectorToVertex = LinkedList<Vector3d>()
+    for (value in polygon) vectorToVertex.add(p - value.toVector())
+    vectorToVertex.add(vectorToVertex[0]);
 
     // sum subtended angles of each edge (using vector p to determine sign)
-    var Σθ = 0;
-    for (var v=0; v<nVertices; v++) {
-        Σθ += vectorToVertex[v].angleTo(vectorToVertex[v+1], p);
+    var Σθ = 0.0;
+    var prevValue : Vector3d? = null
+    for (value in vectorToVertex) {
+        if (prevValue!=null) Σθ += prevValue.angleTo(value, p);
+        prevValue = value
     }
 
-    var enclosed = Math.abs(Σθ) > Math.PI;
-
-    if (!closed) polygon.pop(); // restore polygon to pristine condition
+    val enclosed = Math.abs(Σθ) > Math.PI;
 
     return enclosed;
 };
@@ -575,37 +577,41 @@ fun LatLon.enclosedBy(polygon: Array<LatLon>): Boolean {
  *   var polygon = [ new LatLon(0,0), new LatLon(1,0), new LatLon(0,1) ];
  *   var area = LatLon.areaOf(polygon); // 6.18e9 m²
  */
-fun LatLon.areaOf(polygon: Array<LatLon>, radius: Double = 6371e3) {
+fun LatLon.areaOf(polygon_: Array<LatLon>, radius: Double = 6371e3):Double {
     // uses Girard’s theorem: A = [Σθᵢ − (n−2)·π]·R²
 
+    if (polygon_.size < 2) return 0.0
     // close the polygon so that the last point equals the first point
-    var closed = polygon[0].equals(polygon[polygon.length-1]);
-    if (!closed) polygon.push(polygon[0]);
+    val polygon = if(polygon_[0] == polygon_[polygon_.size-1]) polygon_ else polygon_ + arrayOf(polygon_[0])
 
-    var n = polygon.length - 1; // number of vertices
+    val n = polygon.size - 1; // number of vertices
 
     // get great-circle vector for each edge
-    var c = [];
-    for (var v=0; v<n; v++) {
-        var i = polygon[v].toVector();
-        var j = polygon[v+1].toVector();
-        c[v] = i.cross(j); // great circle for segment v..v+1
+    val c = LinkedList<Vector3d>()
+    var j : Vector3d? = null
+    for (v in polygon) {
+        val i = v.toVector();
+        if (j!=null) c.add(i.cross(j)); // great circle for segment v..v+1
+        j = i
     }
-    c.push(c[0]);
+    c.add(c[0]);
 
     // sum interior angles; depending on whether polygon is cw or ccw, angle between edges is
     // π−α or π+α, where α is angle between great-circle vectors; so sum α, then take n·π − |Σα|
     // (cannot use Σ(π−|α|) as concave polygons would fail); use vector to 1st point as plane
     // normal for sign of α
     var n1 = polygon[0].toVector();
-    var Σα = 0;
-    for (var v=0; v<n; v++) Σα += c[v].angleTo(c[v+1], n1);
+    var Σα = 0.0;
+    var prevValue : Vector3d? = null
+    for (value in c) {
+        if (prevValue!=null) Σα += value.angleTo(prevValue, n1);
+        prevValue = value
+    }
+
     var Σθ = n*Math.PI - Math.abs(Σα);
 
     var E = (Σθ - (n-2)*Math.PI); // spherical excess (in steradians)
-    var A = E * R*R;              // area in units of R²
-
-    if (!closed) polygon.pop(); // restore polygon to pristine condition
+    var A = E * radius*radius;              // area in units of R²
 
     return A;
 };

@@ -63,4 +63,26 @@ class DmsTest {
         assertEquals("037°X00′X00″", uk.co.wedgetech.geodesy.toDegreesMinutesSeconds(36.99999, 0, "X"))
 
     }
-}
+
+    @Test
+    fun test_compassPoint() {
+        //TODO clean up
+        assertEquals("1 -> N ","N",       compassPoint(1.0) )
+        assertEquals("0 -> N ","N",       compassPoint(0.0) )
+        assertEquals("-1 -> N " ,"N",      compassPoint(-1.0) )
+        assertEquals("359 -> N " ,"N",     compassPoint(359.0) )
+        assertEquals("24 -> NNE ","NNE",    compassPoint(24.0) )
+        assertEquals("24:1 -> N ",    compassPoint(24.0, 1) ,"N")
+        assertEquals("24:2 -> NE ",   compassPoint(24.0, 2) ,"NE")
+        assertEquals("24:3 -> NNE ","NNE",  compassPoint(24.0, 3) )
+        assertEquals("226 -> SW ",    compassPoint(226.0) ,"SW")
+        assertEquals("226:1 -> W ",   compassPoint(226.0, 1) ,"W")
+        assertEquals("226:2 -> SW ",  compassPoint(226.0, 2) ,"SW")
+        assertEquals("226:3 -> SW ",  compassPoint(226.0, 3) ,"SW")
+        assertEquals("237 -> WSW ",   compassPoint(237.0) ,"WSW")
+        assertEquals("237:1 -> W ",   compassPoint(237.0, 1) ,"W")
+        assertEquals("237:2 -> SW ",  compassPoint(237.0, 2) ,"SW")
+        assertEquals("237:3 -> WSW ", compassPoint(237.0, 3) ,"WSW")
+    }
+
+    }

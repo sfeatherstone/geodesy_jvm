@@ -33,7 +33,7 @@
  * @example
  *   var utmCoord = new Utm(31, 'N', 448251, 5411932);
  */
-function Utm(zone, hemisphere, easting, northing, datum, convergence, scale) {
+/*function Utm(zone, hemisphere, easting, northing, datum, convergence, scale) {
     if (!(this instanceof Utm)) { // allow instantiation without 'new'
         return new Utm(zone, hemisphere, easting, northing, datum, convergence, scale);
     }
@@ -55,7 +55,7 @@ function Utm(zone, hemisphere, easting, northing, datum, convergence, scale) {
     this.datum = datum;
     this.convergence = convergence===null ? null : Number(convergence);
     this.scale = scale===null ? null : Number(scale);
-}
+}*/
 
 
 /**
@@ -71,6 +71,7 @@ function Utm(zone, hemisphere, easting, northing, datum, convergence, scale) {
  *   var latlong = new LatLon(48.8582, 2.2945);
  *   var utmCoord = latlong.toUtm(); // utmCoord.toString(): '31 N 448252 5411933'
  */
+/*
 LatLon.prototype.toUtm = function() {
     if (isNaN(this.lat) || isNaN(this.lon)) throw new Error('Invalid point');
     if (!(-80<=this.lat && this.lat<=84)) throw new Error('Outside UTM limits');
@@ -174,6 +175,7 @@ LatLon.prototype.toUtm = function() {
     return new Utm(zone, h, x, y, this.datum, convergence, scale);
 };
 
+*/
 
 /**
  * Converts UTM zone/easting/northing coordinate to latitude/longitude
@@ -185,6 +187,7 @@ LatLon.prototype.toUtm = function() {
  *   var grid = new Utm(31, 'N', 448251.795, 5411932.678);
  *   var latlong = grid.toLatLonE(); // latlong.toString(): 48°51′29.52″N, 002°17′40.20″E
  */
+/*
 Utm.prototype.toLatLonE = function() {
     var z = this.zone;
     var h = this.hemisphere;
@@ -286,6 +289,7 @@ Utm.prototype.toLatLonE = function() {
 
     return latLong;
 };
+*/
 
 
 /**
@@ -306,6 +310,8 @@ Utm.prototype.toLatLonE = function() {
  *   var utmCoord = Utm.parse('31 N 448251 5411932');
  *   // utmCoord: {zone: 31, hemisphere: 'N', easting: 448251, northing: 5411932 }
  */
+/*
+
 Utm.parse = function(utmCoord, datum) {
     if (datum === undefined) datum = LatLon.datum.WGS84; // default if not supplied
 
@@ -318,6 +324,7 @@ Utm.parse = function(utmCoord, datum) {
 
     return new Utm(zone, hemisphere, easting, northing, datum);
 };
+*/
 
 
 /**
@@ -334,6 +341,7 @@ Utm.parse = function(utmCoord, datum) {
  * @example
  *   var utm = Utm.parse('31 N 448251 5411932').toString(4);  // 31 N 448251.0000 5411932.0000
  */
+/*
 Utm.prototype.toString = function(digits) {
     digits = Number(digits||0); // default 0 if not supplied
 
@@ -346,43 +354,4 @@ Utm.prototype.toString = function(digits) {
     return z+' '+h+' '+e.toFixed(digits)+' '+n.toFixed(digits);
 };
 
-
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-
-/** Polyfill Math.sinh for old browsers / IE */
-if (Math.sinh === undefined) {
-    Math.sinh = function(x) {
-        return (Math.exp(x) - Math.exp(-x)) / 2;
-    };
-}
-
-/** Polyfill Math.cosh for old browsers / IE */
-if (Math.cosh === undefined) {
-    Math.cosh = function(x) {
-        return (Math.exp(x) + Math.exp(-x)) / 2;
-    };
-}
-
-/** Polyfill Math.tanh for old browsers / IE */
-if (Math.tanh === undefined) {
-    Math.tanh = function(x) {
-        return (Math.exp(x) - Math.exp(-x)) / (Math.exp(x) + Math.exp(-x));
-    };
-}
-
-/** Polyfill Math.asinh for old browsers / IE */
-if (Math.asinh === undefined) {
-    Math.asinh = function(x) {
-        return Math.log(x + Math.sqrt(1 + x*x));
-    };
-}
-
-/** Polyfill Math.atanh for old browsers / IE */
-if (Math.atanh === undefined) {
-    Math.atanh = function(x) {
-        return Math.log((1+x) / (1-x)) / 2;
-    };
-}
-
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-if (typeof module != 'undefined' && module.exports) module.exports = Utm; // ≡ export default Utm
+*/

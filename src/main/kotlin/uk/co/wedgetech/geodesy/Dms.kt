@@ -124,7 +124,7 @@ import kotlin.math.roundToInt
 
     internal fun toDegreesMinutes(degrees: Double, dp: Int, separator : String) : String {
         var d = Math.floor(degrees).toInt()                // get component deg
-        var m = ((degrees * 60.0) % 60).toFixed(dp)           // get component min & round/right-pad
+        var m = ((degrees * 60.0) % 60.0).toFixed(dp)           // get component min & round/right-pad
         if (m == 60.0) {
             m = 0.0
             d++
@@ -135,8 +135,8 @@ import kotlin.math.roundToInt
 
     internal fun toDegreesMinutesSeconds(degrees: Double, dp: Int, separator: String) : String {
         var d = Math.floor(degrees).toInt()                       // get component deg
-        var m = (Math.floor((degrees * 3600) / 60) % 60).toInt()  // get component min
-        var s = (degrees * 3600 % 60).toFixed(dp);           // get component sec & round/right-pad
+        var m = (Math.floor((degrees * 3600.0) / 60.0) % 60.0).toInt()  // get component min
+        var s = (degrees * 3600.0 % 60.0).toFixed(dp);           // get component sec & round/right-pad
         if (s == 60.0) {
             s = 0.0
             m++
@@ -165,10 +165,10 @@ import kotlin.math.roundToInt
      * @param   {number} [dp=0|2|4] - Number of decimal places to use – default 0 for dms, 2 for dm, 4 for d.
      * @returns {string} Degrees formatted as deg/min/secs according to specified format.
      */
-    fun Double.toLatitude(format: String, dp: Int = 0, separator: String = ""): String
+    fun Double.toLatitude(format: String, dp: Int? = null, separator: String = ""): String
     {
         val lat = this.toDMS(format, dp, separator)
-        return if (lat == null) "–" else lat+separator+(if (this<0.0) 'S' else 'N');  // knock off initial '0' for lat!
+        return if (lat == null) "–" else lat.substring(1)+separator+(if (this<0.0) 'S' else 'N');  // knock off initial '0' for lat!
     };
 
 
@@ -180,7 +180,7 @@ import kotlin.math.roundToInt
      * @param   {number} [dp=0|2|4] - Number of decimal places to use – default 0 for dms, 2 for dm, 4 for d.
      * @returns {string} Degrees formatted as deg/min/secs according to specified format.
      */
-    fun Double.toLongitude(format: String, dp: Int = 0, separator : String = ""): String
+    fun Double.toLongitude(format: String, dp: Int? = null, separator : String = ""): String
     {
         val lon = this.toDMS(format, dp, separator);
         return if (lon == null) "–" else lon+separator+(if (this<0.0) 'W' else 'E');

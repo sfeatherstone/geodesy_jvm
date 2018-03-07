@@ -4,10 +4,12 @@
 /* www.movable-type.co.uk/scripts/latlong-utm-mgrs.html                                           */
 /* www.movable-type.co.uk/scripts/geodesy/docs/module-mgrs.html                                   */
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+/*
 
 'use strict';
 if (typeof module!='undefined' && module.exports) var Utm = require('./utm.js');                   // ≡ import Utm from 'utm.js'
 if (typeof module!='undefined' && module.exports) var LatLon = require('./latlon-ellipsoidal.js'); // ≡ import LatLon from 'latlon-ellipsoidal.js'
+*/
 
 
 /**
@@ -25,19 +27,19 @@ if (typeof module!='undefined' && module.exports) var LatLon = require('./latlon
 /*
  * Latitude bands C..X 8° each, covering 80°S to 84°N
  */
-Mgrs.latBands = 'CDEFGHJKLMNPQRSTUVWXX'; // X is repeated for 80-84°N
+//Mgrs.latBands = 'CDEFGHJKLMNPQRSTUVWXX'; // X is repeated for 80-84°N
 
 
 /*
  * 100km grid square column (‘e’) letters repeat every third zone
  */
-Mgrs.e100kLetters = [ 'ABCDEFGH', 'JKLMNPQR', 'STUVWXYZ' ];
+//Mgrs.e100kLetters = [ 'ABCDEFGH', 'JKLMNPQR', 'STUVWXYZ' ];
 
 
 /*
  * 100km grid square row (‘n’) letters repeat every other zone
  */
-Mgrs.n100kLetters = [ 'ABCDEFGHJKLMNPQRSTUV', 'FGHJKLMNPQRSTUVABCDE' ];
+//Mgrs.n100kLetters = [ 'ABCDEFGHJKLMNPQRSTUV', 'FGHJKLMNPQRSTUVABCDE' ];
 
 
 /**
@@ -56,7 +58,7 @@ Mgrs.n100kLetters = [ 'ABCDEFGHJKLMNPQRSTUV', 'FGHJKLMNPQRSTUVABCDE' ];
  * @example
  *   var mgrsRef = new Mgrs(31, 'U', 'D', 'Q', 48251, 11932); // 31U DQ 48251 11932
  */
-function Mgrs(zone, band, e100k, n100k, easting, northing, datum) {
+/*function Mgrs(zone, band, e100k, n100k, easting, northing, datum) {
     // allow instantiation without 'new'
     if (!(this instanceof Mgrs)) return new Mgrs(zone, band, e100k, n100k, easting, northing, datum);
 
@@ -75,7 +77,7 @@ function Mgrs(zone, band, e100k, n100k, easting, northing, datum) {
     this.easting = Number(easting);
     this.northing = Number(northing);
     this.datum = datum;
-}
+}*/
 
 
 /**
@@ -88,6 +90,7 @@ function Mgrs(zone, band, e100k, n100k, easting, northing, datum) {
  *   var utmCoord = new Utm(31, 'N', 448251, 5411932);
  *   var mgrsRef = utmCoord.toMgrs(); // 31U DQ 48251 11932
  */
+/*
 Utm.prototype.toMgrs = function() {
     if (isNaN(this.zone + this.easting + this.northing)) throw new Error('Invalid UTM coordinate ‘'+this.toString()+'’');
 
@@ -117,6 +120,7 @@ Utm.prototype.toMgrs = function() {
 
     return new Mgrs(zone, band, e100k, n100k, easting, northing);
 };
+*/
 
 
 /**
@@ -127,6 +131,7 @@ Utm.prototype.toMgrs = function() {
  * @example
  *   var utmCoord = Mgrs.parse('31U DQ 448251 11932').toUtm(); // 31 N 448251 5411932
  */
+/*
 Mgrs.prototype.toUtm = function() {
     var zone = this.zone;
     var band = this.band;
@@ -158,6 +163,7 @@ Mgrs.prototype.toUtm = function() {
 
     return new Utm(zone, hemisphere, e100kNum+easting, n2M+n100kNum+northing, this.datum);
 };
+*/
 
 
 /**
@@ -178,6 +184,7 @@ Mgrs.prototype.toUtm = function() {
  *   var mgrsRef = Mgrs.parse('31UDQ4825111932');
  *   //  mgrsRef: { zone:31, band:'U', e100k:'D', n100k:'Q', easting:48251, northing:11932 }
  */
+/*
 Mgrs.parse = function(mgrsGridRef) {
     mgrsGridRef = mgrsGridRef.trim();
 
@@ -211,6 +218,7 @@ Mgrs.parse = function(mgrsGridRef) {
 
     return new Mgrs(zone, band, e100k, n100k, e, n);
 };
+*/
 
 
 /**
@@ -231,6 +239,7 @@ Mgrs.parse = function(mgrsGridRef) {
  * @example
  *   var mgrsStr = new Mgrs(31, 'U', 'D', 'Q', 48251, 11932).toString(); // '31U DQ 48251 11932'
  */
+/*
 Mgrs.prototype.toString = function(digits) {
     digits = (digits === undefined) ? 10 : Number(digits);
     if ([ 2,4,6,8,10 ].indexOf(digits) == -1) throw new Error('Invalid precision ‘'+digits+'’');
@@ -251,7 +260,5 @@ Mgrs.prototype.toString = function(digits) {
 
     return zone+band + ' ' + e100k+n100k + ' '  + easting + ' ' + northing;
 };
+*/
 
-
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-if (typeof module != 'undefined' && module.exports) module.exports = Mgrs; // ≡ export default Mgrs

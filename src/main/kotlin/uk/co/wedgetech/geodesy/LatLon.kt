@@ -45,7 +45,7 @@ open class LatLon(val lat: Double, val lon :Double) {
      * @param   {number} [dp=0|2|4] - Number of decimal places to use - default 0 for dms, 2 for dm, 4 for d.
      * @returns {string} Comma-separated latitude/longitude.
      */
-    fun toString(format: String, dp: Int = 0) : String
+    fun toString(format: String, dp: Int? = null) : String
     {
         return "${this.lat.toLatitude(format, dp)}, ${this.lon.toLongitude(format, dp)}"
     }

@@ -104,7 +104,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      *
      * @returns {Vector3d} Negated vector.
      */
-    var negate = Vector3d (-this.x, -this.y, -this.z)
+    val negate by lazy({Vector3d (-this.x, -this.y, -this.z) })
 
 
     /**

@@ -39,165 +39,7 @@ import java.math.BigDecimal
  */
 data class OsGridRef(val easting : Double, val northing: Double) {
 
-
-    /**
-     * Converts latitude/longitude to Ordnance Survey grid reference easting/northing coordinate.
-     *
-     * Note formulation implemented here due to Thomas, Redfearn, etc is as published by OS, but is
-     * inferior to Krüger as used by e.g. Karney 2011.
-     *
-     * @param   {LatLon}    point - latitude/longitude.
-     * @returns {OsGridRef} OS Grid Reference easting/northing.
-     *
-     * @example
-     *   var p = new LatLon(52.65798, 1.71605);
-     *   var grid = OsGridRef.latLonToOsGrid(p); // grid.toString(): TG 51409 13177
-     *   // for conversion of (historical) OSGB36 latitude/longitude point:
-     *   var p = new LatLon(52.65757, 1.71791, LatLon.datum.OSGB36);
-     */
-    fun latLonToOsGrid(point: LatLon): OsGridRef {
-        // if necessary convert to OSGB36 first
-        val osgbPoint = if (point.datum != LatLon.Companion.OSGB36) point.convertDatum(LatLon.Companion.OSGB36)
-            else point
-
-        val φ = osgbPoint.lat.toRadians();
-        val λ = osgbPoint.lon.toRadians();
-
-        val a = 6377563.396
-        val b = 6356256.909;              // Airy 1830 major & minor semi-axes
-        val F0 = 0.9996012717;                             // NatGrid scale factor on central meridian
-        val φ0 = (49.0).toRadians()
-        val λ0 = (-2.0).toRadians();  // NatGrid true origin is 49°N,2°W
-        val N0 = -100000
-        val E0 = 400000;                     // northing & easting of true origin, metres
-        val e2 = 1 - (b * b) / (a * a);                          // eccentricity squared
-        val n = (a - b) / (a + b)
-        val n2 = n * n
-        val n3 = n * n * n;         // n, n², n³
-
-        val cosφ = Math.cos(φ)
-        val sinφ = Math.sin(φ);
-        val ν = a * F0 / Math.sqrt(1 - e2 * sinφ * sinφ);            // nu = transverse radius of curvature
-        val ρ = a * F0 * (1 - e2) / Math.pow(1 - e2 * sinφ * sinφ, 1.5); // rho = meridional radius of curvature
-        val η2 = ν / ρ - 1;                                    // eta = ?
-
-        val Ma = (1 + n + (5 / 4) * n2 + (5 / 4) * n3) * (φ - φ0);
-        val Mb = (3 * n + 3 * n * n + (21 / 8) * n3) * Math.sin(φ - φ0) * Math.cos(φ + φ0);
-        val Mc = ((15 / 8) * n2 + (15 / 8) * n3) * Math.sin(2 * (φ - φ0)) * Math.cos(2 * (φ + φ0));
-        val Md = (35 / 24) * n3 * Math.sin(3 * (φ - φ0)) * Math.cos(3 * (φ + φ0));
-        val M = b * F0 * (Ma - Mb + Mc - Md);              // meridional arc
-
-        val cos3φ = cosφ * cosφ * cosφ;
-        val cos5φ = cos3φ * cosφ * cosφ;
-        val tan2φ = Math.tan(φ) * Math.tan(φ);
-        val tan4φ = tan2φ * tan2φ;
-
-        val I = M + N0;
-        val II = (ν / 2) * sinφ * cosφ;
-        val III = (ν / 24) * sinφ * cos3φ * (5 - tan2φ + 9 * η2);
-        val IIIA = (ν / 720) * sinφ * cos5φ * (61 - 58 * tan2φ + tan4φ);
-        val IV = ν * cosφ;
-        val V = (ν / 6) * cos3φ * (ν / ρ - tan2φ);
-        val VI = (ν / 120) * cos5φ * (5 - 18 * tan2φ + tan4φ + 14 * η2 - 58 * tan2φ * η2);
-
-        val Δλ = λ - λ0;
-        val Δλ2 = Δλ * Δλ
-        val Δλ3 = Δλ2 * Δλ
-        val Δλ4 = Δλ3 * Δλ
-        val Δλ5 = Δλ4 * Δλ
-        val Δλ6 = Δλ5 * Δλ;
-
-        val N = I + II * Δλ2 + III * Δλ4 + IIIA * Δλ6;
-        val E = E0 + IV * Δλ + V * Δλ3 + VI * Δλ5;
-
-        return OsGridRef(E.toFixed(3), N.toFixed(3)); // gets truncated to SW corner of 1m grid square
-    };
-
-
-    /**
-     * Converts Ordnance Survey grid reference easting/northing coordinate to latitude/longitude
-     * (SW corner of grid square).
-     *
-     * Note formulation implemented here due to Thomas, Redfearn, etc is as published by OS, but is
-     * inferior to Krüger as used by e.g. Karney 2011.
-     *
-     * @param   {OsGridRef}    gridref - Grid ref E/N to be converted to lat/long (SW corner of grid square).
-     * @param   {LatLon.datum} [datum=WGS84] - Datum to convert grid reference into.
-     * @returns {LatLon}       Latitude/longitude of supplied grid reference.
-     *
-     * @example
-     *   var gridref = new OsGridRef(651409.903, 313177.270);
-     *   var pWgs84 = OsGridRef.osGridToLatLon(gridref);                     // 52°39′28.723″N, 001°42′57.787″E
-     *   // to obtain (historical) OSGB36 latitude/longitude point:
-     *   var pOsgb = OsGridRef.osGridToLatLon(gridref, LatLon.datum.OSGB36); // 52°39′27.253″N, 001°43′04.518″E
-     */
-    fun osGridToLatLon(gridref :OsGridRef, datum: LatLon.Datum = LatLon.WGS84): LatLon
-    {
-        val E = gridref.easting;
-        val N = gridref.northing;
-
-        val a = 6377563.396
-        val b = 6356256.909;              // Airy 1830 major & minor semi-axes
-        val F0 = 0.9996012717;                             // NatGrid scale factor on central meridian
-        val φ0 = (49.0).toRadians()
-        val λ0 = (-2.0).toRadians()  // NatGrid true origin is 49°N,2°W
-        val N0 = -100000.0
-        val E0 = 400000.0;                     // northing & easting of true origin, metres
-        val e2 = 1 - (b * b) / (a * a);                          // eccentricity squared
-        val n = (a - b) / (a + b)
-        val n2 = n*n
-        val n3 = n*n*n;         // n, n², n³
-
-        var φ = φ0
-        var M = 0.0;
-        do {
-            φ = (N - N0 - M) / (a * F0) + φ;
-
-            val Ma = (1 + n + (5 / 4) * n2 + (5 / 4) * n3) * (φ - φ0);
-            val Mb = (3 * n + 3 * n * n + (21 / 8) * n3) * Math.sin(φ - φ0) * Math.cos(φ + φ0);
-            val Mc = ((15 / 8) * n2 + (15 / 8) * n3) * Math.sin(2 * (φ - φ0)) * Math.cos(2 * (φ + φ0));
-            val Md = (35 / 24) * n3 * Math.sin(3 * (φ - φ0)) * Math.cos(3 * (φ + φ0));
-            M = b * F0 * (Ma - Mb + Mc - Md);              // meridional arc
-
-        } while ((N - N0 - M) >= 0.00001);  // ie until < 0.01mm
-
-        val cosφ = Math.cos(φ)
-        val sinφ = Math.sin(φ);
-        val ν = a * F0 / Math.sqrt(1 - (e2 * sinφ * sinφ));            // nu = transverse radius of curvature
-        val ρ = a * F0 * (1 - e2) / Math.pow(1 - (e2 * sinφ * sinφ), 1.5); // rho = meridional radius of curvature
-        val η2 = ν / ρ - 1;                                    // eta = ?
-
-        val tanφ = Math.tan(φ);
-        val tan2φ = tanφ * tanφ
-        val tan4φ = tan2φ*tan2φ
-        val tan6φ = tan4φ*tan2φ;
-        val secφ = 1 / cosφ;
-        val ν3 = ν * ν * ν
-        val ν5 = ν3*ν*ν
-        val ν7 = ν5*ν*ν;
-        val VII = tanφ / (2 * ρ * ν);
-        val VIII = tanφ / (24 * ρ * ν3) * (5 + 3 * tan2φ + η2 - 9 * tan2φ * η2);
-        val IX = tanφ / (720 * ρ * ν5) * (61 + 90 * tan2φ + 45 * tan4φ);
-        val X = secφ / ν;
-        val XI = secφ / (6 * ν3) * (ν / ρ + 2 * tan2φ);
-        val XII = secφ / (120 * ν5) * (5 + 28 * tan2φ + 24 * tan4φ);
-        val XIIA = secφ / (5040 * ν7) * (61 + 662 * tan2φ + 1320 * tan4φ + 720 * tan6φ);
-
-        val dE = (E - E0)
-        val dE2 = dE*dE
-        val dE3 = dE2*dE
-        val dE4 = dE2*dE2
-        val dE5 = dE3*dE2
-        val dE6 = dE4*dE2
-        val dE7 = dE5*dE2;
-        φ -= (VII * dE2) + (VIII * dE4) - (IX * dE6);
-        val λ = λ0 + (X * dE) - (XI * dE3) + (XII * dE5) - (XIIA * dE7);
-
-        var point = LatLon (φ.toDegrees(), λ.toDegrees(), LatLon.OSGB36);
-        if (datum != LatLon.OSGB36) point = point.convertDatum(datum);
-
-        return point;
-    };
+    override fun toString() :String = toString(10)
 
     /**
      * Converts ‘this’ numeric grid reference to standard OS grid reference.
@@ -209,7 +51,7 @@ data class OsGridRef(val easting : Double, val northing: Double) {
      * @example
      *   var ref = new OsGridRef(651409, 313177).toString(); // TG 51409 13177
      */
-    fun toString(digits: Int = 10): String
+    fun toString(digits: Int): String
     {
         if (digits % 2 != 0 || digits > 16) throw IllegalArgumentException("Invalid precision ${digits}")
 
@@ -311,7 +153,7 @@ fun String.parseOsGridReference() : OsGridRef
     var en = gridref.substring(2).trim().split(Regex("\\s+"));
     // if e/n not whitespace separated, split half way
     if (en.size == 1) {
-        en = listOf(en[0].substring(IntRange(0, en[0].length / 2)), en[0].substring(en[0].length / 2))
+        en = listOf(en[0].substring(IntRange(0, (en[0].length / 2)-1)), en[0].substring(en[0].length / 2))
     };
 
     // validation
@@ -329,4 +171,161 @@ fun String.parseOsGridReference() : OsGridRef
     return OsGridRef (e.toDouble(), n.toDouble());
 };
 
+/**
+ * Converts latitude/longitude to Ordnance Survey grid reference easting/northing coordinate.
+ *
+ * Note formulation implemented here due to Thomas, Redfearn, etc is as published by OS, but is
+ * inferior to Krüger as used by e.g. Karney 2011.
+ *
+ * @param   {LatLon}    point - latitude/longitude.
+ * @returns {OsGridRef} OS Grid Reference easting/northing.
+ *
+ * @example
+ *   var p = new LatLon(52.65798, 1.71605);
+ *   var grid = OsGridRef.latLonToOsGrid(p); // grid.toString(): TG 51409 13177
+ *   // for conversion of (historical) OSGB36 latitude/longitude point:
+ *   var p = new LatLon(52.65757, 1.71791, LatLon.datum.OSGB36);
+ */
+fun LatLonDatum.toOsGrid(): OsGridRef {
+    // if necessary convert to OSGB36 first
+    val osgbPoint = if (this.datum != LatLonDatum.OSGB36) this.convertDatum(LatLonDatum.OSGB36)
+        else this
 
+    val φ = osgbPoint.lat.toRadians();
+    val λ = osgbPoint.lon.toRadians();
+
+    val a = 6377563.396
+    val b = 6356256.909;              // Airy 1830 major & minor semi-axes
+    val F0 = 0.9996012717             // NatGrid scale factor on central meridian
+    val φ0 = (49.0).toRadians()
+    val λ0 = (-2.0).toRadians();      // NatGrid true origin is 49°N,2°W
+    val N0 = -100000.0
+    val E0 = 400000.0                  // northing & easting of true origin, metres
+    val e2 = 1 - (b * b) / (a * a);   // eccentricity squared
+    val n = (a - b) / (a + b)
+    val n2 = n * n
+    val n3 = n * n * n;         // n, n², n³
+
+    val cosφ = Math.cos(φ)
+    val sinφ = Math.sin(φ);
+    val ν = a * F0 / Math.sqrt(1 - e2 * sinφ * sinφ);            // nu = transverse radius of curvature
+    val ρ = a * F0 * (1.0 - e2) / Math.pow(1.0 - e2 * sinφ * sinφ, 1.5); // rho = meridional radius of curvature
+    val η2 = ν / ρ - 1.0;                                    // eta = ?
+
+    val Ma = (1.0 + n + (5.0 / 4.0) * n2 + (5.0 / 4.0) * n3) * (φ - φ0);
+    val Mb = (3.0 * n + 3.0 * n * n + (21.0 / 8.0) * n3) * Math.sin(φ - φ0) * Math.cos(φ + φ0);
+    val Mc = ((15.0 / 8.0) * n2 + (15.0 / 8.0) * n3) * Math.sin(2.0 * (φ - φ0)) * Math.cos(2 * (φ + φ0));
+    val Md = (35.0 / 24.0) * n3 * Math.sin(3.0 * (φ - φ0)) * Math.cos(3.0 * (φ + φ0));
+    val M = b * F0 * (Ma - Mb + Mc - Md);              // meridional arc
+
+    val cos3φ = cosφ * cosφ * cosφ;
+    val cos5φ = cos3φ * cosφ * cosφ;
+    val tan2φ = Math.tan(φ) * Math.tan(φ);
+    val tan4φ = tan2φ * tan2φ;
+
+    val I = M + N0;
+    val II = (ν / 2.0) * sinφ * cosφ;
+    val III = (ν / 24.0) * sinφ * cos3φ * (5.0 - tan2φ + 9.0 * η2);
+    val IIIA = (ν / 720.0) * sinφ * cos5φ * (61.0 - 58.0 * tan2φ + tan4φ);
+    val IV = ν * cosφ;
+    val V = (ν / 6.0) * cos3φ * (ν / ρ - tan2φ);
+    val VI = (ν / 120.0) * cos5φ * (5.0 - 18.0 * tan2φ + tan4φ + 14.0 * η2 - 58.0 * tan2φ * η2);
+
+    val Δλ = λ - λ0;
+    val Δλ2 = Δλ * Δλ
+    val Δλ3 = Δλ2 * Δλ
+    val Δλ4 = Δλ3 * Δλ
+    val Δλ5 = Δλ4 * Δλ
+    val Δλ6 = Δλ5 * Δλ;
+
+    val N = I + II * Δλ2 + III * Δλ4 + IIIA * Δλ6;
+    val E = E0 + IV * Δλ + V * Δλ3 + VI * Δλ5;
+
+    return OsGridRef(E.toFixed(3), N.toFixed(3)); // gets truncated to SW corner of 1m grid square
+};
+
+
+/**
+ * Converts Ordnance Survey grid reference easting/northing coordinate to latitude/longitude
+ * (SW corner of grid square).
+ *
+ * Note formulation implemented here due to Thomas, Redfearn, etc is as published by OS, but is
+ * inferior to Krüger as used by e.g. Karney 2011.
+ *
+ * @param   {OsGridRef}    gridref - Grid ref E/N to be converted to lat/long (SW corner of grid square).
+ * @param   {LatLon.datum} [datum=WGS84] - Datum to convert grid reference into.
+ * @returns {LatLon}       Latitude/longitude of supplied grid reference.
+ *
+ * @example
+ *   var gridref = new OsGridRef(651409.903, 313177.270);
+ *   var pWgs84 = OsGridRef.osGridToLatLon(gridref);                     // 52°39′28.723″N, 001°42′57.787″E
+ *   // to obtain (historical) OSGB36 latitude/longitude point:
+ *   var pOsgb = OsGridRef.osGridToLatLon(gridref, LatLon.datum.OSGB36); // 52°39′27.253″N, 001°43′04.518″E
+ */
+fun OsGridRef.toLatLonDatum(datum: LatLonDatum.Datum = LatLonDatum.WGS84): LatLonDatum
+{
+    val E = this.easting;
+    val N = this.northing;
+
+    val a = 6377563.396
+    val b = 6356256.909;              // Airy 1830 major & minor semi-axes
+    val F0 = 0.9996012717;                             // NatGrid scale factor on central meridian
+    val φ0 = (49.0).toRadians()
+    val λ0 = (-2.0).toRadians()  // NatGrid true origin is 49°N,2°W
+    val N0 = -100000.0
+    val E0 = 400000.0;                     // northing & easting of true origin, metres
+    val e2 = 1.0 - (b * b) / (a * a);                          // eccentricity squared
+    val n = (a - b) / (a + b)
+    val n2 = n*n
+    val n3 = n*n*n;         // n, n², n³
+
+    var φ = φ0
+    var M = 0.0;
+    do {
+        φ = (N - N0 - M) / (a * F0) + φ;
+
+        val Ma = (1.0 + n + (5.0 / 4.0) * n2 + (5.0 / 4.0) * n3) * (φ - φ0);
+        val Mb = (3.0 * n + 3.0 * n * n + (21.0 / 8.0) * n3) * Math.sin(φ - φ0) * Math.cos(φ + φ0);
+        val Mc = ((15.0 / 8.0) * n2 + (15.0 / 8.0) * n3) * Math.sin(2.0 * (φ - φ0)) * Math.cos(2.0 * (φ + φ0));
+        val Md = (35.0 / 24.0) * n3 * Math.sin(3.0 * (φ - φ0)) * Math.cos(3.0 * (φ + φ0));
+        M = b * F0 * (Ma - Mb + Mc - Md);              // meridional arc
+
+    } while ((N - N0 - M) >= 0.00001);  // ie until < 0.01mm
+
+    val cosφ = Math.cos(φ)
+    val sinφ = Math.sin(φ);
+    val ν = a * F0 / Math.sqrt(1.0 - (e2 * sinφ * sinφ));            // nu = transverse radius of curvature
+    val ρ = a * F0 * (1.0 - e2) / Math.pow(1.0 - (e2 * sinφ * sinφ), 1.5); // rho = meridional radius of curvature
+    val η2 = ν / ρ - 1.0;                                    // eta = ?
+
+    val tanφ = Math.tan(φ);
+    val tan2φ = tanφ * tanφ
+    val tan4φ = tan2φ*tan2φ
+    val tan6φ = tan4φ*tan2φ;
+    val secφ = 1.0 / cosφ;
+    val ν3 = ν * ν * ν
+    val ν5 = ν3*ν*ν
+    val ν7 = ν5*ν*ν
+    val VII = tanφ / (2.0 * ρ * ν)
+    val VIII = tanφ / (24.0 * ρ * ν3) * (5.0 + 3.0 * tan2φ + η2 - 9.0 * tan2φ * η2)
+    val IX = tanφ / (720.0 * ρ * ν5) * (61.0 + 90.0 * tan2φ + 45.0 * tan4φ)
+    val X = secφ / ν
+    val XI = secφ / (6.0 * ν3) * (ν / ρ + 2.0 * tan2φ)
+    val XII = secφ / (120.0 * ν5) * (5.0 + 28.0 * tan2φ + 24.0 * tan4φ);
+    val XIIA = secφ / (5040.0 * ν7) * (61.0 + 662.0 * tan2φ + 1320.0 * tan4φ + 720.0 * tan6φ);
+
+    val dE = (E - E0)
+    val dE2 = dE*dE
+    val dE3 = dE2*dE
+    val dE4 = dE2*dE2
+    val dE5 = dE3*dE2
+    val dE6 = dE4*dE2
+    val dE7 = dE5*dE2;
+    φ = φ - VII * dE2 + VIII * dE4 - IX * dE6
+    val λ = λ0 + X * dE - XI * dE3 + XII * dE5 - XIIA * dE7
+
+    var point = LatLonDatum(φ.toDegrees(), λ.toDegrees(), LatLonDatum.OSGB36);
+    if (datum != LatLonDatum.OSGB36) point = point.convertDatum(datum);
+
+    return point;
+};
