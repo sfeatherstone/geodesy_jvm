@@ -22,8 +22,8 @@ plugins {
     kotlin("jvm") version "1.2.21"     // <1>
 }
 
-group = "uk.co.wedgetech.geodesy"
-version = "0.0.1"
+group = "com.github.sfeatherstone"
+version = "0.1.1"
 
 repositories {
     jcenter()
