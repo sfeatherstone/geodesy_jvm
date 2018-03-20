@@ -144,4 +144,53 @@ class DmsTest {
         assertEquals("parse -185", -185.0, "-185".parseDegreesMinutesSeconds(), 0.001)
         assertEquals("parse -365", -365.0, "-365".parseDegreesMinutesSeconds(), 0.001)
     }
+
+    @Test
+    fun testOutputVariations() {
+        assertEquals("output dms ", "045°45′45″", 45.76260.toDMS())
+        assertEquals("output dms " + "d", "045.7626°", 45.76260.toDMS("d"))
+        assertEquals("output dms " + "dm", "045°45.76′", 45.76260.toDMS("dm"))
+        assertEquals("output dms " + "dms", "045°45′45″", 45.76260.toDMS("dms"))
+        assertEquals("output dms " + "dm,6", "045.762600°", 45.76260.toDMS("d", 6))
+        assertEquals("output dms " + "dm,4", "045°45.7560′", 45.76260.toDMS("dm", 4))
+        assertEquals("output dms " + "dms,2", "045°45′45.36″", 45.76260.toDMS("dms", 2))
+        assertEquals("output dms " + "xxx", "045°45′45″", 45.76260.toDMS("xxx"))
+        assertEquals("output dms " + "xxx,6", "045°45′45.360000″", 45.76260.toDMS("xxx", 6)) // !!
+    }
+/*
+    describe("misc", function() {
+        assertEquals("toLat num",    Dms.toLat(51.2, "dms"))"51°12′00″N")
+        assertEquals("toLat str",    Dms.toLat("51.2", "dms"))"51°12′00″N")
+        assertEquals("toLat xxx",    Dms.toLat("xxx", "dms"))"–")
+        assertEquals("toLon num",    Dms.toLon(0.33, "dms"))"000°19′48″E")
+        assertEquals("toLon str",    Dms.toLon("0.33", "dms"))"000°19′48″E")
+        assertEquals("toLon xxx",    Dms.toLon("xxx", "dms"))"–")
+        assertEquals("toDMS rnd-up", Dms.toDMS(51.19999999999999, "d"))"051.2000°")
+        assertEquals("toDMS rnd-up", Dms.toDMS(51.19999999999999, "dm"))"051°12.00′")
+        assertEquals("toDMS rnd-up", Dms.toDMS(51.19999999999999, "dms"))"051°12′00″")
+        assertEquals("toBrng",       Dms.toBrng(1))"001°00′00″")
+    });
+
+    describe("parse failures", function() {
+        assertEquals("parse 0 0 0 0", Dms.parseDMS("0 0 0 0").should.be.NaN
+        assertEquals("parse xxx",     Dms.parseDMS("xxx").should.be.NaN
+        assertEquals("parse """,      Dms.parseDMS("").should.be.NaN
+        assertEquals("parse null",    Dms.parseDMS(null).should.be.NaN
+        assertEquals("parse obj",     Dms.parseDMS({ a: 1 }).should.be.NaN
+        assertEquals("parse true",    Dms.parseDMS(true).should.be.NaN
+        assertEquals("parse false",   Dms.parseDMS(false).should.be.NaN
+    });
+
+    describe("convert failures", function() {
+        assertEquals("output 0 0 0 0", should.equal(Dms.toDMS("0 0 0 0"), null)
+        assertEquals("output xxx",     should.equal(Dms.toDMS("xxx", "dms", 2), null)
+        assertEquals("output xxx",     should.equal(Dms.toDMS("xxx"), null)
+        assertEquals("output """,      should.equal(Dms.toDMS(""), "000°00′00″") // TODO: fix on next semver major
+        assertEquals("output null",    should.equal(Dms.toDMS(null), "000°00′00″") // TODO: fix on next semver major
+        assertEquals("output obj",     should.equal(Dms.toDMS({ a: 1 }), null)
+        assertEquals("output true",    should.equal(Dms.toDMS(true), "001°00′00″") // TODO: fix on next semver major
+        assertEquals("output false",   should.equal(Dms.toDMS(false), "000°00′00″") // TODO: fix on next semver major
+        assertEquals("output ∞",       should.equal(Dms.toDMS(1/0), "ity°aN′NaN″") // TODO: fix on next semver major
+    });
+*/
 }

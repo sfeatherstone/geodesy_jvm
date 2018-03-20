@@ -460,12 +460,12 @@ fun LatLon.rhumbBearingTo(point: LatLon): Double {
  *     var p2 = p1.rhumbDestinationPoint(40300, 116.7); // 50.9642°N, 001.8530°E
  */
 fun LatLon.rhumbDestinationPoint(distance: Double, bearing: Double, radius: Double = 6371e3): LatLon {
-    var δ = distance / radius; // angular distance in radians
-    var φ1 = this.lat.toRadians()
+    val δ = distance / radius; // angular distance in radians
+    val φ1 = this.lat.toRadians()
     val λ1 = this.lon.toRadians();
-    var θ = bearing.toRadians();
+    val θ = bearing.toRadians();
 
-    var Δφ = δ * Math.cos(θ);
+    val Δφ = δ * Math.cos(θ);
     var φ2 = φ1 + Δφ;
 
     // check for some daft bugger going past the pole, normalise latitude if so
@@ -473,11 +473,11 @@ fun LatLon.rhumbDestinationPoint(distance: Double, bearing: Double, radius: Doub
         φ2 = if (φ2>0) Math.PI-φ2 else -Math.PI-φ2
     }
 
-    var Δψ = Math.log(Math.tan(φ2/2+Math.PI/4)/Math.tan(φ1/2+Math.PI/4));
-    var q = if (Math.abs(Δψ) > 10e-12) Δφ / Δψ else Math.cos(φ1); // E-W course becomes ill-conditioned with 0/0
+    val Δψ = Math.log(Math.tan(φ2/2+Math.PI/4)/Math.tan(φ1/2+Math.PI/4));
+    val q = if (Math.abs(Δψ) > 10e-12) Δφ / Δψ else Math.cos(φ1); // E-W course becomes ill-conditioned with 0/0
 
-    var Δλ = δ*Math.sin(θ)/q;
-    var λ2 = λ1 + Δλ;
+    val Δλ = δ*Math.sin(θ)/q;
+    val λ2 = λ1 + Δλ;
 
     return LatLon(φ2.toDegrees(), (λ2.toDegrees()+540.0) % 360.0 - 180.0); // normalise to −180..+180°
 };
@@ -498,17 +498,17 @@ fun LatLon.rhumbMidpointTo(point: LatLon): LatLon {
 
     // see mathforum.org/kb/message.jspa?messageID=148837
 
-    var φ1 = this.lat.toRadians()
+    val φ1 = this.lat.toRadians()
     var λ1 = this.lon.toRadians();
-    var φ2 = point.lat.toRadians()
+    val φ2 = point.lat.toRadians()
     val λ2 = point.lon.toRadians();
 
     if (Math.abs(λ2-λ1) > Math.PI) λ1 += 2*Math.PI; // crossing anti-meridian
 
-    var φ3 = (φ1+φ2)/2;
-    var f1 = Math.tan(Math.PI/4 + φ1/2);
-    var f2 = Math.tan(Math.PI/4 + φ2/2);
-    var f3 = Math.tan(Math.PI/4 + φ3/2);
+    val φ3 = (φ1+φ2)/2;
+    val f1 = Math.tan(Math.PI/4 + φ1/2);
+    val f2 = Math.tan(Math.PI/4 + φ2/2);
+    val f3 = Math.tan(Math.PI/4 + φ3/2);
     var λ3 = ( (λ2-λ1)*Math.log(f3) + λ1*Math.log(f2) - λ2*Math.log(f1) ) / Math.log(f2/f1);
 
     if (!java.lang.Double.isFinite(λ3)) λ3 = (λ1+λ2)/2; // parallel of latitude
@@ -545,14 +545,14 @@ fun areaOf(polygonInput: Array<LatLon>, radius: Double = 6371e3):Double {
 
     if (polygon.size < 4) return 0.0
 
-    val nVertices = polygon.size - 1;
+    val nVertices = polygon.size - 2;
 
     var S = 0.0 // spherical excess in steradians
     for (v in 0..nVertices) {
-        var φ1 = polygon[v].lat.toRadians();
-        var φ2 = polygon[v+1].lat.toRadians();
-        var Δλ = (polygon[v+1].lon - polygon[v].lon).toRadians();
-        var E = 2 * Math.atan2(Math.tan(Δλ/2) * (Math.tan(φ1/2)+Math.tan(φ2/2)), 1 + Math.tan(φ1/2)*Math.tan(φ2/2));
+        val φ1 = polygon[v].lat.toRadians();
+        val φ2 = polygon[v+1].lat.toRadians();
+        val Δλ = (polygon[v+1].lon - polygon[v].lon).toRadians();
+        val E = 2 * Math.atan2(Math.tan(Δλ/2) * (Math.tan(φ1/2)+Math.tan(φ2/2)), 1 + Math.tan(φ1/2)*Math.tan(φ2/2));
         S += E;
     }
 
@@ -562,23 +562,23 @@ fun areaOf(polygonInput: Array<LatLon>, radius: Double = 6371e3):Double {
         // TODO: any better test than this?
         var ΣΔ = 0.0
         var prevBrng = polygon[0].bearingTo(polygon[1]);
-        for (v in 0..polygon.size-1) {
-            var initBrng = polygon[v].bearingTo(polygon[v+1]);
-            var finalBrng = polygon[v].finalBearingTo(polygon[v+1]);
+        for (v in 0..polygon.size-2) {
+            val initBrng = polygon[v].bearingTo(polygon[v+1]);
+            val finalBrng = polygon[v].finalBearingTo(polygon[v+1]);
             ΣΔ += (initBrng - prevBrng + 540.0) % 360.0 - 180.0
             ΣΔ += (finalBrng - initBrng + 540.0) % 360.0 - 180.0
             prevBrng = finalBrng;
         }
-        var initBrng = polygon[0].bearingTo(polygon[1]);
+        val initBrng = polygon[0].bearingTo(polygon[1]);
         ΣΔ += (initBrng - prevBrng + 540) % 360 - 180;
         // TODO: fix (intermittant) edge crossing pole - eg (85,90), (85,0), (85,-90)
-        var enclosed = Math.abs(ΣΔ) < 90; // 0°-ish
+        val enclosed = Math.abs(ΣΔ) < 90; // 0°-ish
         return enclosed;
     }
 
     if (isPoleEnclosedBy(polygon)) S = Math.abs(S) - 2*Math.PI;
 
-    var A = Math.abs(S * radius*radius); // area in units of R
+    val A = Math.abs(S * radius*radius); // area in units of R
 
     return A;
 };

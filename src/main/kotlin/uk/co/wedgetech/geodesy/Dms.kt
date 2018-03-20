@@ -113,7 +113,7 @@ import kotlin.math.roundToInt
             "dm","deg+min" -> toDegreesMinutes(degrees, _dp, separator)
             "dms", "deg+min+sec" -> toDegreesMinutesSeconds(degrees, _dp, separator)
             "d", "deg" -> toDegrees(degrees, _dp)
-            else -> toDegrees(degrees, _dp)
+            else -> toDegreesMinutesSeconds(degrees, _dp, separator)
         }
     }
 
