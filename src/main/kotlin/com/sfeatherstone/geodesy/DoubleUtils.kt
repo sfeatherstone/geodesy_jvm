@@ -1,4 +1,4 @@
-package uk.co.wedgetech.geodesy
+package com.sfeatherstone.geodesy
 
 import java.math.BigDecimal
 import java.math.MathContext

@@ -1,10 +1,11 @@
-package uk.co.wedgetech.geodesy
+package com.sfeatherstone.geodesy
 
 import java.lang.Double.*
 import kotlin.math.sign
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /* Geodesy tools for an ellipsoidal earth model                       (c) Chris Veness 2005-2016  */
+/*                                                                        Simon Featherstone 2018 */
 /*                                                                                   MIT Licence  */
 /* www.movable-type.co.uk/scripts/latlong-convert-coords.html                                     */
 /* www.movable-type.co.uk/scripts/geodesy/docs/module-latlon-ellipsoidal.html                     */

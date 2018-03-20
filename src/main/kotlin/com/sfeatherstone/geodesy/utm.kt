@@ -1,5 +1,6 @@
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /* UTM / WGS-84 Conversion Functions                                  (c) Chris Veness 2014-2017  */
+/*                                                                        Simon Featherstone 2018 */
 /*                                                                                   MIT Licence  */
 /* www.movable-type.co.uk/scripts/latlong-utm-mgrs.html                                           */
 /* www.movable-type.co.uk/scripts/geodesy/docs/module-utm.html                                    */

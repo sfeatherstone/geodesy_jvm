@@ -1,9 +1,10 @@
-package uk.co.wedgetech.geodesy
+package com.sfeatherstone.geodesy
 
 import java.math.BigDecimal
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /* Ordnance Survey Grid Reference functions                           (c) Chris Veness 2005-2017  */
+/*                                                                        Simon Featherstone 2018 */
 /*                                                                                   MIT Licence  */
 /* www.movable-type.co.uk/scripts/latlong-gridref.html                                            */
 /* www.movable-type.co.uk/scripts/geodesy/docs/module-osgridref.html                              */
@@ -127,7 +128,7 @@ fun String.parseOsGridReference() : OsGridRef
     val gridRefRegEx = Regex("^(\\d+)\\s*,\\s*(\\d+)$")
     val match = gridRefRegEx.matchEntire(gridref)
     match?.let {
-        return OsGridRef (it.groupValues[1].toDouble(), it.groupValues[2].toDouble())
+        return OsGridRef(it.groupValues[1].toDouble(), it.groupValues[2].toDouble())
     }
 
     // validate format
@@ -168,7 +169,7 @@ fun String.parseOsGridReference() : OsGridRef
     val e = e100km.toString() + easString
     val n = n100km.toString() + norString
 
-    return OsGridRef (e.toDouble(), n.toDouble())
+    return OsGridRef(e.toDouble(), n.toDouble())
 }
 
 /**

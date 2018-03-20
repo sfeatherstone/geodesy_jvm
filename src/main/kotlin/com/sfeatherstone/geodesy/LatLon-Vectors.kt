@@ -1,11 +1,12 @@
-import uk.co.wedgetech.geodesy.LatLon
-import uk.co.wedgetech.geodesy.Vector3d
-import uk.co.wedgetech.geodesy.toDegrees
-import uk.co.wedgetech.geodesy.toRadians
+import com.sfeatherstone.geodesy.LatLon
+import com.sfeatherstone.geodesy.Vector3d
+import com.sfeatherstone.geodesy.toDegrees
+import com.sfeatherstone.geodesy.toRadians
 import java.util.*
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /*  Vector-based spherical geodetic (latitude/longitude) functions    (c) Chris Veness 2011-2017  */
+/*                                                                        Simon Featherstone 2018 */
 /*                                                                                   MIT Licence  */
 /* www.movable-type.co.uk/scripts/latlong-vectors.html                                            */
 /* www.movable-type.co.uk/scripts/geodesy/docs/module-latlon-nvector-spherical.html               */
@@ -202,7 +203,7 @@ fun LatLon.midpointTo(point: LatLon): LatLon {
  *   var p2 = new LatLon(48.857, 2.351);
  *   var pInt = p1.intermediatePointTo(p2, 0.25); // 51.3721°N, 000.7073°E
  */
-fun LatLon.intermediatePointTo(point: LatLon, fraction: Double):LatLon {
+fun LatLon.intermediatePointTo(point: LatLon, fraction: Double): LatLon {
     // angular distance between points; tanδ = |n₁×n₂| / n₁⋅n₂
     val n1 = this.toVector()
     val n2 = point.toVector()
@@ -622,7 +623,7 @@ fun LatLon.areaOf(polygon_: Array<LatLon>, radius: Double = 6371e3):Double {
  * @returns {LatLon}   Point at the geographic mean of the supplied points.
  * @todo Not yet tested.
  */
-fun meanOf(points: Array<LatLon>):LatLon {
+fun meanOf(points: Array<LatLon>): LatLon {
     var m = Vector3d(0.0, 0.0, 0.0)
 
     // add all vectors

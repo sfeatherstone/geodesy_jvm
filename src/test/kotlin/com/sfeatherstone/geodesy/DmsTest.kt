@@ -1,4 +1,4 @@
-package uk.co.wedgetech.geodesy
+package com.sfeatherstone.geodesy
 
 import org.junit.Test
 
@@ -29,38 +29,38 @@ class DmsTest {
 
     @Test
     fun toDegrees() {
-        assertEquals("350.01°", uk.co.wedgetech.geodesy.toDegrees(350.007, dp = 2))
-        assertEquals("050.00°", uk.co.wedgetech.geodesy.toDegrees(50.0003, dp = 2))
-        assertEquals("001.00°", uk.co.wedgetech.geodesy.toDegrees(1.0003, dp = 2))
-        assertEquals("350.00°", uk.co.wedgetech.geodesy.toDegrees(350.0003, dp = 2))
+        assertEquals("350.01°", toDegrees(350.007, dp = 2))
+        assertEquals("050.00°", toDegrees(50.0003, dp = 2))
+        assertEquals("001.00°", toDegrees(1.0003, dp = 2))
+        assertEquals("350.00°", toDegrees(350.0003, dp = 2))
 
-        assertEquals("350°", uk.co.wedgetech.geodesy.toDegrees(350.007, dp = 0))
-        assertEquals("351°", uk.co.wedgetech.geodesy.toDegrees(350.7, dp = 0))
-        assertEquals("050°", uk.co.wedgetech.geodesy.toDegrees(50.007, dp = 0))
-        assertEquals("001°", uk.co.wedgetech.geodesy.toDegrees(1.007, dp = 0))
+        assertEquals("350°", toDegrees(350.007, dp = 0))
+        assertEquals("351°", toDegrees(350.7, dp = 0))
+        assertEquals("050°", toDegrees(50.007, dp = 0))
+        assertEquals("001°", toDegrees(1.007, dp = 0))
 
-        assertEquals("350.0001°", uk.co.wedgetech.geodesy.toDegrees(350.00007, 4))
-        assertEquals("350.0000°", uk.co.wedgetech.geodesy.toDegrees(350.00004, 4))
-        assertEquals("050.0070°", uk.co.wedgetech.geodesy.toDegrees(50.007, 4))
-        assertEquals("001.0071°", uk.co.wedgetech.geodesy.toDegrees(1.00707, 4))
-        assertEquals("037°", uk.co.wedgetech.geodesy.toDegrees(36.99999, 0))
-        assertEquals("037.00°", uk.co.wedgetech.geodesy.toDegrees(36.99999, 2))
-        assertEquals("036.99°", uk.co.wedgetech.geodesy.toDegrees(36.99, 2))
+        assertEquals("350.0001°", toDegrees(350.00007, 4))
+        assertEquals("350.0000°", toDegrees(350.00004, 4))
+        assertEquals("050.0070°", toDegrees(50.007, 4))
+        assertEquals("001.0071°", toDegrees(1.00707, 4))
+        assertEquals("037°", toDegrees(36.99999, 0))
+        assertEquals("037.00°", toDegrees(36.99999, 2))
+        assertEquals("036.99°", toDegrees(36.99, 2))
     }
 
     @Test
     fun toDegreesMinutesSeconds() {
-        assertEquals("051°28′40″", uk.co.wedgetech.geodesy.toDegreesMinutesSeconds(51.4778, 0, ""))
-        assertEquals("051°X28′X40″", uk.co.wedgetech.geodesy.toDegreesMinutesSeconds(51.4778, 0, "X"))
-        assertEquals("006°X00′X01″", uk.co.wedgetech.geodesy.toDegreesMinutesSeconds(6.0003, 0, "X"))
-        assertEquals("006°X00′X01.08″", uk.co.wedgetech.geodesy.toDegreesMinutesSeconds(6.0003, 2, "X"))
-        assertEquals("051°X28′X40″", uk.co.wedgetech.geodesy.toDegreesMinutesSeconds(51.4778, 0, "X"))
-        assertEquals("051°X28′X40.08″", uk.co.wedgetech.geodesy.toDegreesMinutesSeconds(51.4778, 2, "X"))
-        assertEquals("350°X00′X01.08″", uk.co.wedgetech.geodesy.toDegreesMinutesSeconds(350.0003, 2, "X"))
+        assertEquals("051°28′40″", toDegreesMinutesSeconds(51.4778, 0, ""))
+        assertEquals("051°X28′X40″", toDegreesMinutesSeconds(51.4778, 0, "X"))
+        assertEquals("006°X00′X01″", toDegreesMinutesSeconds(6.0003, 0, "X"))
+        assertEquals("006°X00′X01.08″", toDegreesMinutesSeconds(6.0003, 2, "X"))
+        assertEquals("051°X28′X40″", toDegreesMinutesSeconds(51.4778, 0, "X"))
+        assertEquals("051°X28′X40.08″", toDegreesMinutesSeconds(51.4778, 2, "X"))
+        assertEquals("350°X00′X01.08″", toDegreesMinutesSeconds(350.0003, 2, "X"))
 
-        assertEquals("036°X59′X59.96″", uk.co.wedgetech.geodesy.toDegreesMinutesSeconds(36.99999, 2, "X"))
-        assertEquals("037°X00′X00.0″", uk.co.wedgetech.geodesy.toDegreesMinutesSeconds(36.99999, 1, "X"))
-        assertEquals("037°X00′X00″", uk.co.wedgetech.geodesy.toDegreesMinutesSeconds(36.99999, 0, "X"))
+        assertEquals("036°X59′X59.96″", toDegreesMinutesSeconds(36.99999, 2, "X"))
+        assertEquals("037°X00′X00.0″", toDegreesMinutesSeconds(36.99999, 1, "X"))
+        assertEquals("037°X00′X00″", toDegreesMinutesSeconds(36.99999, 0, "X"))
 
     }
 

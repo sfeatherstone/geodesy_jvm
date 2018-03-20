@@ -1,5 +1,6 @@
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /*  MGRS / UTM Conversion Functions                                   (c) Chris Veness 2014-2016  */
+/*                                                                        Simon Featherstone 2018 */
 /*                                                                                   MIT Licence  */
 /* www.movable-type.co.uk/scripts/latlong-utm-mgrs.html                                           */
 /* www.movable-type.co.uk/scripts/geodesy/docs/module-mgrs.html                                   */

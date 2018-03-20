@@ -1,3 +1,4 @@
+import com.sfeatherstone.geodesy.*
 import uk.co.wedgetech.geodesy.*
 
 /**
@@ -203,7 +204,7 @@ internal data class inverseResult(val distance: Double, val initialBearing: Doub
  */
 
 internal fun LatLonDatum.inverse(point: LatLon): inverseResult {
-    val p1 = LatLon(this.lat, if (this.lon!=-180.0) this.lon else 180.0)
+    val p1 = LatLon(this.lat, if (this.lon != -180.0) this.lon else 180.0)
     val p2 = point
     //if (p1.lon == -180) p1.lon = 180;
     val φ1 = p1.lat.toRadians()

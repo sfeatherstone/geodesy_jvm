@@ -1,4 +1,4 @@
-package uk.co.wedgetech.geodesy
+package com.sfeatherstone.geodesy
 
 import org.junit.Assert
 import org.junit.Test

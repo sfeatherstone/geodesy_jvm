@@ -1,8 +1,9 @@
-package uk.co.wedgetech.geodesy
+package com.sfeatherstone.geodesy
 import kotlin.math.roundToInt
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /* Geodesy representation conversion functions                        (c) Chris Veness 2002-2017  */
+/*                                                                        Simon Featherstone 2018 */
 /*                                                                                   MIT Licence  */
 /* www.movable-type.co.uk/scripts/latlong.html                                                    */
 /* www.movable-type.co.uk/scripts/geodesy/docs/module-dms.html                                    */

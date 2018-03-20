@@ -1,4 +1,4 @@
-package uk.co.wedgetech.geodesy
+package com.sfeatherstone.geodesy
 
 import org.junit.Test
 
@@ -27,29 +27,29 @@ class LatLon_SphericalKtTest {
         assertEquals("dest’n inc R",      "51.5135°N, 000.0983°W", greenwich.destinationPoint(dist, brng, 6371e3).toString("d"))
 
         val bradwell = LatLon(53.3206, -1.7297)
-        assertEquals("cross-track",       -307.5, LatLon(53.2611, -0.7972).crossTrackDistanceTo(bradwell,  LatLon(53.1887,  0.1334)).toPrecision(4), 0.0001)
-        assertEquals("along-track",       6.233e+4, LatLon(53.2611, -0.7972).alongTrackDistanceTo(bradwell,  LatLon(53.1887,  0.1334)).toPrecision(4), 0.0001)
+        assertEquals("cross-track",       -307.5, LatLon(53.2611, -0.7972).crossTrackDistanceTo(bradwell, LatLon(53.1887, 0.1334)).toPrecision(4), 0.0001)
+        assertEquals("along-track",       6.233e+4, LatLon(53.2611, -0.7972).alongTrackDistanceTo(bradwell, LatLon(53.1887, 0.1334)).toPrecision(4), 0.0001)
 
-        assertEquals("cross-track NE",    -1.112e+5, LatLon( 1.0,  1.0).crossTrackDistanceTo(LatLon(0.0, 0.0), LatLon(0.0, 2.0)).toPrecision(4), 0.0001)
-        assertEquals("cross-track SE",    1.112e+5, LatLon(-1.0,  1.0).crossTrackDistanceTo(LatLon(0.0, 0.0), LatLon(0.0, 2.0)).toPrecision(4), 0.0001)
+        assertEquals("cross-track NE",    -1.112e+5, LatLon(1.0, 1.0).crossTrackDistanceTo(LatLon(0.0, 0.0), LatLon(0.0, 2.0)).toPrecision(4), 0.0001)
+        assertEquals("cross-track SE",    1.112e+5, LatLon(-1.0, 1.0).crossTrackDistanceTo(LatLon(0.0, 0.0), LatLon(0.0, 2.0)).toPrecision(4), 0.0001)
         assertEquals("cross-track SW?",   1.112e+5, LatLon(-1.0, -1.0).crossTrackDistanceTo(LatLon(0.0, 0.0), LatLon(0.0, 2.0)).toPrecision(4), 0.0001)
-        assertEquals("cross-track NW?",   -1.112e+5, LatLon( 1.0, -1.0).crossTrackDistanceTo(LatLon(0.0, 0.0), LatLon(0.0, 2.0)).toPrecision(4), 0.0001)
+        assertEquals("cross-track NW?",   -1.112e+5, LatLon(1.0, -1.0).crossTrackDistanceTo(LatLon(0.0, 0.0), LatLon(0.0, 2.0)).toPrecision(4), 0.0001)
 
-        assertEquals("along-track NE",    1.112e+5, LatLon( 1.0,  1.0).alongTrackDistanceTo(LatLon(0.0, 0.0), LatLon(0.0, 2.0)).toPrecision(4), 0.0001)
-        assertEquals("along-track SE",    1.112e+5, LatLon(-1.0,  1.0).alongTrackDistanceTo(LatLon(0.0, 0.0), LatLon(0.0, 2.0)).toPrecision(4), 0.0001)
+        assertEquals("along-track NE",    1.112e+5, LatLon(1.0, 1.0).alongTrackDistanceTo(LatLon(0.0, 0.0), LatLon(0.0, 2.0)).toPrecision(4), 0.0001)
+        assertEquals("along-track SE",    1.112e+5, LatLon(-1.0, 1.0).alongTrackDistanceTo(LatLon(0.0, 0.0), LatLon(0.0, 2.0)).toPrecision(4), 0.0001)
         assertEquals("along-track SW",    -1.112e+5, LatLon(-1.0, -1.0).alongTrackDistanceTo(LatLon(0.0, 0.0), LatLon(0.0, 2.0)).toPrecision(4), 0.0001)
-        assertEquals("along-track NW",    -1.112e+5, LatLon( 1.0, -1.0).alongTrackDistanceTo(LatLon(0.0, 0.0), LatLon(0.0, 2.0)).toPrecision(4), 0.0001)
+        assertEquals("along-track NW",    -1.112e+5, LatLon(1.0, -1.0).alongTrackDistanceTo(LatLon(0.0, 0.0), LatLon(0.0, 2.0)).toPrecision(4), 0.0001)
 
-        assertEquals("Clairaut 0°",   90.0,    LatLon(0.0,0.0).maxLatitude( 0.0), 0.0001)
-        assertEquals("Clairaut 1°",   89.0,    LatLon(0.0,0.0).maxLatitude( 1.0), 0.0001)
-        assertEquals("Clairaut 90°",  0.0,     LatLon(0.0,0.0).maxLatitude(90.0), 0.0001)
+        assertEquals("Clairaut 0°",   90.0,    LatLon(0.0, 0.0).maxLatitude( 0.0), 0.0001)
+        assertEquals("Clairaut 1°",   89.0,    LatLon(0.0, 0.0).maxLatitude( 1.0), 0.0001)
+        assertEquals("Clairaut 90°",  0.0,     LatLon(0.0, 0.0).maxLatitude(90.0), 0.0001)
 
-        val parallels = crossingParallels(LatLon(0.0,0.0), LatLon(60.0,30.0), 30.0)
+        val parallels = crossingParallels(LatLon(0.0, 0.0), LatLon(60.0, 30.0), 30.0)
         parallels?.let { parallels ->
             assertEquals("parallels 1", "30°00′00″N, 009°35′39″E", LatLon(30.0, parallels.first).toString("dms"))
             assertEquals("parallels 2", "30°00′00″N, 170°24′21″E", LatLon(30.0, parallels.second).toString("dms"))
         }
-        assertEquals("parallels -",       null, crossingParallels(LatLon(0.0,0.0), LatLon(10.0,60.0), 60.0))
+        assertEquals("parallels -",       null, crossingParallels(LatLon(0.0, 0.0), LatLon(10.0, 60.0), 60.0))
 
 
     }
@@ -92,13 +92,13 @@ class LatLon_SphericalKtTest {
 
     @Test
     fun polygonalTest() {
-        val polyTriangle  = arrayOf(LatLon(1.0,1.0), LatLon(2.0,1.0), LatLon(1.0,2.0))
-        val polySquareCw  = arrayOf(LatLon(1.0,1.0), LatLon(2.0,1.0), LatLon(2.0,2.0), LatLon(1.0,2.0))
-        val polySquareCcw = arrayOf(LatLon(1.0,1.0), LatLon(1.0,2.0), LatLon(2.0,2.0), LatLon(2.0,1.0))
-        val polyQuadrant  = arrayOf(LatLon(0.0,0.0), LatLon(0.0,90.0), LatLon(90.0,0.0))
-        val polyHemi      = arrayOf(LatLon(0.0,1.0), LatLon(45.0,0.0), LatLon(89.0,90.0), LatLon(45.0,180.0), LatLon(0.0,179.0), LatLon(-45.0,180.0), LatLon(-89.0,90.0), LatLon(-45.0,0.0))
-        val polyPole      = arrayOf(LatLon(89.0,0.0), LatLon(89.0,120.0), LatLon(89.0,-120.0))
-        val polyConcave   = arrayOf(LatLon(1.0,1.0), LatLon(5.0,1.0), LatLon(5.0,3.0), LatLon(1.0,3.0), LatLon(3.0,2.0))
+        val polyTriangle  = arrayOf(LatLon(1.0, 1.0), LatLon(2.0, 1.0), LatLon(1.0, 2.0))
+        val polySquareCw  = arrayOf(LatLon(1.0, 1.0), LatLon(2.0, 1.0), LatLon(2.0, 2.0), LatLon(1.0, 2.0))
+        val polySquareCcw = arrayOf(LatLon(1.0, 1.0), LatLon(1.0, 2.0), LatLon(2.0, 2.0), LatLon(2.0, 1.0))
+        val polyQuadrant  = arrayOf(LatLon(0.0, 0.0), LatLon(0.0, 90.0), LatLon(90.0, 0.0))
+        val polyHemi      = arrayOf(LatLon(0.0, 1.0), LatLon(45.0, 0.0), LatLon(89.0, 90.0), LatLon(45.0, 180.0), LatLon(0.0, 179.0), LatLon(-45.0, 180.0), LatLon(-89.0, 90.0), LatLon(-45.0, 0.0))
+        val polyPole      = arrayOf(LatLon(89.0, 0.0), LatLon(89.0, 120.0), LatLon(89.0, -120.0))
+        val polyConcave   = arrayOf(LatLon(1.0, 1.0), LatLon(5.0, 1.0), LatLon(5.0, 3.0), LatLon(1.0, 3.0), LatLon(3.0, 2.0))
         assertEquals("triangle area",         6181527888.0, areaOf(polyTriangle).toFixed(0), 0.001)
         assertEquals("triangle area radius",  6181527888.0, areaOf(polyTriangle, 6371e3).toFixed(0), 0.001)
         assertEquals("triangle area closed",  6181527888.0, areaOf(polyTriangle + polyTriangle[0]).toFixed(0), 0.001)

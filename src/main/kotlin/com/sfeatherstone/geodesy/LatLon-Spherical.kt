@@ -1,4 +1,4 @@
-package uk.co.wedgetech.geodesy
+package com.sfeatherstone.geodesy
 
 import kotlin.math.sign
 
@@ -22,7 +22,7 @@ import kotlin.math.sign
  *     var p2 = new LatLon(48.857, 2.351);
  *     var d = p1.distanceTo(p2); // 404.3 km
  */
-fun LatLon.distanceTo(point :LatLon, radius : Double = 6371e3):Double {
+fun LatLon.distanceTo(point : LatLon, radius : Double = 6371e3):Double {
 
     // a = sin²(Δφ/2) + cos(φ1)⋅cos(φ2)⋅sin²(Δλ/2)
     // tanδ = √(a) / √(1−a)
@@ -137,7 +137,7 @@ fun LatLon.midpointTo(point: LatLon): LatLon {
  *   let p2 = new LatLon(48.857, 2.351);
  *   let pMid = p1.intermediatePointTo(p2, 0.25); // 51.3721°N, 000.7073°E
  */
-fun LatLon.intermediatePointTo(point :LatLon, fraction: Double): LatLon {
+fun LatLon.intermediatePointTo(point : LatLon, fraction: Double): LatLon {
     val φ1 = this.lat.toRadians()
     val λ1 = this.lon.toRadians()
     val φ2 = point.lat.toRadians()
@@ -310,7 +310,7 @@ fun LatLon.crossTrackDistanceTo(pathStart: LatLon, pathEnd: LatLon, radius: Doub
  *   var p2 = new LatLon(53.1887,  0.1334);
  *   var d = pCurrent.alongTrackDistanceTo(p1, p2);  // 62.331 km
  */
-fun LatLon.alongTrackDistanceTo(pathStart :LatLon, pathEnd :LatLon, radius :Double = 6371e3): Double {
+fun LatLon.alongTrackDistanceTo(pathStart : LatLon, pathEnd : LatLon, radius :Double = 6371e3): Double {
     val δ13 = pathStart.distanceTo(this, radius) / radius
     val θ13 = pathStart.bearingTo(this).toRadians()
     val θ12 = pathStart.bearingTo(pathEnd).toRadians()
@@ -479,7 +479,7 @@ fun LatLon.rhumbDestinationPoint(distance: Double, bearing: Double, radius: Doub
     val Δλ = δ*Math.sin(θ)/q
     val λ2 = λ1 + Δλ
 
-    return LatLon(φ2.toDegrees(), (λ2.toDegrees()+540.0) % 360.0 - 180.0) // normalise to −180..+180°
+    return LatLon(φ2.toDegrees(), (λ2.toDegrees() + 540.0) % 360.0 - 180.0) // normalise to −180..+180°
 }
 
 
@@ -513,7 +513,7 @@ fun LatLon.rhumbMidpointTo(point: LatLon): LatLon {
 
     if (!java.lang.Double.isFinite(λ3)) λ3 = (λ1+λ2)/2 // parallel of latitude
 
-    return LatLon(φ3.toDegrees(), (λ3.toDegrees()+540)%360-180) // normalise to −180..+180°
+    return LatLon(φ3.toDegrees(), (λ3.toDegrees() + 540) % 360 - 180) // normalise to −180..+180°
 }
 
 

@@ -1,9 +1,10 @@
-package uk.co.wedgetech.geodesy
+package com.sfeatherstone.geodesy
 
 import kotlin.math.sign
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /* Vector handling functions                                          (c) Chris Veness 2011-2016  */
+/*                                                                        Simon Featherstone 2018 */
 /*                                                                                   MIT Licence  */
 /* www.movable-type.co.uk/scripts/geodesy/docs/module-vector3d.html                               */
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -46,7 +47,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      * @param   {Vector3d} v - Vector to be added to this vector.
      * @returns {Vector3d} Vector representing sum of this and v.
      */
-    operator fun plus(v : Vector3d) = Vector3d (this.x + v.x, this.y+v.y, this.z+v.z)
+    operator fun plus(v : Vector3d) = Vector3d(this.x + v.x, this.y + v.y, this.z + v.z)
 
 
     /**
@@ -55,7 +56,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      * @param   {Vector3d} v - Vector to be subtracted from this vector.
      * @returns {Vector3d} Vector representing difference between this and v.
      */
-    operator fun minus(v : Vector3d) = Vector3d (this.x - v.x, this.y-v.y, this.z-v.z)
+    operator fun minus(v : Vector3d) = Vector3d(this.x - v.x, this.y - v.y, this.z - v.z)
 
     /**
      * Multiplies ‘this’ vector by a scalar value.
@@ -63,7 +64,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      * @param   {number}   x - Factor to multiply this vector by.
      * @returns {Vector3d} Vector scaled by x.
      */
-    operator fun times(x :Double) = Vector3d (this.x * x, this.y * x, this.z * x)
+    operator fun times(x :Double) = Vector3d(this.x * x, this.y * x, this.z * x)
 
 
     /**
@@ -72,7 +73,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      * @param   {number}   x - Factor to divide this vector by.
      * @returns {Vector3d} Vector divided by x.
      */
-    operator fun div(x: Double) = Vector3d (this.x / x, this.y / x, this.z / x)
+    operator fun div(x: Double) = Vector3d(this.x / x, this.y / x, this.z / x)
 
 
     /**
@@ -95,7 +96,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
         val y = this.z * v.x - this.x * v.z
         val z = this.x * v.y - this.y * v.x
 
-        return Vector3d (x, y, z)
+        return Vector3d(x, y, z)
     }
 
 
@@ -104,7 +105,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      *
      * @returns {Vector3d} Negated vector.
      */
-    val negate by lazy({Vector3d (-this.x, -this.y, -this.z) })
+    val negate by lazy({ Vector3d(-this.x, -this.y, -this.z) })
 
 
     /**
@@ -130,7 +131,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
         val y = this.y / norm
         val z = this.z / norm
 
-        return  Vector3d (x , y, z)
+        return Vector3d(x, y, z)
     }
 
 
@@ -142,8 +143,8 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      *     clockwise looking along n, -ve in opposite direction (if not supplied, angle is always 0..π).
      * @returns {number} Angle (in radians) between this vector and supplied vector.
      */
-    fun angleTo(v : Vector3d, n : Vector3d = Vector3d(0.0,0.0,0.0)) :Double {
-        val sign = if (n == Vector3d(0.0,0.0,0.0)) 1.0 else this.cross(v).dot(n).sign
+    fun angleTo(v : Vector3d, n : Vector3d = Vector3d(0.0, 0.0, 0.0)) :Double {
+        val sign = if (n == Vector3d(0.0, 0.0, 0.0)) 1.0 else this.cross(v).dot(n).sign
         val sinθ = this.cross(v).length * sign
         val cosθ = this.dot(v)
 
@@ -158,7 +159,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      * @param   {number}   theta - The angle of rotation (in radians).
      * @returns {Vector3d} The rotated point.
      */
-    fun rotateAround(axis: Vector3d , thetaRadians: Double ):Vector3d
+    fun rotateAround(axis: Vector3d, thetaRadians: Double ): Vector3d
     {
         // en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle
         // en.wikipedia.org/wiki/Quaternions_and_spatial_rotation#Quaternion-derived_rotation_matrix
@@ -179,7 +180,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
                 qp[i] += q[i][j] * p[j]
             }
         }
-        return Vector3d (qp[0], qp[1], qp[2])
+        return Vector3d(qp[0], qp[1], qp[2])
         // qv en.wikipedia.org/wiki/Rodrigues'_rotation_formula...
     }
 
@@ -218,7 +219,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
         val ν = a/Math.sqrt(1-e2*sinφ*sinφ) // length of the normal terminated by the minor axis
         var h = p*cosφ + z*sinφ - (a*a/ν)
 
-        return  LatLonDatum(φ.toDegrees(), λ.toDegrees(), datum)
+        return LatLonDatum(φ.toDegrees(), λ.toDegrees(), datum)
     }
 
     /**
@@ -228,7 +229,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      * @param   {number[]} t - Transform to apply to this point.
      * @returns {Vector3} Transformed point.
      */
-    fun applyTransform(t: LatLonDatum.Transform) :Vector3d  {
+    fun applyTransform(t: LatLonDatum.Transform) : Vector3d {
         // this point
         val x1 = this.x
         val y1 = this.y
