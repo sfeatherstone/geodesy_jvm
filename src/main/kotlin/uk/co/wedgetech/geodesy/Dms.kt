@@ -194,7 +194,7 @@ import kotlin.math.roundToInt
      * @param   {number} [dp=0|2|4] - Number of decimal places to use – default 0 for dms, 2 for dm, 4 for d.
      * @returns {string} Degrees formatted as deg/min/secs according to specified format.
      */
-    fun Double.toBearing(format: String, dp: Int = 0, separator : String = ""): String
+    fun Double.toBearing(format: String = "dms", dp: Int = 0, separator : String = ""): String
     {
         val degNormalised = (this + 360) % 360;  // normalise -ve values to 180°..360°
         val brng = degNormalised.toDMS(format, dp, separator);
