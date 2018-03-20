@@ -65,7 +65,7 @@ open class LatLon(val lat: Double, val lon :Double) {
         if (obj === this) return true
         if (obj !is LatLon) return false
         return obj.lat == lat && obj.lon == lon
-    };
+    }
 
 
 }

@@ -1,6 +1,4 @@
 package uk.co.wedgetech.geodesy
-import kotlin.math.pow
-import kotlin.math.round
 import kotlin.math.roundToInt
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -45,32 +43,32 @@ import kotlin.math.roundToInt
         // strip off any sign or compass dir'n & split out separate d/m/s
         var dms = this.trim().replace(Regex("^-"), "")
                 .replace(Regex("[NSEW]$/i") , "")
-                .split(Regex("[^0-9.]+"));
+                .split(Regex("[^0-9.]+"))
 
-        if (dms.size > 1 && dms[dms.lastIndex].isNullOrBlank()) dms = dms.subList(0,dms.lastIndex);  // from trailing symbol
+        if (dms.size > 1 && dms[dms.lastIndex].isNullOrBlank()) dms = dms.subList(0,dms.lastIndex)  // from trailing symbol
 
-        if (dms[0] == "") return Double.NaN;
+        if (dms[0] == "") return Double.NaN
 
         // and convert to decimal degrees...
-        var deg : Double
+        val deg : Double
         when(dms.size) {
             3 ->  // interpret 3-part result as d/m/s
-                deg = (dms[0].toDouble() / 1.0) + (dms[1].toDouble() / 60.0) + (dms[2].toDouble() / 3600);
+                deg = (dms[0].toDouble() / 1.0) + (dms[1].toDouble() / 60.0) + (dms[2].toDouble() / 3600)
             2 ->  // interpret 2-part result as d/m
-                deg = (dms[0].toDouble() / 1.0) + (dms[1].toDouble() / 60.0);
+                deg = (dms[0].toDouble() / 1.0) + (dms[1].toDouble() / 60.0)
             1 ->  // just d (possibly decimal) or non-separated dddmmss
                 deg = dms[0].toDouble()
             // check for fixed-width unseparated format eg 0033709W
             //if (/[NS]/i.test(dmsStr)) deg = '0' + deg;  // - normalise N/S to 3-digit degrees
             //if (/[0-9]{7}/.test(deg)) deg = deg.slice(0,3)/1 + deg.slice(3,5)/60 + deg.slice(5)/3600;
             else ->
-                return Double.NaN;
+                return Double.NaN
         }
         return if ( Regex("^-|[WSws]$").containsMatchIn(this.trim())) -deg else deg // take '-', west and south as -ve
-    };
+    }
 
 
-    /**
+/**
      * Separator character to be used to separate degrees, minutes, seconds, and cardinal directions.
      *
      * Set to '\u202f' (narrow no-break space) for improved formatting.
@@ -80,7 +78,7 @@ import kotlin.math.roundToInt
      *   Dms.separator = '\u202f';        // narrow no-break space
      *   var pʹ = new LatLon(51.2, 0.33); // 51° 12′ 00.0″ N, 000° 19′ 48.0″ E
      */
-    var narrowNoBreakSeparator = "\u202f"
+    val narrowNoBreakSeparator = "\u202f"
 
 
     /**
@@ -96,18 +94,18 @@ import kotlin.math.roundToInt
      */
     fun Double.toDMS(format: String = "dms", dp: Int? = null, separator : String = ""): String?
     {
-        if (this == Double.NaN) return null;  // give up here if we can't make a number from deg
+        if (this == Double.NaN) return null  // give up here if we can't make a number from deg
 
         val _dp = if (dp == null) {
             when(format) {
                 "d", "deg" -> 4
                 "dm","deg+min" -> 2
-                "dms", "deg+min+sec" -> 0;
+                "dms", "deg+min+sec" -> 0
                 else -> 0
             }
         } else dp
 
-        val degrees : Double = Math.abs(this % 360.0);  // (unsigned result ready for appending compass dir'n)
+        val degrees : Double = Math.abs(this % 360.0)  // (unsigned result ready for appending compass dir'n)
 
         return when (format) {
             "dm","deg+min" -> toDegreesMinutes(degrees, _dp, separator)
@@ -135,7 +133,7 @@ import kotlin.math.roundToInt
     internal fun toDegreesMinutesSeconds(degrees: Double, dp: Int, separator: String) : String {
         var d = Math.floor(degrees).toInt()                       // get component deg
         var m = (Math.floor((degrees * 3600.0) / 60.0) % 60.0).toInt()  // get component min
-        var s = (degrees * 3600.0 % 60.0).toFixed(dp);           // get component sec & round/right-pad
+        var s = (degrees * 3600.0 % 60.0).toFixed(dp)           // get component sec & round/right-pad
         if (s == 60.0) {
             s = 0.0
             m++
@@ -152,7 +150,7 @@ import kotlin.math.roundToInt
                 m = ('00' + m).slice(-2);                    // left-pad with leading zeros
                 if (s < 10) s = '0' + s;                     // left-pad with leading zeros (note may include decimals)
                 dms = d + '°' + Dms.separator + m + '′' + Dms.separator + s + '″'*/
-        return "%03d°%s%02d′%s%0${minsLength}.${dp}f″".format(d, separator, m, separator, s);
+        return "%03d°%s%02d′%s%0$minsLength.${dp}f″".format(d, separator, m, separator, s)
     }
 
 
@@ -167,11 +165,11 @@ import kotlin.math.roundToInt
     fun Double.toLatitude(format: String, dp: Int? = null, separator: String = ""): String
     {
         val lat = this.toDMS(format, dp, separator)
-        return if (lat == null) "–" else lat.substring(1)+separator+(if (this<0.0) 'S' else 'N');  // knock off initial '0' for lat!
-    };
+        return if (lat == null) "–" else lat.substring(1)+separator+(if (this<0.0) 'S' else 'N')  // knock off initial '0' for lat!
+    }
 
 
-    /**
+/**
      * Convert numeric degrees to deg/min/sec longitude (3-digit degrees, suffixed with E/W)
      *
      * @param   {number} deg - Degrees to be formatted as specified.
@@ -181,12 +179,12 @@ import kotlin.math.roundToInt
      */
     fun Double.toLongitude(format: String, dp: Int? = null, separator : String = ""): String
     {
-        val lon = this.toDMS(format, dp, separator);
-        return if (lon == null) "–" else lon+separator+(if (this<0.0) 'W' else 'E');
-    };
+        val lon = this.toDMS(format, dp, separator)
+        return if (lon == null) "–" else lon+separator+(if (this<0.0) 'W' else 'E')
+    }
 
 
-    /**
+/**
      * Converts numeric degrees to deg/min/sec as a bearing (0°..360°)
      *
      * @param   {number} deg - Degrees to be formatted as specified.
@@ -196,13 +194,13 @@ import kotlin.math.roundToInt
      */
     fun Double.toBearing(format: String = "dms", dp: Int = 0, separator : String = ""): String
     {
-        val degNormalised = (this + 360) % 360;  // normalise -ve values to 180°..360°
-        val brng = degNormalised.toDMS(format, dp, separator);
-        return if (brng == null) "–" else brng.replace("360", "0");  // just in case rounding took us up to 360°!
-    };
+        val degNormalised = (this + 360) % 360  // normalise -ve values to 180°..360°
+        val brng = degNormalised.toDMS(format, dp, separator)
+        return if (brng == null) "–" else brng.replace("360", "0")  // just in case rounding took us up to 360°!
+    }
 
 
-    /**
+/**
      * Returns compass point (to given precision) for supplied bearing.
      *
      * @param   bearing - Bearing in degrees from north.
@@ -217,21 +215,21 @@ import kotlin.math.roundToInt
     {
         // note precision could be extended to 4 for quarter-winds (eg NbNW), but I think they are little used
 
-        val normalisedBearing = ((bearing % 360) + 360) % 360; // normalise to range 0..360°
+        val normalisedBearing = ((bearing % 360) + 360) % 360 // normalise to range 0..360°
 
         val cardinals = arrayOf(
             "N", "NNE", "NE", "ENE",
             "E", "ESE", "SE", "SSE",
             "S", "SSW", "SW", "WSW",
-            "W", "WNW", "NW", "NNW");
+            "W", "WNW", "NW", "NNW")
         val n = when(precision) {
             1 -> 4
             2 -> 8
             3-> 16
             else -> 16
         }
-        return cardinals[(normalisedBearing * n / 360.0).roundToInt() % n * 16 / n];
-    };
+        return cardinals[(normalisedBearing * n / 360.0).roundToInt() % n * 16 / n]
+    }
 
 
 

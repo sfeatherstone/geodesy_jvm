@@ -37,16 +37,16 @@ import java.util.*
  *   var v = p.toVector(); // [0.5000,0.5000,0.7071]
  */
 fun LatLon.toVector(): Vector3d {
-    var φ = lat.toRadians();
-    var λ = lon.toRadians();
+    val φ = lat.toRadians()
+    val λ = lon.toRadians()
 
     // right-handed vector: x -> 0°E,0°N; y -> 90°E,0°N, z -> 90°N
-    var x = Math.cos(φ) * Math.cos(λ);
-    var y = Math.cos(φ) * Math.sin(λ);
-    var z = Math.sin(φ);
+    val x = Math.cos(φ) * Math.cos(λ)
+    val y = Math.cos(φ) * Math.sin(λ)
+    val z = Math.sin(φ)
 
-    return Vector3d(x, y, z);
-};
+    return Vector3d(x, y, z)
+}
 
 
 /**
@@ -59,11 +59,11 @@ fun LatLon.toVector(): Vector3d {
  *   var p = v.toLatLonS(); // 45.0°N, 45.0°E
  */
 fun Vector3d.toLatLonS(): LatLon {
-    var φ = Math.atan2(this.z, Math.sqrt(this.x*this.x + this.y*this.y));
-    var λ = Math.atan2(this.y, this.x);
+    val φ = Math.atan2(this.z, Math.sqrt(this.x*this.x + this.y*this.y))
+    val λ = Math.atan2(this.y, this.x)
 
-    return LatLon(φ.toDegrees(), λ.toDegrees());
-};
+    return LatLon(φ.toDegrees(), λ.toDegrees())
+}
 
 
 /**
@@ -79,16 +79,16 @@ fun Vector3d.toLatLonS(): LatLon {
  *   var gc = p1.greatCircle(96.0); // [-0.794,0.129,0.594]
  */
 fun LatLon.greatCircle(bearing: Double): Vector3d {
-    var φ = this.lat.toRadians();
-    var λ = this.lon.toRadians();
-    var θ = bearing.toRadians();
+    val φ = this.lat.toRadians()
+    val λ = this.lon.toRadians()
+    val θ = bearing.toRadians()
 
-    var x =  Math.sin(λ) * Math.cos(θ) - Math.sin(φ) * Math.cos(λ) * Math.sin(θ);
-    var y = -Math.cos(λ) * Math.cos(θ) - Math.sin(φ) * Math.sin(λ) * Math.sin(θ);
-    var z =  Math.cos(φ) * Math.sin(θ);
+    val x =  Math.sin(λ) * Math.cos(θ) - Math.sin(φ) * Math.cos(λ) * Math.sin(θ)
+    val y = -Math.cos(λ) * Math.cos(θ) - Math.sin(φ) * Math.sin(λ) * Math.sin(θ)
+    val z =  Math.cos(φ) * Math.sin(θ)
 
-    return Vector3d(x, y, z);
-};
+    return Vector3d(x, y, z)
+}
 
 
 /**
@@ -105,17 +105,17 @@ fun LatLon.greatCircle(bearing: Double): Vector3d {
  *   var gc = n1.greatCircle(96.0); // [-0.794,0.129,0.594]
  */
 fun Vector3d.greatCircle(bearing : Double): Vector3d {
-    var θ = bearing.toRadians();
+    val θ = bearing.toRadians()
 
-    var N = Vector3d(0.0, 0.0, 1.0);
-    var e = N.cross(this); // easting
-    var n = this.cross(e); // northing
-    var eʹ = e.times(Math.cos(θ)/e.length);
-    var nʹ = n.times(Math.sin(θ)/n.length);
-    var c = nʹ.minus(eʹ);
+    val N = Vector3d(0.0, 0.0, 1.0)
+    val e = N.cross(this) // easting
+    val n = this.cross(e) // northing
+    val eʹ = e.times(Math.cos(θ)/e.length)
+    val nʹ = n.times(Math.sin(θ)/n.length)
+    val c = nʹ.minus(eʹ)
 
-    return c;
-};
+    return c
+}
 
 
 /**
@@ -131,14 +131,14 @@ fun Vector3d.greatCircle(bearing : Double): Vector3d {
  *   var d = p1.distanceTo(p2); // 404.3 km
  */
 fun LatLon.distanceTo(point: LatLon, radius: Double = 6371e3):Double {
-    var p1 = this.toVector();
-    var p2 = point.toVector();
+    val p1 = this.toVector()
+    val p2 = point.toVector()
 
-    var δ = p1.angleTo(p2); // δ = atan2(|p₁×p₂|, p₁·p₂)
-    var d = δ * radius;
+    val δ = p1.angleTo(p2) // δ = atan2(|p₁×p₂|, p₁·p₂)
+    val d = δ * radius
 
-    return d;
-};
+    return d
+}
 
 
 /**
@@ -154,18 +154,18 @@ fun LatLon.distanceTo(point: LatLon, radius: Double = 6371e3):Double {
  *   var b1 = p1.bearingTo(p2); // 156.2°
  */
 fun LatLon.bearingTo(point: LatLon): Double {
-    var p1 = this.toVector();
-    var p2 = point.toVector();
+    val p1 = this.toVector()
+    val p2 = point.toVector()
 
-    var N = Vector3d(0.0, 0.0, 1.0); // n-vector representing north pole
+    val N = Vector3d(0.0, 0.0, 1.0) // n-vector representing north pole
 
-    var c1 = p1.cross(p2); // great circle through p1 & p2
-    var c2 = p1.cross(N);  // great circle through p1 & north pole
+    val c1 = p1.cross(p2) // great circle through p1 & p2
+    val c2 = p1.cross(N)  // great circle through p1 & north pole
 
-    var θ = c1.angleTo(c2, p1); // bearing is (signed) angle between c1 & c2
+    val θ = c1.angleTo(c2, p1) // bearing is (signed) angle between c1 & c2
 
-    return (θ.toDegrees()+360) % 360; // normalise to 0..360
-};
+    return (θ.toDegrees()+360) % 360 // normalise to 0..360
+}
 
 
 /**
@@ -180,13 +180,13 @@ fun LatLon.bearingTo(point: LatLon): Double {
  *   var pMid = p1.midpointTo(p2); // 50.5363°N, 001.2746°E
  */
 fun LatLon.midpointTo(point: LatLon): LatLon {
-    var p1 = this.toVector();
-    var p2 = point.toVector();
+    val p1 = this.toVector()
+    val p2 = point.toVector()
 
-    var mid = p1.plus(p2).unit();
+    val mid = p1.plus(p2).unit()
 
-    return mid.toLatLonS();
-};
+    return mid.toLatLonS()
+}
 
 
 /**
@@ -204,25 +204,25 @@ fun LatLon.midpointTo(point: LatLon): LatLon {
  */
 fun LatLon.intermediatePointTo(point: LatLon, fraction: Double):LatLon {
     // angular distance between points; tanδ = |n₁×n₂| / n₁⋅n₂
-    var n1 = this.toVector();
-    var n2 = point.toVector();
-    var sinθ = n1.cross(n2).length;
-    var cosθ = n1.dot(n2);
-    var δ = Math.atan2(sinθ, cosθ);
+    val n1 = this.toVector()
+    val n2 = point.toVector()
+    val sinθ = n1.cross(n2).length
+    val cosθ = n1.dot(n2)
+    val δ = Math.atan2(sinθ, cosθ)
 
     // interpolated angular distance on straight line between points
-    var δi = δ * fraction
-    var sinδi = Math.sin(δi);
-    var cosδi = Math.cos(δi);
+    val δi = δ * fraction
+    val sinδi = Math.sin(δi)
+    val cosδi = Math.cos(δi)
 
     // direction vector (perpendicular to n1 in plane of n2)
-    var d = n1.cross(n2).unit().cross(n1); // unit(n₁×n₂) × n₁
+    val d = n1.cross(n2).unit().cross(n1) // unit(n₁×n₂) × n₁
 
     // interpolated position
-    var int = n1.times(cosδi).plus(d.times(sinδi)); // n₁⋅cosδᵢ + d⋅sinδᵢ
+    val int = n1.times(cosδi).plus(d.times(sinδi)) // n₁⋅cosδᵢ + d⋅sinδᵢ
 
-    return Vector3d(int.x, int.y, int.z).toLatLonS();
-};
+    return Vector3d(int.x, int.y, int.z).toLatLonS()
+}
 
 
 /**
@@ -240,13 +240,13 @@ fun LatLon.intermediatePointTo(point: LatLon, fraction: Double):LatLon {
  *   var pInt = p1.intermediatePointOnChordTo(p2, 0.25); // 51.3723°N, 000.7072°E
  */
 fun LatLon.intermediatePointOnChordTo(point: LatLon, fraction: Double): LatLon {
-    var n1 = this.toVector();
-    var n2 = point.toVector();
+    val n1 = this.toVector()
+    val n2 = point.toVector()
 
-    var int = n1.plus(n2.minus(n1).times(fraction)); // n₁ + (n₂−n₁)·f ≡ n₁·(1-f) + n₂·f
+    val int = n1.plus(n2.minus(n1).times(fraction)) // n₁ + (n₂−n₁)·f ≡ n₁·(1-f) + n₂·f
 
-    return Vector3d(int.x, int.y, int.z).toLatLonS();
-};
+    return Vector3d(int.x, int.y, int.z).toLatLonS()
+}
 
 
 /**
@@ -263,27 +263,27 @@ fun LatLon.intermediatePointOnChordTo(point: LatLon, fraction: Double): LatLon {
  *   var p2 = p1.destinationPoint(7794, 300.7); // 51.5135°N, 000.0983°W
  */
 fun LatLon.destinationPoint(distance: Double, bearing: Double, radius: Double = 6371e3): LatLon {
-    var n1 = this.toVector();
-    var δ = distance / radius; // angular distance in radians
-    var θ = bearing.toRadians();
+    val n1 = this.toVector()
+    val δ = distance / radius // angular distance in radians
+    val θ = bearing.toRadians()
 
-    var N = Vector3d(0.0, 0.0, 1.0); // north pole
+    val N = Vector3d(0.0, 0.0, 1.0) // north pole
 
-    var de = N.cross(n1).unit();   // east direction vector @ n1
-    var dn = n1.cross(de);         // north direction vector @ n1
+    val de = N.cross(n1).unit()   // east direction vector @ n1
+    val dn = n1.cross(de)         // north direction vector @ n1
 
-    var deSinθ = de.times(Math.sin(θ));
-    var dnCosθ = dn.times(Math.cos(θ));
+    val deSinθ = de.times(Math.sin(θ))
+    val dnCosθ = dn.times(Math.cos(θ))
 
-    var d = dnCosθ.plus(deSinθ);   // direction vector @ n1 (≡ C×n1; C = great circle)
+    val d = dnCosθ.plus(deSinθ)   // direction vector @ n1 (≡ C×n1; C = great circle)
 
-    var x = n1.times(Math.cos(δ)); // component of n2 parallel to n1
-    var y = d.times(Math.sin(δ));  // component of n2 perpendicular to n1
+    val x = n1.times(Math.cos(δ)) // component of n2 parallel to n1
+    val y = d.times(Math.sin(δ))  // component of n2 perpendicular to n1
 
-    var n2 = x.plus(y);
+    val n2 = x.plus(y)
 
-    return n2.toLatLonS();
-};
+    return n2.toLatLonS()
+}
 
 
 /**
@@ -474,20 +474,20 @@ fun LatLon.alongTrackDistanceTo(pathStart, pathBrngEnd, radius: Double = 6371e3)
 fun LatLon.nearestPointOnSegment(point1: LatLon, point2: LatLon): LatLon {
     if (this.isBetween(point1, point2)) {
         // closer to segment than to its endpoints, find closest point on segment
-        var n0 = this.toVector()
-        var n1 = point1.toVector()
-        var n2 = point2.toVector();
-        var c1 = n1.cross(n2); // n1×n2 = vector representing great circle through p1, p2
-        var c2 = n0.cross(c1); // n0×c1 = vector representing great circle through p0 normal to c1
-        var n = c1.cross(c2);  // c2×c1 = nearest point on c1 to n0
-        return n.toLatLonS();
+        val n0 = this.toVector()
+        val n1 = point1.toVector()
+        val n2 = point2.toVector()
+        val c1 = n1.cross(n2) // n1×n2 = vector representing great circle through p1, p2
+        val c2 = n0.cross(c1) // n0×c1 = vector representing great circle through p0 normal to c1
+        val n = c1.cross(c2)  // c2×c1 = nearest point on c1 to n0
+        return n.toLatLonS()
     }
 
     // beyond segment extent, take closer endpoint
-    var d1 = this.distanceTo(point1);
-    var d2 = this.distanceTo(point2);
+    val d1 = this.distanceTo(point1)
+    val d2 = this.distanceTo(point2)
     return if (d1<d2) point1 else point2
-};
+}
 
 
 /**
@@ -503,23 +503,23 @@ fun LatLon.nearestPointOnSegment(point1: LatLon, point2: LatLon): LatLon {
 fun LatLon.isBetween(point1: LatLon, point2: LatLon):Boolean {
     val n0 = this.toVector()
     val n1 = point1.toVector()
-    val n2 = point2.toVector(); // n-vectors
+    val n2 = point2.toVector() // n-vectors
 
     // get vectors representing p0->p1, p0->p2, p1->p2, p2->p1
     val δ10 = n0.minus(n1)
-    val δ12 = n2.minus(n1);
+    val δ12 = n2.minus(n1)
     val δ20 = n0.minus(n2)
-    val δ21 = n1.minus(n2);
+    val δ21 = n1.minus(n2)
 
     // dot product δ10⋅δ12 tells us if p0 is on p2 side of p1, similarly for δ20⋅δ21
-    val extent1 = δ10.dot(δ12);
-    val extent2 = δ20.dot(δ21);
+    val extent1 = δ10.dot(δ12)
+    val extent2 = δ20.dot(δ21)
 
-    val isBetween = extent1>=0 && extent2>=0;
-    val isSameHemisphere = n0.dot(n1)>=0 && n0.dot(n2)>=0;
+    val isBetween = extent1>=0 && extent2>=0
+    val isSameHemisphere = n0.dot(n1)>=0 && n0.dot(n2)>=0
 
-    return isBetween && isSameHemisphere;
-};
+    return isBetween && isSameHemisphere
+}
 
 
 /**
@@ -542,27 +542,25 @@ fun LatLon.enclosedBy(polygon_: Array<LatLon>): Boolean {
     // close the polygon so that the last point equals the first point
     val polygon = if(polygon_[0] == polygon_[polygon_.size-1]) polygon_ else polygon_ + arrayOf(polygon_[0])
 
-    var nVertices = polygon.size - 1;
-
-    var p = this.toVector();
+    val p = this.toVector()
 
     // get vectors from p to each vertex
-    var vectorToVertex = LinkedList<Vector3d>()
+    val vectorToVertex = LinkedList<Vector3d>()
     for (value in polygon) vectorToVertex.add(p - value.toVector())
-    vectorToVertex.add(vectorToVertex[0]);
+    vectorToVertex.add(vectorToVertex[0])
 
     // sum subtended angles of each edge (using vector p to determine sign)
-    var Σθ = 0.0;
+    var Σθ = 0.0
     var prevValue : Vector3d? = null
     for (value in vectorToVertex) {
-        if (prevValue!=null) Σθ += prevValue.angleTo(value, p);
+        if (prevValue!=null) Σθ += prevValue.angleTo(value, p)
         prevValue = value
     }
 
-    val enclosed = Math.abs(Σθ) > Math.PI;
+    val enclosed = Math.abs(Σθ) > Math.PI
 
-    return enclosed;
-};
+    return enclosed
+}
 
 
 /**
@@ -584,37 +582,37 @@ fun LatLon.areaOf(polygon_: Array<LatLon>, radius: Double = 6371e3):Double {
     // close the polygon so that the last point equals the first point
     val polygon = if(polygon_[0] == polygon_[polygon_.size-1]) polygon_ else polygon_ + arrayOf(polygon_[0])
 
-    val n = polygon.size - 1; // number of vertices
+    val n = polygon.size - 1 // number of vertices
 
     // get great-circle vector for each edge
     val c = LinkedList<Vector3d>()
     var j : Vector3d? = null
     for (v in polygon) {
-        val i = v.toVector();
-        if (j!=null) c.add(i.cross(j)); // great circle for segment v..v+1
+        val i = v.toVector()
+        if (j!=null) c.add(i.cross(j)) // great circle for segment v..v+1
         j = i
     }
-    c.add(c[0]);
+    c.add(c[0])
 
     // sum interior angles; depending on whether polygon is cw or ccw, angle between edges is
     // π−α or π+α, where α is angle between great-circle vectors; so sum α, then take n·π − |Σα|
     // (cannot use Σ(π−|α|) as concave polygons would fail); use vector to 1st point as plane
     // normal for sign of α
-    var n1 = polygon[0].toVector();
-    var Σα = 0.0;
+    val n1 = polygon[0].toVector()
+    var Σα = 0.0
     var prevValue : Vector3d? = null
     for (value in c) {
-        if (prevValue!=null) Σα += value.angleTo(prevValue, n1);
+        if (prevValue!=null) Σα += value.angleTo(prevValue, n1)
         prevValue = value
     }
 
-    var Σθ = n*Math.PI - Math.abs(Σα);
+    val Σθ = n*Math.PI - Math.abs(Σα)
 
-    var E = (Σθ - (n-2)*Math.PI); // spherical excess (in steradians)
-    var A = E * radius*radius;              // area in units of R²
+    val E = (Σθ - (n-2)*Math.PI) // spherical excess (in steradians)
+    val A = E * radius*radius              // area in units of R²
 
-    return A;
-};
+    return A
+}
 
 
 /**
@@ -625,15 +623,15 @@ fun LatLon.areaOf(polygon_: Array<LatLon>, radius: Double = 6371e3):Double {
  * @todo Not yet tested.
  */
 fun meanOf(points: Array<LatLon>):LatLon {
-    var m = Vector3d(0.0, 0.0, 0.0);
+    var m = Vector3d(0.0, 0.0, 0.0)
 
     // add all vectors
     for (element in points) {
-        m = m + element.toVector()
+        m += element.toVector()
     }
 
     // m is now geographic mean
-    return m.unit().toLatLonS();
-};
+    return m.unit().toLatLonS()
+}
 
 

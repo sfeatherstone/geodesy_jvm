@@ -12,29 +12,29 @@ package uk.co.wedgetech.geodesy
  *     var pOSGB = pWGS84.convertDatum(LatLon.datum.OSGB36); // 51.4773°N, 000.0000°E
  */
 fun LatLonDatum.convertDatum(toDatum: LatLonDatum.Datum): LatLonDatum {
-    var oldLatLon = this;
+    var oldLatLon = this
     var transform :  LatLonDatum.Transform? = null
 
     if (oldLatLon.datum == LatLonDatum.WGS84) {
         // converting from WGS 84
-        transform = toDatum.transform;
+        transform = toDatum.transform
     }
     if (toDatum == LatLonDatum.WGS84) {
         // converting to WGS 84; use inverse transform (don't overwrite original!)
-        transform = oldLatLon.datum.transform.inverse();
+        transform = oldLatLon.datum.transform.inverse()
     }
     if (transform == null) {
         // neither this.datum nor toDatum are WGS84: convert this to WGS84 first
-        oldLatLon = this.convertDatum(LatLonDatum.WGS84);
-        transform = toDatum.transform;
+        oldLatLon = this.convertDatum(LatLonDatum.WGS84)
+        transform = toDatum.transform
     }
 
     val oldCartesian = oldLatLon.toCartesian()                // convert polar to cartesian...
     val newCartesian = oldCartesian.applyTransform(transform) // ...apply transform...
     val newLatLon = newCartesian.toLatLonE(toDatum)           // ...and convert cartesian to polar
 
-    return newLatLon;
-};
+    return newLatLon
+}
 
 
 /**
@@ -63,5 +63,5 @@ fun LatLonDatum.toCartesian(): Vector3d {
     val z = (ν * (1 - eSq) + h) * sinφ
 
     return Vector3d(x, y, z)
-};
+}
 

@@ -82,7 +82,7 @@ class DmsTest {
                 "45° 45’ 45.36”")
 
         for (v in variations)
-            assertEquals("parse dms variations " + v, 45.76260, v.parseDegreesMinutesSeconds(), 0.00001);
+            assertEquals("parse dms variations " + v, 45.76260, v.parseDegreesMinutesSeconds(), 0.00001)
 
         for (v in variations)
             assertEquals("parse dms variations " + "-" + v, -45.76260, ("-" + v).parseDegreesMinutesSeconds(), 0.00001)
@@ -99,7 +99,7 @@ class DmsTest {
         for (v in variations)
             assertEquals("parse dms variations " + v + "W", -45.76260, (v + "W").parseDegreesMinutesSeconds(), 0.00001)
 
-        assertEquals("parse dms variations " + " ws before+after ", 45.76260, " 45°45′45.36″ ".parseDegreesMinutesSeconds(), 0.00001);
+        assertEquals("parse dms variations " + " ws before+after ", 45.76260, " 45°45′45.36″ ".parseDegreesMinutesSeconds(), 0.00001)
 
     }
 

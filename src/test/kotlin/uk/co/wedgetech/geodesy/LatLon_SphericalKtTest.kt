@@ -5,14 +5,14 @@ import org.junit.Test
 import org.junit.Assert.*
 
 class LatLon_SphericalKtTest {
-    val R = 6371e3;
-    val π = Math.PI;
+    val R = 6371e3
+    val π = Math.PI
 
 
     @Test
     fun geodesicsTest() {
         val cambg = LatLon(52.205, 0.119)
-        val paris = LatLon(48.857, 2.351);
+        val paris = LatLon(48.857, 2.351)
         assertEquals("distance",          4.043e+5, cambg.distanceTo(paris).toPrecision(4), 1.0)
         assertEquals("distance (miles)",  251.2, cambg.distanceTo(paris, 3959.0).toPrecision(4), 0.0001)
         assertEquals("initial bearing",   156.2, cambg.bearingTo(paris) , 0.1)
@@ -22,7 +22,7 @@ class LatLon_SphericalKtTest {
 
         val greenwich = LatLon(51.4778, -0.0015)
         val dist = 7794.0
-        val brng = 300.7;
+        val brng = 300.7
         assertEquals("dest’n",            "51.5135°N, 000.0983°W", greenwich.destinationPoint(dist, brng).toString("d"))
         assertEquals("dest’n inc R",      "51.5135°N, 000.0983°W", greenwich.destinationPoint(dist, brng, 6371e3).toString("d"))
 
@@ -44,7 +44,7 @@ class LatLon_SphericalKtTest {
         assertEquals("Clairaut 1°",   89.0,    LatLon(0.0,0.0).maxLatitude( 1.0), 0.0001)
         assertEquals("Clairaut 90°",  0.0,     LatLon(0.0,0.0).maxLatitude(90.0), 0.0001)
 
-        val parallels = crossingParallels(LatLon(0.0,0.0), LatLon(60.0,30.0), 30.0);
+        val parallels = crossingParallels(LatLon(0.0,0.0), LatLon(60.0,30.0), 30.0)
         parallels?.let { parallels ->
             assertEquals("parallels 1", "30°00′00″N, 009°35′39″E", LatLon(30.0, parallels.first).toString("dms"))
             assertEquals("parallels 2", "30°00′00″N, 170°24′21″E", LatLon(30.0, parallels.second).toString("dms"))
@@ -58,15 +58,15 @@ class LatLon_SphericalKtTest {
     fun Ed_WilliamsTest() {
         val lax = LatLon("33° 57′N".parseDegreesMinutesSeconds(), "118° 24′W".parseDegreesMinutesSeconds())
         val jfk = LatLon("40° 38′N".parseDegreesMinutesSeconds(), "073° 47′W".parseDegreesMinutesSeconds())
-        assertEquals("distance nm",   2144.0, lax.distanceTo(jfk, 180.0*60.0/π).toPrecision(4), 0.001);
-        assertEquals("bearing",       66.0, lax.bearingTo(jfk).toPrecision(2), 0.001);
-        assertEquals("intermediate",  "34°37′N, 116°33′W", lax.intermediatePointTo(jfk, 100.0/2144.0).toString("dm", 0));
-        val d = LatLon("34:30N".parseDegreesMinutesSeconds(), "116:30W".parseDegreesMinutesSeconds());
-        assertEquals("cross-track", 7.4523, d.crossTrackDistanceTo(lax, jfk, 180*60/π).toPrecision(5), 0.001);
-        assertEquals("intermediate",  "38°40.167′N, 101°37.570′W", lax.intermediatePointTo(jfk, 0.4).toString("dm", 3));
+        assertEquals("distance nm",   2144.0, lax.distanceTo(jfk, 180.0*60.0/π).toPrecision(4), 0.001)
+        assertEquals("bearing",       66.0, lax.bearingTo(jfk).toPrecision(2), 0.001)
+        assertEquals("intermediate",  "34°37′N, 116°33′W", lax.intermediatePointTo(jfk, 100.0/2144.0).toString("dm", 0))
+        val d = LatLon("34:30N".parseDegreesMinutesSeconds(), "116:30W".parseDegreesMinutesSeconds())
+        assertEquals("cross-track", 7.4523, d.crossTrackDistanceTo(lax, jfk, 180*60/π).toPrecision(5), 0.001)
+        assertEquals("intermediate",  "38°40.167′N, 101°37.570′W", lax.intermediatePointTo(jfk, 0.4).toString("dm", 3))
         val reo = LatLon("42.600N".parseDegreesMinutesSeconds(), "117.866W".parseDegreesMinutesSeconds())
-        val bke = LatLon("44.840N".parseDegreesMinutesSeconds(), "117.806W".parseDegreesMinutesSeconds());
-        assertEquals("intersection",  "43.572°N, 116.189°W", intersection(reo, 51.0, bke, 137.0)?.toString("d", 3));
+        val bke = LatLon("44.840N".parseDegreesMinutesSeconds(), "117.806W".parseDegreesMinutesSeconds())
+        assertEquals("intersection",  "43.572°N, 116.189°W", intersection(reo, 51.0, bke, 137.0)?.toString("d", 3))
     }
 
 
@@ -84,7 +84,7 @@ class LatLon_SphericalKtTest {
         assertEquals("1E/90E N,E nearest", "00.0175°N, 179.0000°W", intersection(LatLon(0.0, 1.0), N, LatLon(1.0, 92.0), E)?.toString("d"))
 
         val stn = LatLon(51.8853, 0.2545)
-        val cdg = LatLon(49.0034, 2.5735);
+        val cdg = LatLon(49.0034, 2.5735)
         assertEquals("stn-cdg-bxl", "50.9078°N, 004.5084°E", intersection(stn, 108.547, cdg, 32.435)?.toString("d"))
 
         assertEquals("coincident points", null, intersection(LatLon(0.0, 1.0), N, LatLon(0.0, 1.0), E))
@@ -93,7 +93,7 @@ class LatLon_SphericalKtTest {
     @Test
     fun polygonalTest() {
         val polyTriangle  = arrayOf(LatLon(1.0,1.0), LatLon(2.0,1.0), LatLon(1.0,2.0))
-        val polySquareCw  = arrayOf(LatLon(1.0,1.0), LatLon(2.0,1.0), LatLon(2.0,2.0), LatLon(1.0,2.0));
+        val polySquareCw  = arrayOf(LatLon(1.0,1.0), LatLon(2.0,1.0), LatLon(2.0,2.0), LatLon(1.0,2.0))
         val polySquareCcw = arrayOf(LatLon(1.0,1.0), LatLon(1.0,2.0), LatLon(2.0,2.0), LatLon(2.0,1.0))
         val polyQuadrant  = arrayOf(LatLon(0.0,0.0), LatLon(0.0,90.0), LatLon(90.0,0.0))
         val polyHemi      = arrayOf(LatLon(0.0,1.0), LatLon(45.0,0.0), LatLon(89.0,90.0), LatLon(45.0,180.0), LatLon(0.0,179.0), LatLon(-45.0,180.0), LatLon(-89.0,90.0), LatLon(-45.0,0.0))
@@ -113,7 +113,7 @@ class LatLon_SphericalKtTest {
     @Test
     fun rhumb_linesTests() { 
         val dov = LatLon(51.127, 1.338)
-        val cal = LatLon(50.964, 1.853);
+        val cal = LatLon(50.964, 1.853)
         assertEquals("distance",               4.031e+4, dov.rhumbDistanceTo(cal).toPrecision(4), 0.1)
         assertEquals("distance r",             4.031e+4, dov.rhumbDistanceTo(cal, 6371e3).toPrecision(4), 0.1)
         assertEquals("distance dateline E-W",  LatLon(1.0, -179.0).rhumbDistanceTo(LatLon(1.0, 179.0)).toFixed(6),
@@ -130,8 +130,8 @@ class LatLon_SphericalKtTest {
 
     @Test
     fun miscTests() {  
-        assertEquals("equals true",   true, LatLon(52.205, 0.119).equals(LatLon(52.205, 0.119)) );
-        assertEquals("equals false",  false, LatLon(52.206, 0.119).equals(LatLon(52.205, 0.119)));
+        assertEquals("equals true",   true, LatLon(52.205, 0.119).equals(LatLon(52.205, 0.119)) )
+        assertEquals("equals false",  false, LatLon(52.206, 0.119).equals(LatLon(52.205, 0.119)))
     }
 
 }
