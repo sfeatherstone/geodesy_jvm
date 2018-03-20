@@ -129,8 +129,7 @@ import kotlin.math.roundToInt
             m = 0.0
             d++
         }               // check for rounding up
-        val degsLength = if (dp==0) 2 else dp + 4
-        return "%03d°%s%0${degsLength}.${dp}f′".format(d, separator, m)
+        return "%03d°%s%02.${dp}f′".format(d, separator, m)
     }
 
     internal fun toDegreesMinutesSeconds(degrees: Double, dp: Int, separator: String) : String {
@@ -206,13 +205,13 @@ import kotlin.math.roundToInt
     /**
      * Returns compass point (to given precision) for supplied bearing.
      *
-     * @param   {number} bearing - Bearing in degrees from north.
-     * @param   {number} [precision=3] - Precision (1:cardinal / 2:intercardinal / 3:secondary-intercardinal).
-     * @returns {string} Compass point for supplied bearing.
+     * @param   bearing - Bearing in degrees from north.
+     * @param   precision=3 - Precision (1:cardinal / 2:intercardinal / 3:secondary-intercardinal).
+     * @returns Compass point for supplied bearing.
      *
      * @example
-     *   var point = Dms.compassPoint(24);    // point = 'NNE'
-     *   var point = Dms.compassPoint(24, 1); // point = 'N'
+     *   var point = Dms.compassPoint(24.0);    // point = 'NNE'
+     *   var point = Dms.compassPoint(24.0, 1); // point = 'N'
      */
     fun compassPoint(bearing : Double, precision: Int = 3): String
     {

@@ -121,7 +121,7 @@ fun LatLon.midpointTo(point: LatLon): LatLon {
 
     val λ3 = λ1 + Math.atan2(By, Math.cos(φ1) + Bx);
 
-    return LatLon(φ3.toDegrees(), (λ3.toDegrees()+540)%360-180); // normalise to −180..+180°
+    return LatLon(φ3.toDegrees(), λ3.toNormalisedDegrees()); // normalise to −180..+180°
 };
 
 
@@ -154,11 +154,10 @@ fun LatLon.intermediatePointTo(point :LatLon, fraction: Double): LatLon {
     // distance between points
     val Δφ = φ2 - φ1;
     val Δλ = λ2 - λ1;
-    val a = Math.sin(Δφ/2) * Math.sin(Δφ/2)
-    + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) * Math.sin(Δλ/2);
-    val δ = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    val a = Math.sin(Δφ/2.0) * Math.sin(Δφ/2.0) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2.0) * Math.sin(Δλ/2.0);
+    val δ = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1.0-a));
 
-    val A = Math.sin((1-fraction)*δ) / Math.sin(δ);
+    val A = Math.sin((1.0-fraction)*δ) / Math.sin(δ);
     val B = Math.sin(fraction*δ) / Math.sin(δ);
 
     val x = A * cosφ1 * cosλ1 + B * cosφ2 * cosλ2;
@@ -168,7 +167,7 @@ fun LatLon.intermediatePointTo(point :LatLon, fraction: Double): LatLon {
     val φ3 = Math.atan2(z, Math.sqrt(x*x + y*y));
     val λ3 = Math.atan2(y, x);
 
-    return LatLon(φ3.toDegrees(), (λ3.toDegrees()+540)%360-180); // normalise lon to −180..+180°
+    return LatLon(φ3.toDegrees(), λ3.toNormalisedDegrees()); // normalise lon to −180..+180°
 };
 
 
@@ -209,7 +208,7 @@ fun LatLon.destinationPoint(distance: Double, bearing: Double, radius :Double = 
     var x = cosδ - sinφ1 * sinφ2;
     var λ2 = λ1 + Math.atan2(y, x);
 
-    return LatLon(φ2.toDegrees(), (λ2.toDegrees()+540)%360-180); // normalise to −180..+180°
+    return LatLon(φ2.toDegrees(), λ2.toNormalisedDegrees()); // normalise to −180..+180°
 };
 
 
@@ -227,7 +226,7 @@ fun LatLon.destinationPoint(distance: Double, bearing: Double, radius :Double = 
  *     var p2 = LatLon(49.0034, 2.5735), brng2 =  32.435;
  *     var pInt = LatLon.intersection(p1, brng1, p2, brng2); // 50.9078°N, 004.5084°E
  */
-fun LatLon.intersection(p1: LatLon, bearing1: Double, p2: LatLon, bearing2: Double): LatLon? {
+fun intersection(p1: LatLon, bearing1: Double, p2: LatLon, bearing2: Double): LatLon? {
 
     // see www.edwilliams.org/avform.htm#Intersection
 
@@ -241,8 +240,8 @@ fun LatLon.intersection(p1: LatLon, bearing1: Double, p2: LatLon, bearing2: Doub
     val Δλ = λ2-λ1;
 
     // angular distance p1-p2
-    var δ12 = 2*Math.asin( Math.sqrt( Math.sin(Δφ/2)*Math.sin(Δφ/2)
-            + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)*Math.sin(Δλ/2) ) );
+    var δ12 = 2.0*Math.asin( Math.sqrt( Math.sin(Δφ/2.0)*Math.sin(Δφ/2.0)
+            + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2.0)*Math.sin(Δλ/2.0) ) );
 
     if (δ12 == 0.0) return null;
 
@@ -251,8 +250,8 @@ fun LatLon.intersection(p1: LatLon, bearing1: Double, p2: LatLon, bearing2: Doub
     if (java.lang.Double.isNaN(θa)) θa = 0.0; // protect against rounding
     var θb = Math.acos( ( Math.sin(φ1) - Math.sin(φ2)*Math.cos(δ12) ) / ( Math.sin(δ12)*Math.cos(φ2) ) );
 
-    var θ12 = if (Math.sin(λ2-λ1)>0) θa else 2*Math.PI-θa
-    var θ21 = if (Math.sin(λ2-λ1)>0) 2*Math.PI-θb else θb
+    var θ12 = if (Math.sin(λ2-λ1)>0.0) θa else 2.0*Math.PI-θa
+    var θ21 = if (Math.sin(λ2-λ1)>0.0) 2.0*Math.PI-θb else θb
 
     var α1 = θ13 - θ12; // angle 2-1-3
     var α2 = θ21 - θ23; // angle 1-2-3
@@ -266,7 +265,7 @@ fun LatLon.intersection(p1: LatLon, bearing1: Double, p2: LatLon, bearing2: Doub
     var Δλ13 = Math.atan2( Math.sin(θ13)*Math.sin(δ13)*Math.cos(φ1), Math.cos(δ13)-Math.sin(φ1)*Math.sin(φ3) );
     var λ3 = λ1 + Δλ13;
 
-    return LatLon(φ3.toDegrees(), (λ3.toDegrees()+540)%360-180); // normalise to −180..+180°
+    return LatLon(φ3.toDegrees(), λ3.toNormalisedDegrees()); // normalise to −180..+180°
 };
 
 
@@ -355,7 +354,7 @@ fun LatLon.maxLatitude(bearing: Double): Double {
  * @param {number} latitude - Latitude crossings are to be determined for.
  * @returns {Object|null} Object containing { lon1, lon2 } or null if given latitude not reached.
  */
-fun LatLon.crossingParallels(point1: LatLon, point2: LatLon, latitude: Double): Pair<Double, Double>? {
+fun crossingParallels(point1: LatLon, point2: LatLon, latitude: Double): Pair<Double, Double>? {
     var φ = latitude.toRadians();
 
     var φ1 = point1.lat.toRadians();
@@ -377,7 +376,7 @@ fun LatLon.crossingParallels(point1: LatLon, point2: LatLon, latitude: Double): 
     var λi1 = λ1 + λm - Δλi;
     var λi2 = λ1 + λm + Δλi;
 
-    return Pair((λi1.toDegrees()+540)%360-180, (λi2.toDegrees()+540)%360-180) // normalise to −180..+180°
+    return Pair(λi1.toNormalisedDegrees(), λi2.toNormalisedDegrees()) // normalise to −180..+180°
 };
 
 
@@ -404,7 +403,7 @@ fun LatLon.rhumbDistanceTo(point: LatLon, radius: Double = 6371e3): Double {
     var Δφ = φ2 - φ1;
     var Δλ = Math.abs(point.lon-this.lon).toRadians();
     // if dLon over 180° take shorter rhumb line across the anti-meridian:
-    if (Δλ > Math.PI) Δλ -= 2*Math.PI;
+    if (Δλ > Math.PI) Δλ -= 2.0*Math.PI;
 
     // on Mercator projection, longitude distances shrink by latitude; q is the 'stretch factor'
     // q becomes ill-conditioned along E-W line (0/0); use empirical tolerance to avoid it
@@ -533,7 +532,7 @@ fun LatLon.rhumbMidpointTo(point: LatLon): LatLon {
  *   var polygon = [new LatLon(0,0), new LatLon(1,0), new LatLon(0,1)];
  *   var area = LatLon.areaOf(polygon); // 6.18e9 m²
  */
-fun LatLon.areaOf(polygonInput: Array<LatLon>, radius: Double = 6371e3):Double {
+fun areaOf(polygonInput: Array<LatLon>, radius: Double = 6371e3):Double {
     // uses method due to Karney: osgeo-org.1560.x6.nabble.com/Area-of-a-spherical-polygon-td3841625.html;
     // for each edge of the polygon, tan(E/2) = tan(Δλ/2)·(tan(φ1/2) + tan(φ2/2)) / (1 + tan(φ1/2)·tan(φ2/2))
     // where E is the spherical excess of the trapezium obtained by extending the edge to the equator
