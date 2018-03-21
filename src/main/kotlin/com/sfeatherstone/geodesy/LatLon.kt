@@ -1,8 +1,5 @@
 package com.sfeatherstone.geodesy
 
-import java.lang.Double.*
-import kotlin.math.sign
-
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /* Geodesy tools for an ellipsoidal earth model                       (c) Chris Veness 2005-2016  */
 /*                                                                        Simon Featherstone 2018 */
@@ -38,6 +35,7 @@ import kotlin.math.sign
  */
 open class LatLon(val lat: Double, val lon :Double) {
 
+    override fun toString() = toString("dms", 0)
     /**
      * Returns a string representation of ‘this’ point, formatted as degrees, degrees+minutes, or
      * degrees+minutes+seconds.

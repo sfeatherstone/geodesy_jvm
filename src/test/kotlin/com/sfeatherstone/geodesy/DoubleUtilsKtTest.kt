@@ -3,8 +3,6 @@ package com.sfeatherstone.geodesy
 import org.junit.Assert
 import org.junit.Test
 
-import org.junit.Assert.*
-
 class DoubleUtilsKtTest {
 
     @Test

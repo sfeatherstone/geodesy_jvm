@@ -1,7 +1,5 @@
 package com.sfeatherstone.geodesy
 
-import kotlin.math.sign
-
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /* Geodesy tools for an ellipsoidal earth model                       (c) Chris Veness 2005-2016  */
 /*                                                                        Simon Featherstone 2018 */
@@ -36,7 +34,7 @@ import kotlin.math.sign
  * @example
  *     var p1 = new LatLon(51.4778, -0.0016, LatLon.datum.WGS84);
  */
-class LatLonDatum(lat: Double, lon :Double, val datum : Datum = WGS84): LatLon(lat, lon) {
+class LatLonDatum(lat: Double, lon :Double, val datum : Datum = WGS84, val convergence: Double? = null, val scale:Double? = null): LatLon(lat, lon) {
 
     data class Ellipsoid(val a: Double, val b: Double, val f: Double)
 

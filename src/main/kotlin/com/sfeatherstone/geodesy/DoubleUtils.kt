@@ -11,6 +11,8 @@ import kotlin.math.round
 inline fun Double.toFixed(s : Int) =
         BigDecimal(this).setScale(s, BigDecimal.ROUND_HALF_UP).toDouble()
 
+inline fun Double.toFixedString(s : Int) =
+        BigDecimal(this).setScale(s, BigDecimal.ROUND_HALF_UP).toString()
 
 /***
  * Faster but less accurate
