@@ -1,11 +1,13 @@
+package com.sfeatherstone.geodesy.vincenty
+
 import com.sfeatherstone.geodesy.*
 
 /**
- * Direct and inverse solutions of geodesics on the ellipsoid using Vincenty formulae.
+ * Direct and com.sfeatherstone.geodesy.vincenty.inverse solutions of geodesics on the ellipsoid using Vincenty formulae.
  *
  * From: T Vincenty, "Direct and Inverse Solutions of Geodesics on the Ellipsoid with application of
  *       nested equations", Survey Review, vol XXIII no 176, 1975.
- *       www.ngs.noaa.gov/PUBS_LIB/inverse.pdf.
+ *       www.ngs.noaa.gov/PUBS_LIB/com.sfeatherstone.geodesy.vincenty.inverse.pdf.
  *
  * @module  latlon-vincenty
  * @extends latlon-ellipsoidal
@@ -15,7 +17,7 @@ import com.sfeatherstone.geodesy.*
 
 /**
  * Returns the distance between ‘this’ point and destination point along a geodesic, using Vincenty
- * inverse solution.
+ * com.sfeatherstone.geodesy.vincenty.inverse solution.
  *
  * Note: the datum used is of ‘this’ point; distance is on the surface of the ellipsoid (height is
  * ignored).
@@ -26,7 +28,7 @@ import com.sfeatherstone.geodesy.*
  * @example
  *   var p1 = new LatLon(50.06632, -5.71475);
  *   var p2 = new LatLon(58.64402, -3.07009);
- *   var d = p1.distanceTo(p2); // 969,954.166 m
+ *   var d = p1.com.sfeatherstone.geodesy.vectors.com.sfeatherstone.geodesy.vincenty.distanceTo(p2); // 969,954.166 m
  */
 fun LatLonDatum.distanceTo(point: LatLon) : Double {
     try {
@@ -39,7 +41,7 @@ fun LatLonDatum.distanceTo(point: LatLon) : Double {
 
 /**
  * Returns the initial bearing (forward azimuth) to travel along a geodesic from ‘this’ point to the
- * specified point, using Vincenty inverse solution.
+ * specified point, using Vincenty com.sfeatherstone.geodesy.vincenty.inverse solution.
  *
  * Note: the datum used is of ‘this’ point.
  *
@@ -49,7 +51,7 @@ fun LatLonDatum.distanceTo(point: LatLon) : Double {
  * @example
  *   var p1 = new LatLon(50.06632, -5.71475);
  *   var p2 = new LatLon(58.64402, -3.07009);
- *   var b1 = p1.initialBearingTo(p2); // 9.1419°
+ *   var b1 = p1.com.sfeatherstone.geodesy.vincenty.initialBearingTo(p2); // 9.1419°
  */
 fun LatLonDatum.initialBearingTo(point: LatLon): Double {
     try {
@@ -62,7 +64,7 @@ fun LatLonDatum.initialBearingTo(point: LatLon): Double {
 
 /**
  * Returns the final bearing (reverse azimuth) having travelled along a geodesic from ‘this’ point
- * to the specified point, using Vincenty inverse solution.
+ * to the specified point, using Vincenty com.sfeatherstone.geodesy.vincenty.inverse solution.
  *
  * Note: the datum used is of ‘this’ point.
  *
@@ -72,7 +74,7 @@ fun LatLonDatum.initialBearingTo(point: LatLon): Double {
  * @example
  *   var p1 = new LatLon(50.06632, -5.71475);
  *   var p2 = new LatLon(58.64402, -3.07009);
- *   var b2 = p1.finalBearingTo(p2); // 11.2972°
+ *   var b2 = p1.com.sfeatherstone.geodesy.vincenty.finalBearingTo(p2); // 11.2972°
  */
 fun LatLonDatum.finalBearingTo(point: LatLon):Double {
     try {
@@ -85,7 +87,7 @@ fun LatLonDatum.finalBearingTo(point: LatLon):Double {
 
 /**
  * Returns the destination point having travelled the given distance along a geodesic given by
- * initial bearing from ‘this’ point, using Vincenty direct solution.
+ * initial bearing from ‘this’ point, using Vincenty com.sfeatherstone.geodesy.vincenty.direct solution.
  *
  * Note: the datum used is of ‘this’ point; distance is on the surface of the ellipsoid (height is
  * ignored).
@@ -96,7 +98,7 @@ fun LatLonDatum.finalBearingTo(point: LatLon):Double {
  *
  * @example
  *   var p1 = new LatLon(-37.95103, 144.42487);
- *   var p2 = p1.destinationPoint(54972.271, 306.86816); // 37.6528°S, 143.9265°E
+ *   var p2 = p1.com.sfeatherstone.geodesy.vectors.com.sfeatherstone.geodesy.vincenty.destinationPoint(54972.271, 306.86816); // 37.6528°S, 143.9265°E
  */
 fun LatLonDatum.destinationPoint(distance :Double, initialBearing: Double): LatLon {
     return direct(distance, initialBearing).point
@@ -105,7 +107,7 @@ fun LatLonDatum.destinationPoint(distance :Double, initialBearing: Double): LatL
 
 /**
  * Returns the final bearing (reverse azimuth) having travelled along a geodesic given by initial
- * bearing for a given distance from ‘this’ point, using Vincenty direct solution.
+ * bearing for a given distance from ‘this’ point, using Vincenty com.sfeatherstone.geodesy.vincenty.direct solution.
  *
  * Note: the datum used is of ‘this’ point; distance is on the surface of the ellipsoid (height is
  * ignored).
@@ -116,7 +118,7 @@ fun LatLonDatum.destinationPoint(distance :Double, initialBearing: Double): LatL
  *
  * @example
  *   var p1 = new LatLon(-37.95103, 144.42487);
- *   var b2 = p1.finalBearingOn(306.86816, 54972.271); // 307.1736°
+ *   var b2 = p1.com.sfeatherstone.geodesy.vincenty.finalBearingOn(306.86816, 54972.271); // 307.1736°
  */
 fun LatLonDatum.finalBearingOn(distance: Double, initialBearing: Double):Double {
     return this.direct(distance, initialBearing).finalBearing.toFixed(9) // round to 0.00001″ precision
@@ -124,7 +126,7 @@ fun LatLonDatum.finalBearingOn(distance: Double, initialBearing: Double):Double 
 
 internal data class directResult(val point: LatLonDatum, val finalBearing :Double, val iterations: Int)
 /**
- * Vincenty direct calculation.
+ * Vincenty com.sfeatherstone.geodesy.vincenty.direct calculation.
  *
  * @private
  * @param   {number} distance - Distance along bearing in metres.
@@ -132,7 +134,7 @@ internal data class directResult(val point: LatLonDatum, val finalBearing :Doubl
  * @returns (Object} Object including point (destination point), finalBearing.
  * @throws  {Error}  If formula failed to converge.
  */
-internal fun LatLonDatum.direct(distance: Double, initialBearing: Double):directResult {
+internal fun LatLonDatum.direct(distance: Double, initialBearing: Double): directResult {
     val φ1 = this.lat.toRadians()
     val λ1 = this.lon.toRadians()
     val α1 = initialBearing.toRadians()
@@ -194,7 +196,7 @@ internal fun LatLonDatum.direct(distance: Double, initialBearing: Double):direct
 internal data class inverseResult(val distance: Double, val initialBearing: Double, val finalBearing :Double , val iterations: Int)
 
 /**
- * Vincenty inverse calculation.
+ * Vincenty com.sfeatherstone.geodesy.vincenty.inverse calculation.
  *
  * @private
  * @param   {LatLon} point - Latitude/longitude of destination point.
@@ -270,8 +272,8 @@ internal fun LatLonDatum.inverse(point: LatLon): inverseResult {
     α2 = (α2 + 2*Math.PI) % (2*Math.PI) // normalise to 0..360
 
     return inverseResult(distance = s,
-            initialBearing= if (s==0.0) java.lang.Double.NaN else α1.toDegrees(),
-            finalBearing = if (s==0.0) java.lang.Double.NaN else α2.toDegrees(),
+            initialBearing = if (s == 0.0) java.lang.Double.NaN else α1.toDegrees(),
+            finalBearing = if (s == 0.0) java.lang.Double.NaN else α2.toDegrees(),
             iterations = iterations)
 
 }

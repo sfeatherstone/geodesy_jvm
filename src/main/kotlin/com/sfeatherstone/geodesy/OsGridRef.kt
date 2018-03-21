@@ -1,6 +1,6 @@
 package com.sfeatherstone.geodesy
 
-import java.math.BigDecimal
+import com.sfeatherstone.geodesy.ellipsoidal.convertDatum
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /* Ordnance Survey Grid Reference functions                           (c) Chris Veness 2005-2017  */

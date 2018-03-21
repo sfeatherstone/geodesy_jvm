@@ -1,4 +1,7 @@
-package com.sfeatherstone.geodesy
+package com.sfeatherstone.geodesy.ellipsoidal
+
+import com.sfeatherstone.geodesy.LatLonDatum
+import com.sfeatherstone.geodesy.vectors.Vector3d
 
 
 /**
@@ -20,7 +23,7 @@ fun LatLonDatum.convertDatum(toDatum: LatLonDatum.Datum): LatLonDatum {
         transform = toDatum.transform
     }
     if (toDatum == LatLonDatum.WGS84) {
-        // converting to WGS 84; use inverse transform (don't overwrite original!)
+        // converting to WGS 84; use com.sfeatherstone.geodesy.vincenty.inverse transform (don't overwrite original!)
         transform = oldLatLon.datum.transform.inverse()
     }
     if (transform == null) {

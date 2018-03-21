@@ -1,6 +1,6 @@
 package com.sfeatherstone.geodesy
 
-import jdk.nashorn.internal.objects.NativeFunction.function
+import com.sfeatherstone.geodesy.ellipsoidal.convertDatum
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

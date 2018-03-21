@@ -1,5 +1,9 @@
-package com.sfeatherstone.geodesy
+package com.sfeatherstone.geodesy.vectors
 
+import com.sfeatherstone.geodesy.LatLonDatum
+import com.sfeatherstone.geodesy.format
+import com.sfeatherstone.geodesy.toDegrees
+import com.sfeatherstone.geodesy.toRadians
 import kotlin.math.sign
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */

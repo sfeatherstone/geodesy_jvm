@@ -1,5 +1,6 @@
+package com.sfeatherstone.geodesy.vectors
+
 import com.sfeatherstone.geodesy.LatLon
-import com.sfeatherstone.geodesy.Vector3d
 import com.sfeatherstone.geodesy.toDegrees
 import com.sfeatherstone.geodesy.toRadians
 import java.util.*
@@ -35,7 +36,7 @@ import java.util.*
  *
  * @example
  *   var p = new LatLon(45, 45);
- *   var v = p.toVector(); // [0.5000,0.5000,0.7071]
+ *   var v = p.com.sfeatherstone.geodesy.vectors.toVector(); // [0.5000,0.5000,0.7071]
  */
 fun LatLon.toVector(): Vector3d {
     val φ = lat.toRadians()
@@ -57,7 +58,7 @@ fun LatLon.toVector(): Vector3d {
  *
  * @example
  *   var v = new Vector3d(0.500, 0.500, 0.707);
- *   var p = v.toLatLonS(); // 45.0°N, 45.0°E
+ *   var p = v.com.sfeatherstone.geodesy.vectors.toLatLonS(); // 45.0°N, 45.0°E
  */
 fun Vector3d.toLatLonS(): LatLon {
     val φ = Math.atan2(this.z, Math.sqrt(this.x*this.x + this.y*this.y))
@@ -77,7 +78,7 @@ fun Vector3d.toLatLonS(): LatLon {
  *
  * @example
  *   var p1 = new LatLon(53.3206, -1.7297);
- *   var gc = p1.greatCircle(96.0); // [-0.794,0.129,0.594]
+ *   var gc = p1.com.sfeatherstone.geodesy.vectors.greatCircle(96.0); // [-0.794,0.129,0.594]
  */
 fun LatLon.greatCircle(bearing: Double): Vector3d {
     val φ = this.lat.toRadians()
@@ -103,7 +104,7 @@ fun LatLon.greatCircle(bearing: Double): Vector3d {
  *
  * @example
  *   var n1 = new LatLon(53.3206, -1.7297).toNvector();
- *   var gc = n1.greatCircle(96.0); // [-0.794,0.129,0.594]
+ *   var gc = n1.com.sfeatherstone.geodesy.vectors.greatCircle(96.0); // [-0.794,0.129,0.594]
  */
 fun Vector3d.greatCircle(bearing : Double): Vector3d {
     val θ = bearing.toRadians()
@@ -129,7 +130,7 @@ fun Vector3d.greatCircle(bearing : Double): Vector3d {
  * @example
  *   var p1 = new LatLon(52.205, 0.119);
  *   var p2 = new LatLon(48.857, 2.351);
- *   var d = p1.distanceTo(p2); // 404.3 km
+ *   var d = p1.com.sfeatherstone.geodesy.vectors.com.sfeatherstone.geodesy.vincenty.distanceTo(p2); // 404.3 km
  */
 fun LatLon.distanceTo(point: LatLon, radius: Double = 6371e3):Double {
     val p1 = this.toVector()
@@ -152,7 +153,7 @@ fun LatLon.distanceTo(point: LatLon, radius: Double = 6371e3):Double {
  * @example
  *   var p1 = new LatLon(52.205, 0.119);
  *   var p2 = new LatLon(48.857, 2.351);
- *   var b1 = p1.bearingTo(p2); // 156.2°
+ *   var b1 = p1.com.sfeatherstone.geodesy.vectors.bearingTo(p2); // 156.2°
  */
 fun LatLon.bearingTo(point: LatLon): Double {
     val p1 = this.toVector()
@@ -178,7 +179,7 @@ fun LatLon.bearingTo(point: LatLon): Double {
  * @example
  *   var p1 = new LatLon(52.205, 0.119);
  *   var p2 = new LatLon(48.857, 2.351);
- *   var pMid = p1.midpointTo(p2); // 50.5363°N, 001.2746°E
+ *   var pMid = p1.com.sfeatherstone.geodesy.vectors.midpointTo(p2); // 50.5363°N, 001.2746°E
  */
 fun LatLon.midpointTo(point: LatLon): LatLon {
     val p1 = this.toVector()
@@ -201,7 +202,7 @@ fun LatLon.midpointTo(point: LatLon): LatLon {
  * @example
  *   var p1 = new LatLon(52.205, 0.119);
  *   var p2 = new LatLon(48.857, 2.351);
- *   var pInt = p1.intermediatePointTo(p2, 0.25); // 51.3721°N, 000.7073°E
+ *   var pInt = p1.com.sfeatherstone.geodesy.vectors.intermediatePointTo(p2, 0.25); // 51.3721°N, 000.7073°E
  */
 fun LatLon.intermediatePointTo(point: LatLon, fraction: Double): LatLon {
     // angular distance between points; tanδ = |n₁×n₂| / n₁⋅n₂
@@ -238,7 +239,7 @@ fun LatLon.intermediatePointTo(point: LatLon, fraction: Double): LatLon {
  * @example
  *   var p1 = new LatLon(52.205, 0.119);
  *   var p2 = new LatLon(48.857, 2.351);
- *   var pInt = p1.intermediatePointOnChordTo(p2, 0.25); // 51.3723°N, 000.7072°E
+ *   var pInt = p1.com.sfeatherstone.geodesy.vectors.intermediatePointOnChordTo(p2, 0.25); // 51.3723°N, 000.7072°E
  */
 fun LatLon.intermediatePointOnChordTo(point: LatLon, fraction: Double): LatLon {
     val n1 = this.toVector()
@@ -261,7 +262,7 @@ fun LatLon.intermediatePointOnChordTo(point: LatLon, fraction: Double): LatLon {
  *
  * @example
  *   var p1 = new LatLon(51.4778, -0.0015);
- *   var p2 = p1.destinationPoint(7794, 300.7); // 51.5135°N, 000.0983°W
+ *   var p2 = p1.com.sfeatherstone.geodesy.vectors.com.sfeatherstone.geodesy.vincenty.destinationPoint(7794, 300.7); // 51.5135°N, 000.0983°W
  */
 fun LatLon.destinationPoint(distance: Double, bearing: Double, radius: Double = 6371e3): LatLon {
     val n1 = this.toVector()
@@ -314,24 +315,24 @@ fun LatLon.intersection(path1start: LatLon, path1brngEnd: LatLon, path2start: La
     // intersection point to select! if bearing is given, that determines which intersection, if both
     // paths are defined by start/end points, take closer intersection
 
-    var p1 = path1start.toVector();
-    var p2 = path2start.toVector();
+    var p1 = path1start.com.sfeatherstone.geodesy.vectors.toVector();
+    var p2 = path2start.com.sfeatherstone.geodesy.vectors.toVector();
 
     var c1, c2, path1def, path2def;
     // c1 & c2 are vectors defining great circles through start & end points; p × c gives initial bearing vector
 
     if (path1brngEnd instanceof LatLon) { // path 1 defined by endpoint
-        c1 = p1.cross(path1brngEnd.toVector());
+        c1 = p1.cross(path1brngEnd.com.sfeatherstone.geodesy.vectors.toVector());
         path1def = 'endpoint';
     } else {                              // path 1 defined by initial bearing
-        c1 = path1start.greatCircle(Number(path1brngEnd));
+        c1 = path1start.com.sfeatherstone.geodesy.vectors.greatCircle(Number(path1brngEnd));
         path1def = 'bearing';
     }
     if (path2brngEnd instanceof LatLon) { // path 2 defined by endpoint
-        c2 = p2.cross(path2brngEnd.toVector());
+        c2 = p2.cross(path2brngEnd.com.sfeatherstone.geodesy.vectors.toVector());
         path2def = 'endpoint';
     } else {                              // path 2 defined by initial bearing
-        c2 = path2start.greatCircle(Number(path2brngEnd));
+        c2 = path2start.com.sfeatherstone.geodesy.vectors.greatCircle(Number(path2brngEnd));
         path2def = 'bearing';
     }
 
@@ -371,12 +372,12 @@ fun LatLon.intersection(path1start: LatLon, path1brngEnd: LatLon, path2start: La
             intersection = dir2>0 ? i1 : i2;
             break;
         case 'endpoint+endpoint': // select nearest intersection to mid-point of all points
-            var mid = p1.plus(p2).plus(path1brngEnd.toVector()).plus(path2brngEnd.toVector());
+            var mid = p1.plus(p2).plus(path1brngEnd.com.sfeatherstone.geodesy.vectors.toVector()).plus(path2brngEnd.com.sfeatherstone.geodesy.vectors.toVector());
             intersection = mid.dot(i1)>0 ? i1 : i2;
             break;
     }
 
-    return intersection.toLatLonS();
+    return intersection.com.sfeatherstone.geodesy.vectors.toLatLonS();
 };
 */
 
@@ -401,11 +402,11 @@ fun LatLon.intersection(path1start: LatLon, path1brngEnd: LatLon, path2start: La
 /*
 fun LatLon.crossTrackDistanceTo(pathStart: LatLon, pathBrngEnd, radius: Double = 6371e3): Double {
 
-    var p = this.toVector();
+    var p = this.com.sfeatherstone.geodesy.vectors.toVector();
 
     var gc = pathBrngEnd instanceof LatLon                   // (note JavaScript is not good at method overloading)
-        ? pathStart.toVector().cross(pathBrngEnd.toVector()) // great circle defined by two points
-        : pathStart.greatCircle(Number(pathBrngEnd));        // great circle defined by point + bearing
+        ? pathStart.com.sfeatherstone.geodesy.vectors.toVector().cross(pathBrngEnd.com.sfeatherstone.geodesy.vectors.toVector()) // great circle defined by two points
+        : pathStart.com.sfeatherstone.geodesy.vectors.greatCircle(Number(pathBrngEnd));        // great circle defined by point + bearing
 
     var α = gc.angleTo(p) - Math.PI/2; // angle between point & great-circle
 
@@ -436,15 +437,15 @@ fun LatLon.crossTrackDistanceTo(pathStart: LatLon, pathBrngEnd, radius: Double =
 fun LatLon.alongTrackDistanceTo(pathStart, pathBrngEnd, radius: Double = 6371e3) {
     if (!(pathStart instanceof LatLon)) throw new TypeError('pathStart is not LatLon object');
 
-    var p = this.toVector();
+    var p = this.com.sfeatherstone.geodesy.vectors.toVector();
 
     var gc = pathBrngEnd instanceof LatLon                   // (note JavaScript is not good at method overloading)
-        ? pathStart.toVector().cross(pathBrngEnd.toVector()) // great circle defined by two points
-        : pathStart.greatCircle(Number(pathBrngEnd));        // great circle defined by point + bearing
+        ? pathStart.com.sfeatherstone.geodesy.vectors.toVector().cross(pathBrngEnd.com.sfeatherstone.geodesy.vectors.toVector()) // great circle defined by two points
+        : pathStart.com.sfeatherstone.geodesy.vectors.greatCircle(Number(pathBrngEnd));        // great circle defined by point + bearing
 
     var pat = gc.cross(p).cross(gc); // along-track point c × p × c
 
-    var α = pathStart.toVector().angleTo(pat, gc); // angle between start point and along-track point
+    var α = pathStart.com.sfeatherstone.geodesy.vectors.toVector().angleTo(pat, gc); // angle between start point and along-track point
 
     var d = α * radius;
 
@@ -466,11 +467,11 @@ fun LatLon.alongTrackDistanceTo(pathStart, pathBrngEnd, radius: Double = 6371e3)
  *   var p1 = new LatLon(51.0, 1.0), p2 = new LatLon(51.0, 2.0);
  *
  *   var p0 = new LatLon(51.0, 1.9);
- *   var p = p0.nearestPointOnSegment(p1, p2); // 51.0004°N, 001.9000°E
- *   var d = p.distanceTo(p);                  // 42.71 m
+ *   var p = p0.com.sfeatherstone.geodesy.vectors.nearestPointOnSegment(p1, p2); // 51.0004°N, 001.9000°E
+ *   var d = p.com.sfeatherstone.geodesy.vectors.com.sfeatherstone.geodesy.vincenty.distanceTo(p);                  // 42.71 m
  *
  *   var p0 = new LatLon(51.0, 2.1);
- *   var p = p0.nearestPointOnSegment(p1, p2); // 51.0000°N, 002.0000°E
+ *   var p = p0.com.sfeatherstone.geodesy.vectors.nearestPointOnSegment(p1, p2); // 51.0000°N, 002.0000°E
  */
 fun LatLon.nearestPointOnSegment(point1: LatLon, point2: LatLon): LatLon {
     if (this.isBetween(point1, point2)) {
@@ -532,7 +533,7 @@ fun LatLon.isBetween(point1: LatLon, point2: LatLon):Boolean {
  * @example
  *   var bounds = [ new LatLon(45,1), new LatLon(45,2), new LatLon(46,2), new LatLon(46,1) ];
  *   var p = new LatLon(45.1, 1.1);
- *   var inside = p.enclosedBy(bounds); // true
+ *   var inside = p.com.sfeatherstone.geodesy.vectors.enclosedBy(bounds); // true
  */
 fun LatLon.enclosedBy(polygon_: Array<LatLon>): Boolean {
     // this method uses angle summation test; on a plane, angles for an enclosed point will sum
@@ -574,7 +575,7 @@ fun LatLon.enclosedBy(polygon_: Array<LatLon>): Boolean {
  *
  * @example
  *   var polygon = [ new LatLon(0,0), new LatLon(1,0), new LatLon(0,1) ];
- *   var area = LatLon.areaOf(polygon); // 6.18e9 m²
+ *   var area = LatLon.com.sfeatherstone.geodesy.vectors.areaOf(polygon); // 6.18e9 m²
  */
 fun LatLon.areaOf(polygon_: Array<LatLon>, radius: Double = 6371e3):Double {
     // uses Girard’s theorem: A = [Σθᵢ − (n−2)·π]·R²
