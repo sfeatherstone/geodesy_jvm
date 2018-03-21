@@ -1,5 +1,4 @@
 import com.sfeatherstone.geodesy.*
-import uk.co.wedgetech.geodesy.*
 
 /**
  * Direct and inverse solutions of geodesics on the ellipsoid using Vincenty formulae.
