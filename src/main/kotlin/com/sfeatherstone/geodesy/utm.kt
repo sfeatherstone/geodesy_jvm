@@ -364,7 +364,7 @@ fun Utm.toLatLonE(datum: LatLonDatum.Datum = LatLonDatum.WGS84):LatLonDatum {
  *   var utmCoord = Utm.parse('31 N 448251 5411932');
  *   // utmCoord: {zone: 31, hemisphere: 'N', easting: 448251, northing: 5411932 }
  */
-fun String.parseToUtm():Utm {
+fun String.parseUtm():Utm {
     // match separate elements (separated by whitespace)
     val utmCoord = Regex("""\S+""").findAll(this.trim()).toList()
 
