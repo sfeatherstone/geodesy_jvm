@@ -15,7 +15,7 @@ repositories {
 Add to your dependencies
 ```groovy
 dependencies {
-    implementation 'com.github.sfeatherstone:geodesy_jvm:v0.1.1'
+    implementation 'com.github.sfeatherstone:geodesy_jvm:v0.2.0'
 }
 ```
 
