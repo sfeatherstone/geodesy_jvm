@@ -1,9 +1,6 @@
 package com.sfeatherstone.geodesy.vectors
 
-import com.sfeatherstone.geodesy.LatLonDatum
-import com.sfeatherstone.geodesy.format
-import com.sfeatherstone.geodesy.toDegrees
-import com.sfeatherstone.geodesy.toRadians
+import com.sfeatherstone.geodesy.*
 import kotlin.math.sign
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -196,7 +193,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      *
      * @param {LatLon.datum.transform} datum - Datum to use when converting point.
      */
-    fun toLatLonE(datum: LatLonDatum.Datum): LatLonDatum {
+    fun toLatLonE(datum: Datum): LatLon {
         val a = datum.ellipsoid.a
         val b = datum.ellipsoid.b
         val f = datum.ellipsoid.f
@@ -223,7 +220,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
         val ν = a/Math.sqrt(1-e2*sinφ*sinφ) // length of the normal terminated by the minor axis
         var h = p*cosφ + z*sinφ - (a*a/ν)
 
-        return LatLonDatum(φ.toDegrees(), λ.toDegrees(), datum)
+        return LatLon(φ.toDegrees(), λ.toDegrees(), datum)
     }
 
     /**
@@ -233,7 +230,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      * @param   {number[]} t - Transform to apply to this point.
      * @returns {Vector3} Transformed point.
      */
-    fun applyTransform(t: LatLonDatum.Transform) : Vector3d {
+    fun applyTransform(t: Transform) : Vector3d {
         // this point
         val x1 = this.x
         val y1 = this.y

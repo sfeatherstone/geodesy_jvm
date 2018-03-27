@@ -30,7 +30,7 @@ import com.sfeatherstone.geodesy.*
  *   var p2 = new LatLon(58.64402, -3.07009);
  *   var d = p1.com.sfeatherstone.geodesy.vectors.com.sfeatherstone.geodesy.vincenty.distanceTo(p2); // 969,954.166 m
  */
-fun LatLonDatum.distanceTo(point: LatLon) : Double {
+fun LatLon.distanceTo(point: LatLon) : Double {
     try {
         return this.inverse(point).distance.toFixed(3) // round to 1mm precision
     } catch (e: Exception) {
@@ -53,7 +53,7 @@ fun LatLonDatum.distanceTo(point: LatLon) : Double {
  *   var p2 = new LatLon(58.64402, -3.07009);
  *   var b1 = p1.com.sfeatherstone.geodesy.vincenty.initialBearingTo(p2); // 9.1419°
  */
-fun LatLonDatum.initialBearingTo(point: LatLon): Double {
+fun LatLon.initialBearingTo(point: LatLon): Double {
     try {
         return this.inverse(point).initialBearing.toFixed(9) // round to 0.00001″ precision
     } catch (e: Exception) {
@@ -76,7 +76,7 @@ fun LatLonDatum.initialBearingTo(point: LatLon): Double {
  *   var p2 = new LatLon(58.64402, -3.07009);
  *   var b2 = p1.com.sfeatherstone.geodesy.vincenty.finalBearingTo(p2); // 11.2972°
  */
-fun LatLonDatum.finalBearingTo(point: LatLon):Double {
+fun LatLon.finalBearingTo(point: LatLon):Double {
     try {
         return this.inverse(point).finalBearing.toFixed(9) // round to 0.00001″ precision
     } catch (e: Exception) {
@@ -100,7 +100,7 @@ fun LatLonDatum.finalBearingTo(point: LatLon):Double {
  *   var p1 = new LatLon(-37.95103, 144.42487);
  *   var p2 = p1.com.sfeatherstone.geodesy.vectors.com.sfeatherstone.geodesy.vincenty.destinationPoint(54972.271, 306.86816); // 37.6528°S, 143.9265°E
  */
-fun LatLonDatum.destinationPoint(distance :Double, initialBearing: Double): LatLon {
+fun LatLon.destinationPoint(distance :Double, initialBearing: Double): LatLon {
     return direct(distance, initialBearing).point
 }
 
@@ -120,11 +120,11 @@ fun LatLonDatum.destinationPoint(distance :Double, initialBearing: Double): LatL
  *   var p1 = new LatLon(-37.95103, 144.42487);
  *   var b2 = p1.com.sfeatherstone.geodesy.vincenty.finalBearingOn(306.86816, 54972.271); // 307.1736°
  */
-fun LatLonDatum.finalBearingOn(distance: Double, initialBearing: Double):Double {
+fun LatLon.finalBearingOn(distance: Double, initialBearing: Double):Double {
     return this.direct(distance, initialBearing).finalBearing.toFixed(9) // round to 0.00001″ precision
 }
 
-internal data class directResult(val point: LatLonDatum, val finalBearing :Double, val iterations: Int)
+internal data class directResult(val point: LatLon, val finalBearing :Double, val iterations: Int)
 /**
  * Vincenty com.sfeatherstone.geodesy.vincenty.direct calculation.
  *
@@ -134,7 +134,7 @@ internal data class directResult(val point: LatLonDatum, val finalBearing :Doubl
  * @returns (Object} Object including point (destination point), finalBearing.
  * @throws  {Error}  If formula failed to converge.
  */
-internal fun LatLonDatum.direct(distance: Double, initialBearing: Double): directResult {
+internal fun LatLon.direct(distance: Double, initialBearing: Double): directResult {
     val φ1 = this.lat.toRadians()
     val λ1 = this.lon.toRadians()
     val α1 = initialBearing.toRadians()
@@ -187,7 +187,7 @@ internal fun LatLonDatum.direct(distance: Double, initialBearing: Double): direc
     var α2 = Math.atan2(sinα, -x)
     α2 = (α2 + 2*Math.PI) % (2*Math.PI) // normalise to 0..360
 
-    return directResult(point = LatLonDatum(φ2.toDegrees(), λ2.toDegrees(), this.datum),
+    return directResult(point = LatLon(φ2.toDegrees(), λ2.toDegrees(), this.datum),
             finalBearing = α2.toDegrees(),
             iterations = iterations)
 }
@@ -204,7 +204,7 @@ internal data class inverseResult(val distance: Double, val initialBearing: Doub
  * @throws  {Error}  If λ > π or formula failed to converge.
  */
 
-internal fun LatLonDatum.inverse(point: LatLon): inverseResult {
+internal fun LatLon.inverse(point: LatLon): inverseResult {
     val p1 = LatLon(this.lat, if (this.lon != -180.0) this.lon else 180.0)
     val p2 = point
     //if (p1.lon == -180) p1.lon = 180;

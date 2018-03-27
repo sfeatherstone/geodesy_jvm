@@ -133,7 +133,7 @@ data class Utm(val zone: Int,
  *   var utmCoord = latlong.toUtm(); // utmCoord.toString(): '31 N 448252 5411933'
  */
 
-fun LatLonDatum.toUtm(): Utm {
+fun LatLon.toUtm(): Utm {
     if (this.lat.isNaN() || this.lon.isNaN()) throw Exception("Invalid point")
     if (!(-80.0<=this.lat && this.lat<=84.0)) throw Error("Outside UTM limits")
 
@@ -256,7 +256,7 @@ fun LatLonDatum.toUtm(): Utm {
  *   var latlong = grid.toLatLonE(); // latlong.toString(): 48°51′29.52″N, 002°17′40.20″E
  */
 
-fun Utm.toLatLonE(datum: LatLonDatum.Datum = LatLonDatum.WGS84):LatLonDatum {
+fun Utm.toLatLonE(datum: Datum = WGS84):LatLon {
     val z = this.zone
     val h = this.hemisphere
     var x = this.easting
@@ -353,7 +353,7 @@ fun Utm.toLatLonE(datum: LatLonDatum.Datum = LatLonDatum.WGS84):LatLonDatum {
     var convergence = γ.toDegrees().toFixed(9)
     var scale = k.toFixed(12)
 
-    return LatLonDatum(lat, lon, datum, convergence, scale)
+    return LatLon(lat, lon, datum, convergence, scale)
 }
 
 

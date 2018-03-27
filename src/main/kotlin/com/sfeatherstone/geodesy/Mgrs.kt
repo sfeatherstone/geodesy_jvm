@@ -1,5 +1,4 @@
 import com.sfeatherstone.geodesy.LatLon
-import com.sfeatherstone.geodesy.LatLonDatum
 import com.sfeatherstone.geodesy.toFixed
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -214,7 +213,7 @@ fun Mgrs.toUtm(): Utm {
 
     // northing of bottom of band, extended to include entirety of bottommost 100km square
     // (100km square boundaries are aligned with 100km UTM northing intervals)
-    var nBand = Math.floor(LatLonDatum(latBand, 0.0).toUtm().northing/100e3)*100e3;
+    var nBand = Math.floor(LatLon(latBand, 0.0).toUtm().northing/100e3)*100e3;
     // 100km grid square row letters repeat every 2,000km north; add enough 2,000km blocks to get
     // into required band
     var n2M = 0.0; // northing of 2,000km block

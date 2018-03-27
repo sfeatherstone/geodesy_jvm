@@ -1,6 +1,6 @@
 package com.sfeatherstone.geodesy.ellipsoidal
 
-import com.sfeatherstone.geodesy.LatLonDatum
+import com.sfeatherstone.geodesy.*
 import com.sfeatherstone.geodesy.vectors.Vector3d
 
 
@@ -14,21 +14,21 @@ import com.sfeatherstone.geodesy.vectors.Vector3d
  *     var pWGS84 = new LatLon(51.4778, -0.0016, LatLon.datum.WGS84);
  *     var pOSGB = pWGS84.convertDatum(LatLon.datum.OSGB36); // 51.4773°N, 000.0000°E
  */
-fun LatLonDatum.convertDatum(toDatum: LatLonDatum.Datum): LatLonDatum {
+fun LatLon.convertDatum(toDatum: Datum): LatLon {
     var oldLatLon = this
-    var transform :  LatLonDatum.Transform? = null
+    var transform :  Transform? = null
 
-    if (oldLatLon.datum == LatLonDatum.WGS84) {
+    if (oldLatLon.datum == WGS84) {
         // converting from WGS 84
         transform = toDatum.transform
     }
-    if (toDatum == LatLonDatum.WGS84) {
+    if (toDatum == WGS84) {
         // converting to WGS 84; use com.sfeatherstone.geodesy.vincenty.inverse transform (don't overwrite original!)
         transform = oldLatLon.datum.transform.inverse()
     }
     if (transform == null) {
         // neither this.datum nor toDatum are WGS84: convert this to WGS84 first
-        oldLatLon = this.convertDatum(LatLonDatum.WGS84)
+        oldLatLon = this.convertDatum(WGS84)
         transform = toDatum.transform
     }
 
@@ -46,7 +46,7 @@ fun LatLonDatum.convertDatum(toDatum: LatLonDatum.Datum): LatLonDatum {
  *
  * @returns {Vector3d} Vector pointing to lat/lon point, with x, y, z in metres from earth centre.
  */
-fun LatLonDatum.toCartesian(): Vector3d {
+fun LatLon.toCartesian(): Vector3d {
     val φ = Math.toRadians(lat)
     val λ = Math.toRadians(lon)
     val h = 0  // height above ellipsoid - not currently used

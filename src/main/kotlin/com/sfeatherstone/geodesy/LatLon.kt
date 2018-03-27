@@ -28,20 +28,21 @@ package com.sfeatherstone.geodesy
  *
  * @property        lat - Geodetic latitude in degrees.
  * @property        lon - Longitude in degrees.
+ * @property        datum=WGS84 - Datum this point is defined within.
  *
  * @example
  *     val p1 = new LatLon(51.4778, -0.0016);
  */
-open class LatLon(val lat: Double, val lon :Double) {
+data class LatLon(val lat: Double, val lon :Double, val datum : Datum = WGS84, val convergence: Double? = null, val scale:Double? = null) {
 
     override fun toString() = toString("dms", 0)
     /**
      * Returns a string representation of ‘this’ point, formatted as degrees, degrees+minutes, or
      * degrees+minutes+seconds.
      *
-     * @param   {string} [format=dms] - Format point as 'd', 'dm', 'dms'.
-     * @param   {number} [dp=0|2|4] - Number of decimal places to use - default 0 for dms, 2 for dm, 4 for d.
-     * @returns {string} Comma-separated latitude/longitude.
+     * @param   format=dms - Format point as 'd', 'dm', 'dms'.
+     * @param   dp=0|2|4 - Number of decimal places to use - default 0 for dms, 2 for dm, 4 for d.
+     * @returns Comma-separated latitude/longitude.
      */
     fun toString(format: String, dp: Int? = null) : String
     {
@@ -59,11 +60,11 @@ open class LatLon(val lat: Double, val lon :Double) {
      *   var p2 = new LatLon(52.205, 0.119);
      *   var equal = p1.equals(p2); // true
      */
-    override fun equals(obj: Any?): Boolean {
+/*    override fun equals(obj: Any?): Boolean {
         if (obj === this) return true
         if (obj !is LatLon) return false
         return obj.lat == lat && obj.lon == lon
-    }
+    }*/
 
 
 }

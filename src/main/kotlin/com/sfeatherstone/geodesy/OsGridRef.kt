@@ -119,7 +119,7 @@ data class OsGridRef(val easting : Double, val northing: Double) {
      *   // to obtain (historical) OSGB36 latitude/longitude point:
      *   var pOsgb = OsGridRef.osGridToLatLon(gridref, LatLon.datum.OSGB36); // 52°39′27.253″N, 001°43′04.518″E
      */
-    fun toLatLonDatum(datum: LatLonDatum.Datum = LatLonDatum.WGS84): LatLonDatum
+    fun toLatLonDatum(datum: Datum = WGS84): LatLon
     {
         val a = 6377563.396
         val b = 6356256.909              // Airy 1830 major & minor semi-axes
@@ -178,8 +178,8 @@ data class OsGridRef(val easting : Double, val northing: Double) {
         φ = φ - VII * dE2 + VIII * dE4 - IX * dE6
         val λ = λ0 + X * dE - XI * dE3 + XII * dE5 - XIIA * dE7
 
-        var point = LatLonDatum(φ.toDegrees(), λ.toDegrees(), LatLonDatum.OSGB36)
-        if (datum != LatLonDatum.OSGB36) point = point.convertDatum(datum)
+        var point = LatLon(φ.toDegrees(), λ.toDegrees(), OSGB36)
+        if (datum != OSGB36) point = point.convertDatum(datum)
 
         return point
     }
@@ -267,9 +267,9 @@ fun String.parseOsGridReference() : OsGridRef
  *   // for conversion of (historical) OSGB36 latitude/longitude point:
  *   var p = new LatLon(52.65757, 1.71791, LatLon.datum.OSGB36);
  */
-fun LatLonDatum.toOsGrid(): OsGridRef {
+fun LatLon.toOsGrid(): OsGridRef {
     // if necessary convert to OSGB36 first
-    val osgbPoint = if (this.datum != LatLonDatum.OSGB36) this.convertDatum(LatLonDatum.OSGB36)
+    val osgbPoint = if (this.datum != OSGB36) this.convertDatum(OSGB36)
         else this
 
     val φ = osgbPoint.lat.toRadians()
