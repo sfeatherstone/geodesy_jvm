@@ -33,6 +33,17 @@ fun charToHemisphere(input: Char) : Hemisphere = when(input.toUpperCase()) {
     else -> throw Exception("Invalid conversion for Hemisphere")
 }
 
+/***
+ * Utm coordinate object.
+ *
+ * @property  zone - UTM 6° longitudinal zone (1..60 covering 180°W..180°E).
+ * @property  hemisphere - N for northern hemisphere, S for southern hemisphere.
+ * @property  easting - Easting in metres from false easting (-500km from central meridian).
+ * @property  northing - Northing in metres from equator (N) or from false northing -10,000km (S).
+ * @property  convergence - Meridian convergence (bearing of grid north clockwise from true
+ *                  north), in degrees
+ * @property  scale - Grid scale factor
+ */
 data class Utm(val zone: Int,
                val hemisphere:Hemisphere,
                val easting: Double,
@@ -45,6 +56,7 @@ data class Utm(val zone: Int,
     }
 
     override fun toString() = toString(0)
+
     /**
      * Returns a string representation of a UTM coordinate.
      *
@@ -53,13 +65,12 @@ data class Utm(val zone: Int,
      *
      * Note that UTM coordinates get rounded, not truncated (unlike MGRS grid references).
      *
-     * @param   {number} [digits=0] - Number of digits to appear after the decimal point (3 ≡ mm).
-     * @returns {string} A string representation of the coordinate.
+     * @param   digits - Number of digits to appear after the decimal point (3 ≡ mm).
+     * @returns A string representation of the coordinate.
      *
      * @example
      *   var utm = Utm.parse('31 N 448251 5411932').toString(4);  // 31 N 448251.0000 5411932.0000
      */
-
     fun toString(digits: Int): String {
         return "%02d %c %s %s".format(zone, toSingleChar(hemisphere), easting.toFixedString(digits), northing.toFixedString(digits))
     }

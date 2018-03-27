@@ -36,12 +36,26 @@ package com.sfeatherstone.geodesy
  */
 class LatLonDatum(lat: Double, lon :Double, val datum : Datum = WGS84, val convergence: Double? = null, val scale:Double? = null): LatLon(lat, lon) {
 
+    /**
+     * Ellipsoid parameters; major axis (a), minor axis (b), and flattening (f) for each ellipsoid.
+     * @property a major axis
+     * @property b minor axis
+     * @property f flattening
+     */
     data class Ellipsoid(val a: Double, val b: Double, val f: Double)
+
 
     data class Transform(val tx: Double, val ty: Double, val tz: Double, val s: Double, val rx: Double, val ry: Double, val rz: Double) {
         fun inverse() = Transform(-tx, -ty, -tz, -s, -rx, -ry, -rz)
     }
 
+    /**
+     * Datums; with associated ellipsoid, and Helmert transform parameters to convert from WGS 84 into
+     * given datum.
+     *
+     * @property ellipsoid
+     * @property transform
+     */
     data class Datum(val ellipsoid: Ellipsoid, val transform: Transform)
 
     /**
@@ -79,21 +93,21 @@ class LatLonDatum(lat: Double, lon :Double, val datum : Datum = WGS84, val conve
         @JvmField val WGS84 = Datum(eWGS84, Transform(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
 
         /* sources:
-     * - ED50:          www.gov.uk/guidance/oil-and-gas-petroleum-operations-notices#pon-4
-     * - Irl1975:       www.osi.ie/wp-content/uploads/2015/05/transformations_booklet.pdf
-     *   ... note: many sources have opposite sign to rotations - to be checked!
-     * - NAD27:         en.wikipedia.org/wiki/Helmert_transformation
-     * - NAD83: (2009); www.uvm.edu/giv/resources/WGS84_NAD83.pdf
-     *   ... note: functionally ≡ WGS84 - if you *really* need to convert WGS84<->NAD83, you need more knowledge than this!
-     * - NTF:           Nouvelle Triangulation Francaise geodesie.ign.fr/contenu/fichiers/Changement_systeme_geodesique.pdf
-     * - OSGB36:        www.ordnancesurvey.co.uk/docs/support/guide-coordinate-systems-great-britain.pdf
-     * - Potsdam:       kartoweb.itc.nl/geometrics/Coordinate%20transformations/coordtrans.html
-     * - TokyoJapan:    www.geocachingtoolbox.com?page=datumEllipsoidDetails
-     * - WGS72:         www.icao.int/safety/pbn/documentation/eurocontrol/eurocontrol wgs 84 implementation manual.pdf
-     *
-     * more transform parameters are available from earth-info.nga.mil/GandG/coordsys/datums/NATO_DT.pdf,
-     * www.fieldenmaps.info/cconv/web/cconv_params.js
-     */
+         * - ED50:          www.gov.uk/guidance/oil-and-gas-petroleum-operations-notices#pon-4
+         * - Irl1975:       www.osi.ie/wp-content/uploads/2015/05/transformations_booklet.pdf
+         *   ... note: many sources have opposite sign to rotations - to be checked!
+         * - NAD27:         en.wikipedia.org/wiki/Helmert_transformation
+         * - NAD83: (2009); www.uvm.edu/giv/resources/WGS84_NAD83.pdf
+         *   ... note: functionally ≡ WGS84 - if you *really* need to convert WGS84<->NAD83, you need more knowledge than this!
+         * - NTF:           Nouvelle Triangulation Francaise geodesie.ign.fr/contenu/fichiers/Changement_systeme_geodesique.pdf
+         * - OSGB36:        www.ordnancesurvey.co.uk/docs/support/guide-coordinate-systems-great-britain.pdf
+         * - Potsdam:       kartoweb.itc.nl/geometrics/Coordinate%20transformations/coordtrans.html
+         * - TokyoJapan:    www.geocachingtoolbox.com?page=datumEllipsoidDetails
+         * - WGS72:         www.icao.int/safety/pbn/documentation/eurocontrol/eurocontrol wgs 84 implementation manual.pdf
+         *
+         * more transform parameters are available from earth-info.nga.mil/GandG/coordsys/datums/NATO_DT.pdf,
+         * www.fieldenmaps.info/cconv/web/cconv_params.js
+         */
     }
 
 

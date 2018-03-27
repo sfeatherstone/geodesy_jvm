@@ -24,14 +24,13 @@ package com.sfeatherstone.geodesy
 
 
 /**
- * Creates lat/lon (polar) point with latitude & longitude values, on a specified datum.
+ * lat/lon (polar) point with latitude & longitude values
  *
- * @constructor
- * @param {number}       lat - Geodetic latitude in degrees.
- * @param {number}       lon - Longitude in degrees.
+ * @property        lat - Geodetic latitude in degrees.
+ * @property        lon - Longitude in degrees.
  *
  * @example
- *     var p1 = new LatLon(51.4778, -0.0016);
+ *     val p1 = new LatLon(51.4778, -0.0016);
  */
 open class LatLon(val lat: Double, val lon :Double) {
 
