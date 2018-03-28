@@ -1,6 +1,9 @@
-package com.sfeatherstone.geodesy
+package com.sfeatherstone.geodesy.model.spherical
 
-import com.sfeatherstone.geodesy.model.spherical.*
+import com.sfeatherstone.geodesy.LatLon
+import com.sfeatherstone.geodesy.parseDegreesMinutesSeconds
+import com.sfeatherstone.geodesy.toFixed
+import com.sfeatherstone.geodesy.toPrecision
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -46,7 +49,7 @@ class LatLon_SphericalKtTest {
         assertEquals("Clairaut 90°",  0.0,     LatLon(0.0, 0.0).maxLatitude(90.0), 0.0001)
 
         val parallels = crossingParallels(LatLon(0.0, 0.0), LatLon(60.0, 30.0), 30.0)
-        parallels?.let { parallels ->
+        parallels?.let {
             assertEquals("parallels 1", "30°00′00″N, 009°35′39″E", LatLon(30.0, parallels.first).toString("dms"))
             assertEquals("parallels 2", "30°00′00″N, 170°24′21″E", LatLon(30.0, parallels.second).toString("dms"))
         }

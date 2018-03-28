@@ -255,8 +255,9 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      * @param   {number} [precision=3] - Number of decimal places to be used.
      * @returns {string} Vector represented as [x,y,z].
      */
-    fun toString(precision : Int = 3) ="[${this.x.format(precision)},${this.y.format(precision)},${this.z.format(precision)}]"
+    fun toString(precision : Int) ="[${this.x.format(precision)},${this.y.format(precision)},${this.z.format(precision)}]"
 
+    override fun toString() = toString(3)
 
 
 }

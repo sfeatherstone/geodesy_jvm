@@ -578,7 +578,7 @@ fun LatLon.enclosedBy(polygon_: Array<LatLon>): Boolean {
  *   var polygon = [ new LatLon(0,0), new LatLon(1,0), new LatLon(0,1) ];
  *   var area = LatLon.com.sfeatherstone.geodesy.model.spherical.vectors.areaOf(polygon); // 6.18e9 m²
  */
-fun LatLon.areaOf(polygon_: Array<LatLon>, radius: Double = 6371e3):Double {
+fun areaOf(polygon_: Array<LatLon>, radius: Double = 6371e3):Double {
     // uses Girard’s theorem: A = [Σθᵢ − (n−2)·π]·R²
 
     if (polygon_.size < 2) return 0.0
