@@ -118,40 +118,40 @@ fun LatLon.toUtm(): Utm {
     if (zone==36 && latBand=='X' && this.lon< 33) { zone--; λ0 -= (6.0).toRadians(); }
     if (zone==36 && latBand=='X' && this.lon>=33) { zone++; λ0 += (6.0).toRadians(); }
 
-    var φ = this.lat.toRadians()      // latitude ± from equator
-    var λ = this.lon.toRadians() - λ0 // longitude ± from central meridian
+    val φ = this.lat.toRadians()      // latitude ± from equator
+    val λ = this.lon.toRadians() - λ0 // longitude ± from central meridian
 
     val a = this.datum.ellipsoid.a
     val f = this.datum.ellipsoid.f
     // WGS 84: a = 6378137, b = 6356752.314245, f = 1/298.257223563;
 
-    var k0 = 0.9996 // UTM scale on the central meridian
+    val k0 = 0.9996 // UTM scale on the central meridian
 
     // ---- easting, northing: Karney 2011 Eq 7-14, 29, 35:
 
-    var e = Math.sqrt(f*(2.0-f)) // eccentricity
-    var n = f / (2.0 - f)        // 3rd flattening
-    var n2 = n*n
+    val e = Math.sqrt(f*(2.0-f)) // eccentricity
+    val n = f / (2.0 - f)        // 3rd flattening
+    val n2 = n*n
     val n3 = n*n2
     val n4 = n*n3
     val n5 = n*n4
     val n6 = n*n5 // TODO: compare Horner-form accuracy?
 
-    var cosλ = Math.cos(λ)
+    val cosλ = Math.cos(λ)
     val sinλ = Math.sin(λ)
     val tanλ = Math.tan(λ)
 
-    var τ = Math.tan(φ) // τ ≡ tanφ, τʹ ≡ tanφʹ; prime (ʹ) indicates angles on the conformal sphere
-    var σ = Math.sinh(e*atanh(e*τ/ sqrt(1.0+τ*τ)))
+    val τ = Math.tan(φ) // τ ≡ tanφ, τʹ ≡ tanφʹ; prime (ʹ) indicates angles on the conformal sphere
+    val σ = Math.sinh(e*atanh(e*τ/ sqrt(1.0+τ*τ)))
 
-    var τʹ = τ*Math.sqrt(1.0+σ*σ) - σ* sqrt(1.0+τ*τ)
+    val τʹ = τ*Math.sqrt(1.0+σ*σ) - σ* sqrt(1.0+τ*τ)
 
-    var ξʹ = Math.atan2(τʹ, cosλ)
-    var ηʹ = asinh(sinλ / sqrt(τʹ*τʹ + cosλ*cosλ))
+    val ξʹ = Math.atan2(τʹ, cosλ)
+    val ηʹ = asinh(sinλ / sqrt(τʹ*τʹ + cosλ*cosλ))
 
-    var A = a/(1.0+n) * (1.0 + 1.0/4.0*n2 + 1.0/64.0*n4 + 1.0/256.0*n6) // 2πA is the circumference of a meridian
+    val A = a/(1.0+n) * (1.0 + 1.0/4.0*n2 + 1.0/64.0*n4 + 1.0/256.0*n6) // 2πA is the circumference of a meridian
 
-    var α = arrayOf( 0.0, // note α is one-based array (6th order Krüger expressions)
+    val α = arrayOf( 0.0, // note α is one-based array (6th order Krüger expressions)
         1.0/2.0*n - 2.0/3.0*n2 + 5.0/16.0*n3 +   41.0/180.0*n4 -     127.0/288.0*n5 +      7891.0/37800.0*n6,
                   13.0/48.0*n2 -  3.0/5.0*n3 + 557.0/1440.0*n4 +     281.0/630.0*n5 - 1983433.0/1935360.0*n6,
                                61.0/240.0*n3 -  103.0/140.0*n4 + 15061.0/26880.0*n5 +   167603.0/181440.0*n6,
@@ -175,18 +175,18 @@ fun LatLon.toUtm(): Utm {
     var qʹ = 0.0
     for (j in 1..6) qʹ += 2.0*j.toDouble()*α[j] * Math.sin(2.0*j.toDouble()*ξʹ) * Math.sinh(2.0*j.toDouble()*ηʹ)
 
-    var γʹ = Math.atan(τʹ / Math.sqrt(1.0+τʹ*τʹ)*tanλ)
-    var γʺ = Math.atan2(qʹ, pʹ)
+    val γʹ = Math.atan(τʹ / Math.sqrt(1.0+τʹ*τʹ)*tanλ)
+    val γʺ = Math.atan2(qʹ, pʹ)
 
-    var γ = γʹ + γʺ
+    val γ = γʹ + γʺ
 
     // ---- scale: Karney 2011 Eq 25
 
-    var sinφ = Math.sin(φ)
-    var kʹ = Math.sqrt(1.0 - e*e*sinφ*sinφ) * Math.sqrt(1.0 + τ*τ) / Math.sqrt(τʹ*τʹ + cosλ*cosλ)
-    var kʺ = A / a * Math.sqrt(pʹ*pʹ + qʹ*qʹ)
+    val sinφ = Math.sin(φ)
+    val kʹ = Math.sqrt(1.0 - e*e*sinφ*sinφ) * Math.sqrt(1.0 + τ*τ) / Math.sqrt(τʹ*τʹ + cosλ*cosλ)
+    val kʺ = A / a * Math.sqrt(pʹ*pʹ + qʹ*qʹ)
 
-    var k = k0 * kʹ * kʺ
+    val k = k0 * kʹ * kʺ
 
     // ------------
 
@@ -197,10 +197,10 @@ fun LatLon.toUtm(): Utm {
     // round to reasonable precision
     x = x.toFixed(6) // nm precision
     y = y.toFixed(6) // nm precision
-    var convergence = γ.toDegrees().toFixed(9)
-    var scale = k.toFixed(12)
+    val convergence = γ.toDegrees().toFixed(9)
+    val scale = k.toFixed(12)
 
-    var h = if (this.lat>=0) Hemisphere.NORTH else Hemisphere.SOUTH // hemisphere
+    val h = if (this.lat>=0) Hemisphere.NORTH else Hemisphere.SOUTH // hemisphere
 
     return Utm(zone, h, x, y, convergence, scale)
 }
@@ -225,31 +225,31 @@ fun Utm.toLatLonE(datum: Datum = WGS84):LatLon {
 
     if (x.isNaN() || y.isNaN()) throw Exception("Invalid coordinate")
 
-    var a = datum.ellipsoid.a
+    val a = datum.ellipsoid.a
     val f = datum.ellipsoid.f
     // WGS 84:  a = 6378137, b = 6356752.314245, f = 1/298.257223563;
 
-    var k0 = 0.9996 // UTM scale on the central meridian
+    val k0 = 0.9996 // UTM scale on the central meridian
 
-    x = x - Utm.falseEasting               // make x ± relative to central meridian
+    x -= Utm.falseEasting               // make x ± relative to central meridian
     y = if (h== Hemisphere.SOUTH) y - Utm.falseNorthing else y // make y ± relative to equator
 
     // ---- from Karney 2011 Eq 15-22, 36:
 
-    var e = Math.sqrt(f*(2-f)) // eccentricity
-    var n = f / (2 - f)        // 3rd flattening
-    var n2 = n*n
+    val e = Math.sqrt(f*(2-f)) // eccentricity
+    val n = f / (2 - f)        // 3rd flattening
+    val n2 = n*n
     val n3 = n*n2
     val n4 = n*n3
     val n5 = n*n4
     val n6 = n*n5
 
-    var A = a/(1.0+n) * (1.0 + 1.0/4.0*n2 + 1.0/64.0*n4 + 1.0/256.0*n6) // 2πA is the circumference of a meridian
+    val A = a/(1.0+n) * (1.0 + 1.0/4.0*n2 + 1.0/64.0*n4 + 1.0/256.0*n6) // 2πA is the circumference of a meridian
 
-    var η = x / (k0*A)
-    var ξ = y / (k0*A)
+    val η = x / (k0*A)
+    val ξ = y / (k0*A)
 
-    var β = arrayOf(0.0, // note β is one-based array (6th order Krüger expressions)
+    val β = arrayOf(0.0, // note β is one-based array (6th order Krüger expressions)
         1.0/2.0*n - 2.0/3.0*n2 + 37.0/96.0*n3 -    1.0/360.0*n4 -   81.0/512.0*n5 +    96199.0/604800.0*n6,
                    1.0/48.0*n2 +  1.0/15.0*n3 - 437.0/1440.0*n4 +   46.0/105.0*n5 - 1118711.0/3870720.0*n6,
                                 17.0/480.0*n3 -   37.0/840.0*n4 - 209.0/4480.0*n5 +      5569.0/90720.0*n6,
@@ -263,11 +263,11 @@ fun Utm.toLatLonE(datum: Datum = WGS84):LatLon {
     var ηʹ = η
     for (j in 1..6) ηʹ -= β[j] * Math.cos(2.0*j.toDouble()*ξ) * Math.sinh(2.0*j.toDouble()*η)
 
-    var sinhηʹ = Math.sinh(ηʹ)
-    var sinξʹ = Math.sin(ξʹ)
+    val sinhηʹ = Math.sinh(ηʹ)
+    val sinξʹ = Math.sin(ξʹ)
     val cosξʹ = Math.cos(ξʹ)
 
-    var τʹ = sinξʹ / Math.sqrt(sinhηʹ*sinhηʹ + cosξʹ*cosξʹ)
+    val τʹ = sinξʹ / Math.sqrt(sinhηʹ*sinhηʹ + cosξʹ*cosξʹ)
 
     var τi = τʹ
     do {
@@ -277,9 +277,9 @@ fun Utm.toLatLonE(datum: Datum = WGS84):LatLon {
         τi += δτi
     } while (Math.abs(δτi) > 1e-12) // using IEEE 754 δτi -> 0 after 2-3 iterations
     // note relatively large convergence test as δτi toggles on ±1.12e-16 for eg 31 N 400000 5000000
-    var τ = τi
+    val τ = τi
 
-    var φ = Math.atan(τ)
+    val φ = Math.atan(τ)
 
     var λ = Math.atan2(sinhηʹ, cosξʹ)
 
@@ -290,29 +290,29 @@ fun Utm.toLatLonE(datum: Datum = WGS84):LatLon {
     var q = 0.0
     for (j in 1..6) q += 2*j*β[j] * Math.sin(2*j*ξ) * Math.sinh(2*j*η)
 
-    var γʹ = Math.atan(Math.tan(ξʹ) * Math.tanh(ηʹ))
-    var γʺ = Math.atan2(q, p)
+    val γʹ = Math.atan(Math.tan(ξʹ) * Math.tanh(ηʹ))
+    val γʺ = Math.atan2(q, p)
 
-    var γ = γʹ + γʺ
+    val γ = γʹ + γʺ
 
     // ---- scale: Karney 2011 Eq 28
 
-    var sinφ = Math.sin(φ)
-    var kʹ = Math.sqrt(1 - e*e*sinφ*sinφ) * Math.sqrt(1 + τ*τ) * Math.sqrt(sinhηʹ*sinhηʹ + cosξʹ*cosξʹ)
-    var kʺ = A / a / Math.sqrt(p*p + q*q)
+    val sinφ = Math.sin(φ)
+    val kʹ = Math.sqrt(1 - e*e*sinφ*sinφ) * Math.sqrt(1 + τ*τ) * Math.sqrt(sinhηʹ*sinhηʹ + cosξʹ*cosξʹ)
+    val kʺ = A / a / Math.sqrt(p*p + q*q)
 
-    var k = k0 * kʹ * kʺ
+    val k = k0 * kʹ * kʺ
 
     // ------------
 
-    var λ0 = ((z-1.0)*6.0 - 180.0 + 3.0).toRadians() // longitude of central meridian
+    val λ0 = ((z-1.0)*6.0 - 180.0 + 3.0).toRadians() // longitude of central meridian
     λ += λ0 // move λ from zonal to global coordinates
 
     // round to reasonable precision
-    var lat = φ.toDegrees().toFixed(11) // nm precision (1nm = 10^-11°)
-    var lon = λ.toDegrees().toFixed(11) // (strictly lat rounding should be φ⋅cosφ!)
-    var convergence = γ.toDegrees().toFixed(9)
-    var scale = k.toFixed(12)
+    val lat = φ.toDegrees().toFixed(11) // nm precision (1nm = 10^-11°)
+    val lon = λ.toDegrees().toFixed(11) // (strictly lat rounding should be φ⋅cosφ!)
+    val convergence = γ.toDegrees().toFixed(9)
+    val scale = k.toFixed(12)
 
     return LatLon(lat, lon, datum, convergence, scale)
 }
@@ -342,7 +342,7 @@ fun String.parseUtm(): Utm {
 
     if (utmCoord.size!=4) throw Exception("Invalid UTM coordinate ‘"+this+"’")
 
-    var zone = utmCoord[0].value.toInt()
+    val zone = utmCoord[0].value.toInt()
     val hemisphere = charToHemisphere(utmCoord[1].value[0])
     val easting = utmCoord[2].value.toDouble()
     val northing = utmCoord[3].value.toDouble()
