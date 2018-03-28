@@ -1,3 +1,5 @@
+package com.sfeatherstone.geodesy.grids
+
 import com.sfeatherstone.geodesy.*
 import kotlin.math.asinh
 import kotlin.math.atanh
@@ -45,7 +47,7 @@ fun charToHemisphere(input: Char) : Hemisphere = when(input.toUpperCase()) {
  * @property  scale - Grid scale factor
  */
 data class Utm(val zone: Int,
-               val hemisphere:Hemisphere,
+               val hemisphere: Hemisphere,
                val easting: Double,
                val northing: Double,
                val convergence:Double? = null,
@@ -69,54 +71,13 @@ data class Utm(val zone: Int,
      * @returns A string representation of the coordinate.
      *
      * @example
-     *   var utm = Utm.parse('31 N 448251 5411932').toString(4);  // 31 N 448251.0000 5411932.0000
+     *   var utm = parse('31 N 448251 5411932').toString(4);  // 31 N 448251.0000 5411932.0000
      */
     fun toString(digits: Int): String {
         return "%02d %c %s %s".format(zone, toSingleChar(hemisphere), easting.toFixedString(digits), northing.toFixedString(digits))
     }
 
 }
-
-/**
- * Creates a Utm coordinate object.
- *
- * @constructor
- * @param  {number} zone - UTM 6° longitudinal zone (1..60 covering 180°W..180°E).
- * @param  {string} hemisphere - N for northern hemisphere, S for southern hemisphere.
- * @param  {number} easting - Easting in metres from false easting (-500km from central meridian).
- * @param  {number} northing - Northing in metres from equator (N) or from false northing -10,000km (S).
- * @param  {LatLon.datum} [datum=WGS84] - Datum UTM coordinate is based on.
- * @param  {number} [convergence] - Meridian convergence (bearing of grid north clockwise from true
- *                  north), in degrees
- * @param  {number} [scale] - Grid scale factor
- * @throws {Error}  Invalid UTM coordinate
- *
- * @example
- *   var utmCoord = new Utm(31, 'N', 448251, 5411932);
- */
-/*function Utm(zone, hemisphere, easting, northing, datum, convergence, scale) {
-    if (!(this instanceof Utm)) { // allow instantiation without 'new'
-        return new Utm(zone, hemisphere, easting, northing, datum, convergence, scale);
-    }
-
-    if (datum === undefined) datum = LatLon.datum.WGS84; // default if not supplied
-    if (convergence === undefined) convergence = null;   // default if not supplied
-    if (scale === undefined) scale = null;               // default if not supplied
-
-    if (!(1<=zone && zone<=60)) throw new Error('Invalid UTM zone '+zone);
-    if (!hemisphere.match(/[NS]/i)) throw new Error('Invalid UTM hemisphere '+hemisphere);
-    // range-check easting/northing (with 40km overlap between zones) - is this worthwhile?
-    //if (!(120e3<=easting && easting<=880e3)) throw new Error('Invalid UTM easting '+ easting);
-    //if (!(0<=northing && northing<=10000e3)) throw new Error('Invalid UTM northing '+ northing);
-
-    this.zone = Number(zone);
-    this.hemisphere = hemisphere.toUpperCase();
-    this.easting = Number(easting);
-    this.northing = Number(northing);
-    this.datum = datum;
-    this.convergence = convergence===null ? null : Number(convergence);
-    this.scale = scale===null ? null : Number(scale);
-}*/
 
 
 /**
@@ -130,7 +91,7 @@ data class Utm(val zone: Int,
  *
  * @example
  *   var latlong = new LatLon(48.8582, 2.2945);
- *   var utmCoord = latlong.toUtm(); // utmCoord.toString(): '31 N 448252 5411933'
+ *   var utmCoord = toUtm(); // utmCoord.toString(): '31 N 448252 5411933'
  */
 
 fun LatLon.toUtm(): Utm {
@@ -248,11 +209,11 @@ fun LatLon.toUtm(): Utm {
 /**
  * Converts UTM zone/easting/northing coordinate to latitude/longitude
  *
- * @param   {Utm}    utmCoord - UTM coordinate to be converted to latitude/longitude.
- * @returns {LatLon} Latitude/longitude of supplied grid reference.
+ * @param   utmCoord - UTM coordinate to be converted to latitude/longitude.
+ * @returns Latitude/longitude of supplied grid reference.
  *
  * @example
- *   var grid = new Utm(31, 'N', 448251.795, 5411932.678);
+ *   var grid = Utm(31, 'N', 448251.795, 5411932.678);
  *   var latlong = grid.toLatLonE(); // latlong.toString(): 48°51′29.52″N, 002°17′40.20″E
  */
 
@@ -271,7 +232,7 @@ fun Utm.toLatLonE(datum: Datum = WGS84):LatLon {
     var k0 = 0.9996 // UTM scale on the central meridian
 
     x = x - Utm.falseEasting               // make x ± relative to central meridian
-    y = if (h==Hemisphere.SOUTH) y - Utm.falseNorthing else y // make y ± relative to equator
+    y = if (h== Hemisphere.SOUTH) y - Utm.falseNorthing else y // make y ± relative to equator
 
     // ---- from Karney 2011 Eq 15-22, 36:
 
@@ -367,15 +328,15 @@ fun Utm.toLatLonE(datum: Datum = WGS84):LatLon {
  *  - easting
  *  - northing.
  *
- * @param   {string} utmCoord - UTM coordinate (WGS 84).
- * @returns {Utm}
+ * @param   utmCoord - UTM coordinate (WGS 84).
+ * @returns
  * @throws  {Error}  Invalid UTM coordinate.
  *
  * @example
- *   var utmCoord = Utm.parse('31 N 448251 5411932');
+ *   val utmCoord = "31 N 448251 5411932".parseUtm()
  *   // utmCoord: {zone: 31, hemisphere: 'N', easting: 448251, northing: 5411932 }
  */
-fun String.parseUtm():Utm {
+fun String.parseUtm(): Utm {
     // match separate elements (separated by whitespace)
     val utmCoord = Regex("""\S+""").findAll(this.trim()).toList()
 

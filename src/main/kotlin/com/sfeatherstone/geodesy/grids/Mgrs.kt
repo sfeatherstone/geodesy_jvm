@@ -1,4 +1,8 @@
 import com.sfeatherstone.geodesy.LatLon
+import com.sfeatherstone.geodesy.grids.Hemisphere
+import com.sfeatherstone.geodesy.grids.Utm
+import com.sfeatherstone.geodesy.grids.toLatLonE
+import com.sfeatherstone.geodesy.grids.toUtm
 import com.sfeatherstone.geodesy.toFixed
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -8,42 +12,11 @@ import com.sfeatherstone.geodesy.toFixed
 /* www.movable-type.co.uk/scripts/latlong-utm-mgrs.html                                           */
 /* www.movable-type.co.uk/scripts/geodesy/docs/module-mgrs.html                                   */
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-/*
-
-'use strict';
-if (typeof module!='undefined' && module.exports) var Utm = require('./utm.js');                   // ≡ import Utm from 'utm.js'
-if (typeof module!='undefined' && module.exports) var LatLon = require('./latlon-ellipsoidal.js'); // ≡ import LatLon from 'latlon-ellipsoidal.js'
-*/
-
 
 /**
  * Convert between Universal Transverse Mercator (UTM) coordinates and Military Grid Reference
  * System (MGRS/NATO) grid references.
- *
- * @module   mgrs
- * @requires utm
- * @requires latlon-ellipsoidal
  */
-
-/* qv www.fgdc.gov/standards/projects/FGDC-standards-projects/usng/fgdc_std_011_2001_usng.pdf p10 */
-
-
-/*
- * Latitude bands C..X 8° each, covering 80°S to 84°N
- */
-//Mgrs.latBands = 'CDEFGHJKLMNPQRSTUVWXX'; // X is repeated for 80-84°N
-
-
-/*
- * 100km grid square column (‘e’) letters repeat every third zone
- */
-//Mgrs.e100kLetters = [ 'ABCDEFGH', 'JKLMNPQR', 'STUVWXYZ' ];
-
-
-/*
- * 100km grid square row (‘n’) letters repeat every other zone
- */
-//Mgrs.n100kLetters = [ 'ABCDEFGHJKLMNPQRSTUV', 'FGHJKLMNPQRSTUVABCDE' ];
 
 
 /**
@@ -62,26 +35,6 @@ if (typeof module!='undefined' && module.exports) var LatLon = require('./latlon
  * @example
  *   var mgrsRef = new Mgrs(31, 'U', 'D', 'Q', 48251, 11932); // 31U DQ 48251 11932
  */
-/*function Mgrs(zone, band, e100k, n100k, easting, northing, datum) {
-    // allow instantiation without 'new'
-    if (!(this instanceof Mgrs)) return new Mgrs(zone, band, e100k, n100k, easting, northing, datum);
-
-    if (datum === undefined) datum = LatLon.datum.WGS84; // default if not supplied
-
-    if (!(1<=zone && zone<=60)) throw new Error('Invalid MGRS grid reference (zone ‘'+zone+'’)');
-    if (band.length != 1) throw new Error('Invalid MGRS grid reference (band ‘'+band+'’)');
-    if (Mgrs.latBands.indexOf(band) == -1) throw new Error('Invalid MGRS grid reference (band ‘'+band+'’)');
-    if (e100k.length!=1) throw new Error('Invalid MGRS grid reference (e100k ‘'+e100k+'’)');
-    if (n100k.length!=1) throw new Error('Invalid MGRS grid reference (n100k ‘'+n100k+'’)');
-
-    this.zone = Number(zone);
-    this.band = band;
-    this.e100k = e100k;
-    this.n100k = n100k;
-    this.easting = Number(easting);
-    this.northing = Number(northing);
-    this.datum = datum;
-}*/
 
 data class Mgrs(val zone: Int, val band: Char, val e100k: Char, val n100k: Char, val easting: Double, val northing: Double) {
 /**
@@ -185,7 +138,7 @@ fun Utm.toMgrs(): Mgrs {
 /**
  * Converts MGRS grid reference to UTM coordinate.
  *
- * @returns {Utm}
+ * @returns
  *
  * @example
  *   var utmCoord = Mgrs.parse('31U DQ 448251 11932').toUtm(); // 31 N 448251 5411932
@@ -219,7 +172,7 @@ fun Mgrs.toUtm(): Utm {
     var n2M = 0.0; // northing of 2,000km block
     while (n2M + n100kNum + northing < nBand) n2M += 2000e3;
 
-    return Utm(zone, hemisphere, e100kNum+easting, n2M+n100kNum+northing);
+    return Utm(zone, hemisphere, e100kNum + easting, n2M + n100kNum + northing);
 };
 
 
