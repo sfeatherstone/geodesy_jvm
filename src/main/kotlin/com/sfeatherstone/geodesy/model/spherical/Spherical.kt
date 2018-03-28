@@ -1,4 +1,4 @@
-package com.sfeatherstone.geodesy.spherical
+package com.sfeatherstone.geodesy.model.spherical
 
 import com.sfeatherstone.geodesy.LatLon
 import com.sfeatherstone.geodesy.toDegrees
@@ -24,7 +24,7 @@ import kotlin.math.sign
  * @example
  *     var p1 = new LatLon(52.205, 0.119);
  *     var p2 = new LatLon(48.857, 2.351);
- *     var d = p1.com.sfeatherstone.geodesy.vectors.com.sfeatherstone.geodesy.vincenty.distanceTo(p2); // 404.3 km
+ *     var d = p1.distanceTo(p2); // 404.3 km
  */
 fun LatLon.distanceTo(point : LatLon, radius : Double = 6371e3):Double {
 
@@ -57,7 +57,7 @@ fun LatLon.distanceTo(point : LatLon, radius : Double = 6371e3):Double {
  * @example
  *     var p1 = new LatLon(52.205, 0.119);
  *     var p2 = new LatLon(48.857, 2.351);
- *     var b1 = p1.com.sfeatherstone.geodesy.vectors.bearingTo(p2); // 156.2°
+ *     var b1 = p1.bearingTo(p2); // 156.2°
  */
 fun LatLon.bearingTo(point : LatLon): Double {
 
@@ -86,11 +86,11 @@ fun LatLon.bearingTo(point : LatLon): Double {
  * @example
  *     var p1 = new LatLon(52.205, 0.119);
  *     var p2 = new LatLon(48.857, 2.351);
- *     var b2 = p1.com.sfeatherstone.geodesy.vincenty.finalBearingTo(p2); // 157.9°
+ *     var b2 = p1.finalBearingTo(p2); // 157.9°
  */
 fun LatLon.finalBearingTo(point: LatLon):Double {
     // get initial bearing from destination point to this point & reverse it by adding 180°
-    return ( point.bearingTo(this)+180 ) % 360
+    return ( point.bearingTo(this) +180 ) % 360
 }
 
 
@@ -103,7 +103,7 @@ fun LatLon.finalBearingTo(point: LatLon):Double {
  * @example
  *     var p1 = new LatLon(52.205, 0.119);
  *     var p2 = new LatLon(48.857, 2.351);
- *     var pMid = p1.com.sfeatherstone.geodesy.vectors.midpointTo(p2); // 50.5363°N, 001.2746°E
+ *     var pMid = p1.midpointTo(p2); // 50.5363°N, 001.2746°E
  */
 fun LatLon.midpointTo(point: LatLon): LatLon {
 
@@ -139,7 +139,7 @@ fun LatLon.midpointTo(point: LatLon): LatLon {
  * @example
  *   let p1 = new LatLon(52.205, 0.119);
  *   let p2 = new LatLon(48.857, 2.351);
- *   let pMid = p1.com.sfeatherstone.geodesy.vectors.intermediatePointTo(p2, 0.25); // 51.3721°N, 000.7073°E
+ *   let pMid = p1.intermediatePointTo(p2, 0.25); // 51.3721°N, 000.7073°E
  */
 fun LatLon.intermediatePointTo(point : LatLon, fraction: Double): LatLon {
     val φ1 = this.lat.toRadians()
@@ -186,7 +186,7 @@ fun LatLon.intermediatePointTo(point : LatLon, fraction: Double): LatLon {
  *
  * @example
  *     var p1 = new LatLon(51.4778, -0.0015);
- *     var p2 = p1.com.sfeatherstone.geodesy.vectors.com.sfeatherstone.geodesy.vincenty.destinationPoint(7794, 300.7); // 51.5135°N, 000.0983°W
+ *     var p2 = p1.destinationPoint(7794, 300.7); // 51.5135°N, 000.0983°W
  */
 fun LatLon.destinationPoint(distance: Double, bearing: Double, radius :Double = 6371e3): LatLon {
     // sinφ2 = sinφ1⋅cosδ + cosφ1⋅sinδ⋅cosθ
@@ -396,7 +396,7 @@ fun crossingParallels(point1: LatLon, point2: LatLon, latitude: Double): Pair<Do
  * @example
  *     var p1 = new LatLon(51.127, 1.338);
  *     var p2 = new LatLon(50.964, 1.853);
- *     var d = p1.com.sfeatherstone.geodesy.vectors.com.sfeatherstone.geodesy.vincenty.distanceTo(p2); // 40.31 km
+ *     var d = p1.distanceTo(p2); // 40.31 km
  */
 fun LatLon.rhumbDistanceTo(point: LatLon, radius: Double = 6371e3): Double {
     // see www.edwilliams.org/avform.htm#Rhumb
@@ -534,7 +534,7 @@ fun LatLon.rhumbMidpointTo(point: LatLon): LatLon {
  *
  * @example
  *   var polygon = [new LatLon(0,0), new LatLon(1,0), new LatLon(0,1)];
- *   var area = LatLon.com.sfeatherstone.geodesy.vectors.areaOf(polygon); // 6.18e9 m²
+ *   var area = areaOf(polygon); // 6.18e9 m²
  */
 fun areaOf(polygonInput: Array<LatLon>, radius: Double = 6371e3):Double {
     // uses method due to Karney: osgeo-org.1560.x6.nabble.com/Area-of-a-spherical-polygon-td3841625.html;
@@ -567,8 +567,8 @@ fun areaOf(polygonInput: Array<LatLon>, radius: Double = 6371e3):Double {
         var ΣΔ = 0.0
         var prevBrng = polygon[0].bearingTo(polygon[1])
         for (v in 0..polygon.size-2) {
-            val initBrng = polygon[v].bearingTo(polygon[v+1])
-            val finalBrng = polygon[v].finalBearingTo(polygon[v+1])
+            val initBrng = polygon[v].bearingTo(polygon[v + 1])
+            val finalBrng = polygon[v].finalBearingTo(polygon[v + 1])
             ΣΔ += (initBrng - prevBrng + 540.0) % 360.0 - 180.0
             ΣΔ += (finalBrng - initBrng + 540.0) % 360.0 - 180.0
             prevBrng = finalBrng

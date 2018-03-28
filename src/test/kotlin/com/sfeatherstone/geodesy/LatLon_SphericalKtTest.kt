@@ -1,6 +1,6 @@
 package com.sfeatherstone.geodesy
 
-import com.sfeatherstone.geodesy.spherical.*
+import com.sfeatherstone.geodesy.model.spherical.*
 import org.junit.Test
 
 import org.junit.Assert.*

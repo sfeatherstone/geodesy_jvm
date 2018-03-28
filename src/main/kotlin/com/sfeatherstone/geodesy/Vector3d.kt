@@ -1,6 +1,5 @@
-package com.sfeatherstone.geodesy.vectors
+package com.sfeatherstone.geodesy
 
-import com.sfeatherstone.geodesy.*
 import kotlin.math.sign
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */

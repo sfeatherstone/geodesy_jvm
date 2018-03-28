@@ -1,6 +1,6 @@
 package com.sfeatherstone.geodesy
 
-import com.sfeatherstone.geodesy.ellipsoidal.convertDatum
+import com.sfeatherstone.geodesy.model.ellipsoidal.convertDatum
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

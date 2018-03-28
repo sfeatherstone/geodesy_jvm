@@ -1,7 +1,7 @@
 @file:JvmName("OsGridRefUtil")
 package com.sfeatherstone.geodesy
 
-import com.sfeatherstone.geodesy.ellipsoidal.convertDatum
+import com.sfeatherstone.geodesy.model.ellipsoidal.convertDatum
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /* Ordnance Survey Grid Reference functions                           (c) Chris Veness 2005-2017  */
