@@ -1,3 +1,4 @@
+@file:JvmName("Conversion")
 package com.sfeatherstone.geodesy
 import kotlin.math.roundToInt
 

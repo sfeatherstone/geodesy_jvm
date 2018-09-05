@@ -1,3 +1,4 @@
+@file:JvmName("Mgrs")
 import com.sfeatherstone.geodesy.LatLon
 import com.sfeatherstone.geodesy.grids.Hemisphere
 import com.sfeatherstone.geodesy.grids.Utm
@@ -62,8 +63,8 @@ data class Mgrs(val zone: Int, val band: Char, val e100k: Char, val n100k: Char,
 
     // truncate to required precision
         val truncationValue = Math.pow(10.0, (5-digits/2).toDouble())
-        var eRounded = Math.floor(this.easting/truncationValue).toInt()
-        var nRounded = Math.floor(this.northing/truncationValue).toInt()
+        val eRounded = Math.floor(this.easting/truncationValue).toInt()
+        val nRounded = Math.floor(this.northing/truncationValue).toInt()
 
 
         val subFormat = "%0${digits/2}d"
@@ -77,19 +78,19 @@ data class Mgrs(val zone: Int, val band: Char, val e100k: Char, val n100k: Char,
          /*
          * Latitude bands C..X 8° each, covering 80°S to 84°N
          */
-        const val latBands = "CDEFGHJKLMNPQRSTUVWXX" // X is repeated for 80-84°N
+        internal const val latBands = "CDEFGHJKLMNPQRSTUVWXX" // X is repeated for 80-84°N
 
 
         /*
          * 100km grid square column (‘e’) letters repeat every third zone
          */
-        val e100kLetters = arrayOf("ABCDEFGH", "JKLMNPQR", "STUVWXYZ")
+        internal val e100kLetters = arrayOf("ABCDEFGH", "JKLMNPQR", "STUVWXYZ")
 
 
         /*
          * 100km grid square row (‘n’) letters repeat every other zone
          */
-        val n100kLetters = arrayOf("ABCDEFGHJKLMNPQRSTUV", "FGHJKLMNPQRSTUVABCDE")
+        internal val n100kLetters = arrayOf("ABCDEFGHJKLMNPQRSTUV", "FGHJKLMNPQRSTUVABCDE")
 
     }
 }
@@ -108,20 +109,20 @@ fun Utm.toMgrs(): Mgrs {
     if (this.easting.isNaN() || this.northing.isNaN()) throw Exception("Invalid UTM coordinate ‘"+this.toString()+"’")
 
     // MGRS zone is same as UTM zone
-    var zone = this.zone
+    val zone = this.zone
 
     // convert UTM to lat/long to get latitude to determine band
-    var latlong = this.toLatLonE()
+    val latlong = this.toLatLonE()
     // grid zones are 8° tall, 0°N is 10th band
-    var band = Mgrs.latBands[Math.floor(latlong.lat/8+10).toInt()] // latitude band
+    val band = Mgrs.latBands[Math.floor(latlong.lat/8+10).toInt()] // latitude band
 
     // columns in zone 1 are A-H, zone 2 J-R, zone 3 S-Z, then repeating every 3rd zone
-    var col = Math.floor(this.easting / 100e3).toInt()
-    var e100k = Mgrs.e100kLetters[(zone-1)%3][col-1] // col-1 since 1*100e3 -> A (index 0), 2*100e3 -> B (index 1), etc.
+    val col = Math.floor(this.easting / 100e3).toInt()
+    val e100k = Mgrs.e100kLetters[(zone-1)%3][col-1] // col-1 since 1*100e3 -> A (index 0), 2*100e3 -> B (index 1), etc.
 
     // rows in even zones are A-V, in odd zones are F-E
-    var row = Math.floor(this.northing / 100e3).toInt() % 20
-    var n100k = Mgrs.n100kLetters[(zone-1)%2][row]
+    val row = Math.floor(this.northing / 100e3).toInt() % 20
+    val n100k = Mgrs.n100kLetters[(zone-1)%2][row]
 
     // truncate easting/northing to within 100km grid square
     var easting = this.easting % 100e3
@@ -144,29 +145,29 @@ fun Utm.toMgrs(): Mgrs {
  *   var utmCoord = Mgrs.parse('31U DQ 448251 11932').toUtm(); // 31 N 448251 5411932
  */
 fun Mgrs.toUtm(): Utm {
-    var zone = this.zone
-    var band = this.band
-    var e100k = this.e100k
-    var n100k = this.n100k
-    var easting = this.easting
-    var northing = this.northing
+    val zone = this.zone
+    val band = this.band
+    val e100k = this.e100k
+    val n100k = this.n100k
+    val easting = this.easting
+    val northing = this.northing
 
-    var hemisphere = if (band>='N') Hemisphere.NORTH else Hemisphere.SOUTH
+    val hemisphere = if (band>='N') Hemisphere.NORTH else Hemisphere.SOUTH
 
     // get easting specified by e100k
-    var col = Mgrs.e100kLetters[(zone-1)%3].indexOf(e100k) + 1 // index+1 since A (index 0) -> 1*100e3, B (index 1) -> 2*100e3, etc.
-    var e100kNum = col * 100e3 // e100k in metres
+    val col = Mgrs.e100kLetters[(zone-1)%3].indexOf(e100k) + 1 // index+1 since A (index 0) -> 1*100e3, B (index 1) -> 2*100e3, etc.
+    val e100kNum = col * 100e3 // e100k in metres
 
     // get northing specified by n100k
-    var row = Mgrs.n100kLetters[(zone-1)%2].indexOf(n100k)
-    var n100kNum = row * 100e3 // n100k in metres
+    val row = Mgrs.n100kLetters[(zone-1)%2].indexOf(n100k)
+    val n100kNum = row * 100e3 // n100k in metres
 
     // get latitude of (bottom of) band
-    var latBand = (Mgrs.latBands.indexOf(band)-10.0)*8.0
+    val latBand = (Mgrs.latBands.indexOf(band)-10.0)*8.0
 
     // northing of bottom of band, extended to include entirety of bottommost 100km square
     // (100km square boundaries are aligned with 100km UTM northing intervals)
-    var nBand = Math.floor(LatLon(latBand, 0.0).toUtm().northing/100e3)*100e3
+    val nBand = Math.floor(LatLon(latBand, 0.0).toUtm().northing/100e3)*100e3
     // 100km grid square row letters repeat every 2,000km north; add enough 2,000km blocks to get
     // into required band
     var n2M = 0.0 // northing of 2,000km block
@@ -194,7 +195,8 @@ fun Mgrs.toUtm(): Utm {
  *   var mgrsRef = Mgrs.parse('31UDQ4825111932');
  *   //  mgrsRef: { zone:31, band:'U', e100k:'D', n100k:'Q', easting:48251, northing:11932 }
  */
-fun String.parseMgsr(): Mgrs?{
+@JvmName("parse")
+fun String.parseToMgsr(): Mgrs?{
 
     try {
         var str = this.trim().toUpperCase()
@@ -219,14 +221,14 @@ fun String.parseMgsr(): Mgrs?{
         if (mgrsGridRef.size != 4) throw Exception("Invalid MGRS grid reference ‘" + mgrsGridRef + "’")
 
         // split gzd into zone/band
-        var gzd = mgrsGridRef[0].value
-        var zone = gzd.substring(0..1).toInt()
-        var band = gzd[2]
+        val gzd = mgrsGridRef[0].value
+        val zone = gzd.substring(0..1).toInt()
+        val band = gzd[2]
 
         // split 100km letter-pair into e/n
-        var en100k = mgrsGridRef[1].value
-        var e100k = en100k[0]
-        var n100k = en100k[1]
+        val en100k = mgrsGridRef[1].value
+        val e100k = en100k[0]
+        val n100k = en100k[1]
 
         fun trimLeadingZerosAndStandardiseTo10digit(input:String): Double {
             val trimmed = input.trim()

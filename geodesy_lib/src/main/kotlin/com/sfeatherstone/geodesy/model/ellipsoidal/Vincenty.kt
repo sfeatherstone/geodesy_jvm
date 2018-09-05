@@ -1,3 +1,4 @@
+@file:JvmName("Vincenty")
 package com.sfeatherstone.geodesy.model.ellipsoidal
 
 import com.sfeatherstone.geodesy.*
@@ -16,23 +17,24 @@ import com.sfeatherstone.geodesy.*
 
 
 /**
- * Returns the distance between ‘this’ point and destination point along a geodesic, using Vincenty
+ * Returns the distance between ‘this’ destination and destination destination along a geodesic, using Vincenty
  * com.sfeatherstone.geodesy.model.ellipsoidal.inverse solution.
  *
- * Note: the datum used is of ‘this’ point; distance is on the surface of the ellipsoid (height is
+ * Note: the datum used is of ‘this’ destination; distance is on the surface of the ellipsoid (height is
  * ignored).
  *
- * @param   {LatLon} point - Latitude/longitude of destination point.
- * @returns (Number} Distance in metres between points or NaN if failed to converge.
+ * @param    destination - Latitude/longitude of destination destination.
+ * @returns  Distance in metres between points or NaN if failed to converge.
  *
  * @example
- *   var p1 = new LatLon(50.06632, -5.71475);
- *   var p2 = new LatLon(58.64402, -3.07009);
- *   var d = p1.com.sfeatherstone.geodesy.vectors.com.sfeatherstone.geodesy.model.ellipsoidal.distanceTo(p2); // 969,954.166 m
+ *   var p1 = LatLon(50.06632, -5.71475);
+ *   var p2 = LatLon(58.64402, -3.07009);
+ *   var d = p1.distanceTo(p2); // 969,954.166 m
  */
-fun LatLon.distanceTo(point: LatLon) : Double {
+@JvmName("distance")
+fun LatLon.distanceTo(destination: LatLon) : Double {
     try {
-        return this.inverse(point).distance.toFixed(3) // round to 1mm precision
+        return this.inverse(destination).distance.toFixed(3) // round to 1mm precision
     } catch (e: Exception) {
         return java.lang.Double.NaN // failed to converge
     }
@@ -45,8 +47,8 @@ fun LatLon.distanceTo(point: LatLon) : Double {
  *
  * Note: the datum used is of ‘this’ point.
  *
- * @param   {LatLon} point - Latitude/longitude of destination point.
- * @returns {number}  initial Bearing in degrees from north (0°..360°) or NaN if failed to converge.
+ * @param   point - Latitude/longitude of destination point.
+ * @returns initial Bearing in degrees from north (0°..360°) or NaN if failed to converge.
  *
  * @example
  *   var p1 = new LatLon(50.06632, -5.71475);

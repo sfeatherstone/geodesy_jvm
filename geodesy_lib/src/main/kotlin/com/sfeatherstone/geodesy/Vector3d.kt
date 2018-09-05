@@ -258,6 +258,4 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
     fun toString(precision : Int) ="[${this.x.format(precision)},${this.y.format(precision)},${this.z.format(precision)}]"
 
     override fun toString() = toString(3)
-
-
 }

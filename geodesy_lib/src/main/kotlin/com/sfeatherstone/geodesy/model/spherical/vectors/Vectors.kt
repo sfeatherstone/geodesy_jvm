@@ -1,3 +1,4 @@
+@file:JvmName("Vectors")
 package com.sfeatherstone.geodesy.model.spherical.vectors
 
 import com.sfeatherstone.geodesy.LatLon
@@ -124,15 +125,17 @@ fun Vector3d.greatCircle(bearing : Double): Vector3d {
 /**
  * Returns the distance from ‘this’ point to the specified point.
  *
- * @param   {LatLon} point - Latitude/longitude of destination point.
- * @param   {number} [radius=6371e3] - (Mean) radius of earth (defaults to radius in metres).
- * @returns {number} Distance between this point and destination point, in same units as radius.
+ * @param   point - Latitude/longitude of destination point.
+ * @param   radius=6371e3 - (Mean) radius of earth (defaults to radius in metres).
+ * @returns Distance between this point and destination point, in same units as radius.
  *
  * @example
  *   var p1 = new LatLon(52.205, 0.119);
  *   var p2 = new LatLon(48.857, 2.351);
  *   var d = p1.com.sfeatherstone.geodesy.vectors.com.sfeatherstone.geodesy.model.ellipsoidal.distanceTo(p2); // 404.3 km
  */
+@JvmOverloads
+@JvmName("distance")
 fun LatLon.distanceTo(point: LatLon, radius: Double = 6371e3):Double {
     val p1 = this.toVector()
     val p2 = point.toVector()

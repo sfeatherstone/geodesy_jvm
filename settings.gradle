@@ -1,2 +1,4 @@
+include ':samples'
+include ':geodesy_lib'
 //rootProject.buildFileName = 'build.gradle.kts'
-rootProject.name = "geodesy_lib"
+//rootProject.name = "geodesy_lib"

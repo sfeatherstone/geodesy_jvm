@@ -33,7 +33,8 @@ package com.sfeatherstone.geodesy
  * @example
  *     val p1 = new LatLon(51.4778, -0.0016);
  */
-data class LatLon(val lat: Double, val lon :Double, val datum : Datum = WGS84, val convergence: Double? = null, val scale:Double? = null) {
+
+data class LatLon @JvmOverloads constructor(val lat: Double, val lon :Double, val datum : Datum = WGS84, val convergence: Double? = null, val scale:Double? = null) {
 
     override fun toString() = toString("dms", 0)
     /**
@@ -44,29 +45,11 @@ data class LatLon(val lat: Double, val lon :Double, val datum : Datum = WGS84, v
      * @param   dp=0|2|4 - Number of decimal places to use - default 0 for dms, 2 for dm, 4 for d.
      * @returns Comma-separated latitude/longitude.
      */
+    @JvmOverloads
     fun toString(format: String, dp: Int? = null) : String
     {
         return "${this.lat.toLatitude(format, dp)}, ${this.lon.toLongitude(format, dp)}"
     }
-
-    /**
-     * Checks if another point is equal to ‘this’ point.
-     *
-     * @param   {LatLon} point - Point to be compared against this point.
-     * @returns {bool}    True if points are identical.
-     *
-     * @example
-     *   var p1 = new LatLon(52.205, 0.119);
-     *   var p2 = new LatLon(52.205, 0.119);
-     *   var equal = p1.equals(p2); // true
-     */
-/*    override fun equals(obj: Any?): Boolean {
-        if (obj === this) return true
-        if (obj !is LatLon) return false
-        return obj.lat == lat && obj.lon == lon
-    }*/
-
-
 }
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 

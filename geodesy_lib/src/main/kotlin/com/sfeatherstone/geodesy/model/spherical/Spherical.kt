@@ -1,3 +1,4 @@
+@file:JvmName("Spherical")
 package com.sfeatherstone.geodesy.model.spherical
 
 import com.sfeatherstone.geodesy.LatLon
@@ -26,6 +27,8 @@ import kotlin.math.sign
  *     var p2 = new LatLon(48.857, 2.351);
  *     var d = p1.distanceTo(p2); // 404.3 km
  */
+@JvmOverloads
+@JvmName("distance")
 fun LatLon.distanceTo(point : LatLon, radius : Double = 6371e3):Double {
 
     // a = sin²(Δφ/2) + cos(φ1)⋅cos(φ2)⋅sin²(Δλ/2)
