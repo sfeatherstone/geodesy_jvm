@@ -4,7 +4,7 @@ import com.sfeatherstone.geodesy.LatLon
 import org.junit.Test
 
 import org.junit.Assert.*
-import parseMgsr
+import parseToMgsr
 import toMgrs
 import toUtm
 
@@ -50,19 +50,19 @@ class UtmKtTest {
         assertEquals("UTM->MGRS bergen",           "32V KN 97508 00645", "32 N 297508.410 6700645.296".parseUtm().toMgrs().toString())
 
         // MGRS -> UTM
-        assertEquals("MGRS->UTM 0,0",              "31 N 166021 0", "31N AA 66021 00000".parseMgsr()?.toUtm().toString())
-        assertEquals("MGRS->UTM 1,1",              "31 N 277438 110597","31N BB 77438 10597".parseMgsr()?.toUtm().toString())
-        assertEquals("MGRS->UTM -1,-1",           "30 S 722561 9889402", "30M YD 22561 89402".parseMgsr()?.toUtm().toString())
-        assertEquals("MGRS->UTM eiffel tower",    "31 N 448251 5411943", "31U DQ 48251 11943".parseMgsr()?.toUtm().toString())
-        assertEquals("MGRS->UTM sidney o/h",      "56 S 334873 6252266", "56H LH 34873 52266".parseMgsr()?.toUtm().toString())
-        assertEquals("MGRS->UTM white house",     "18 N 323394 4307395", "18S UJ 23394 07395".parseMgsr()?.toUtm().toString())
-        assertEquals("MGRS->UTM rio christ",      "23 S 683466 7460687", "23K PQ 83466 60687".parseMgsr()?.toUtm().toString())
-        assertEquals("MGRS->UTM bergen",          "32 N 297508 6700645", "32V KN 97508 00645".parseMgsr()?.toUtm().toString())
+        assertEquals("MGRS->UTM 0,0",              "31 N 166021 0", "31N AA 66021 00000".parseToMgsr()?.toUtm().toString())
+        assertEquals("MGRS->UTM 1,1",              "31 N 277438 110597","31N BB 77438 10597".parseToMgsr()?.toUtm().toString())
+        assertEquals("MGRS->UTM -1,-1",           "30 S 722561 9889402", "30M YD 22561 89402".parseToMgsr()?.toUtm().toString())
+        assertEquals("MGRS->UTM eiffel tower",    "31 N 448251 5411943", "31U DQ 48251 11943".parseToMgsr()?.toUtm().toString())
+        assertEquals("MGRS->UTM sidney o/h",      "56 S 334873 6252266", "56H LH 34873 52266".parseToMgsr()?.toUtm().toString())
+        assertEquals("MGRS->UTM white house",     "18 N 323394 4307395", "18S UJ 23394 07395".parseToMgsr()?.toUtm().toString())
+        assertEquals("MGRS->UTM rio christ",      "23 S 683466 7460687", "23K PQ 83466 60687".parseToMgsr()?.toUtm().toString())
+        assertEquals("MGRS->UTM bergen",          "32 N 297508 6700645", "32V KN 97508 00645".parseToMgsr()?.toUtm().toString())
         // forgiving parsing of 100km squares spanning bands
-        assertEquals("MGRS->UTM 01P ≡ UTM 01Q",   "01 N 500000 1768935", "01P ET 00000 68935".parseMgsr()?.toUtm().toString())
-        assertEquals("MGRS->UTM 01Q ≡ UTM 01P",   "01 N 500000 1768935", "01Q ET 00000 68935".parseMgsr()?.toUtm().toString())
+        assertEquals("MGRS->UTM 01P ≡ UTM 01Q",   "01 N 500000 1768935", "01P ET 00000 68935".parseToMgsr()?.toUtm().toString())
+        assertEquals("MGRS->UTM 01Q ≡ UTM 01P",   "01 N 500000 1768935", "01Q ET 00000 68935".parseToMgsr()?.toUtm().toString())
         // military style
-        assertEquals("MGRS->UTM 0,0 military",     "31 N 166021 0", "31NAA6602100000".parseMgsr()?.toUtm().toString())
+        assertEquals("MGRS->UTM 0,0 military",     "31 N 166021 0", "31NAA6602100000".parseToMgsr()?.toUtm().toString())
 
         // https://www.ibm.com/developerworks/library/j-coordconvert/#listing7 (note UTM/MGRS confusion; UTM is rounded, MGRS is truncated; UPS not included)
         assertEquals("IBM #01 UTM->LL",            "00.0000°N, 000.0000°W","31 N 166021 0".parseUtm().toLatLonE().toString("d"))
@@ -85,11 +85,11 @@ class UtmKtTest {
         assertEquals("IBM #10 LL->MGRS",           "57X VF 50793 86116", LatLon(77.3450, 156.9876).toUtm().toMgrs().toString())
 
         // varying resolution
-        assertEquals("MGRS 4-digit -> UTM",        "12 N 252000 3786000", "12S TC 52 86".parseMgsr()?.toUtm().toString())
-        assertEquals("MGRS 10-digit -> UTM",       "12 N 252000 3786000", "12S TC 52000 86000".parseMgsr()?.toUtm().toString())
-        assertEquals("MGRS 10-digit+decimals",     "12 N 252000.123 3786000.123", "12S TC 52000.123 86000.123".parseMgsr()?.toUtm()?.toString(3))
-        assertEquals("MGRS truncate",              "12S TC 529 869", "12S TC 52999.999 86999.999".parseMgsr()?.toString(6))
-        assertEquals("MGRS-UTM round",             "12 N 253000 3787000", "12S TC 52999.999 86999.999".parseMgsr()?.toUtm().toString())
+        assertEquals("MGRS 4-digit -> UTM",        "12 N 252000 3786000", "12S TC 52 86".parseToMgsr()?.toUtm().toString())
+        assertEquals("MGRS 10-digit -> UTM",       "12 N 252000 3786000", "12S TC 52000 86000".parseToMgsr()?.toUtm().toString())
+        assertEquals("MGRS 10-digit+decimals",     "12 N 252000.123 3786000.123", "12S TC 52000.123 86000.123".parseToMgsr()?.toUtm()?.toString(3))
+        assertEquals("MGRS truncate",              "12S TC 529 869", "12S TC 52999.999 86999.999".parseToMgsr()?.toString(6))
+        assertEquals("MGRS-UTM round",             "12 N 253000 3787000", "12S TC 52999.999 86999.999".parseToMgsr()?.toUtm().toString())
 
     }
 }

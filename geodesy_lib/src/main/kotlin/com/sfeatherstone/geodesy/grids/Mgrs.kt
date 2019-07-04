@@ -1,10 +1,12 @@
-@file:JvmName("Mgrs")
+//@file:JvmName("Mgrs")
 import com.sfeatherstone.geodesy.LatLon
 import com.sfeatherstone.geodesy.grids.Hemisphere
 import com.sfeatherstone.geodesy.grids.Utm
 import com.sfeatherstone.geodesy.grids.toLatLonE
 import com.sfeatherstone.geodesy.grids.toUtm
 import com.sfeatherstone.geodesy.toFixed
+import kotlin.math.floor
+import kotlin.math.pow
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /*  MGRS / UTM Conversion Functions                                   (c) Chris Veness 2014-2016  */
@@ -59,12 +61,12 @@ data class Mgrs(val zone: Int, val band: Char, val e100k: Char, val n100k: Char,
 
     fun toString(digits: Int) :String{
     //    digits = (digits === undefined) ? 10 : Number(digits);
-        if (arrayOf( 2,4,6,8,10 ).indexOf(digits) == -1) throw Exception("Invalid precision ‘"+digits.toString()+"’")
+        if (arrayOf( 2,4,6,8,10 ).indexOf(digits) == -1) throw Exception("Invalid precision ‘$digits’")
 
     // truncate to required precision
-        val truncationValue = Math.pow(10.0, (5-digits/2).toDouble())
-        val eRounded = Math.floor(this.easting/truncationValue).toInt()
-        val nRounded = Math.floor(this.northing/truncationValue).toInt()
+        val truncationValue = 10.0.pow((5 - digits / 2).toDouble())
+        val eRounded = floor(this.easting/truncationValue).toInt()
+        val nRounded = floor(this.northing/truncationValue).toInt()
 
 
         val subFormat = "%0${digits/2}d"
@@ -106,7 +108,7 @@ data class Mgrs(val zone: Int, val band: Char, val e100k: Char, val n100k: Char,
  *   var mgrsRef = utmCoord.toMgrs(); // 31U DQ 48251 11932
  */
 fun Utm.toMgrs(): Mgrs {
-    if (this.easting.isNaN() || this.northing.isNaN()) throw Exception("Invalid UTM coordinate ‘"+this.toString()+"’")
+    if (this.easting.isNaN() || this.northing.isNaN()) throw Exception("Invalid UTM coordinate ‘$this’")
 
     // MGRS zone is same as UTM zone
     val zone = this.zone
@@ -114,14 +116,14 @@ fun Utm.toMgrs(): Mgrs {
     // convert UTM to lat/long to get latitude to determine band
     val latlong = this.toLatLonE()
     // grid zones are 8° tall, 0°N is 10th band
-    val band = Mgrs.latBands[Math.floor(latlong.lat/8+10).toInt()] // latitude band
+    val band = Mgrs.latBands[floor(latlong.lat/8+10).toInt()] // latitude band
 
     // columns in zone 1 are A-H, zone 2 J-R, zone 3 S-Z, then repeating every 3rd zone
-    val col = Math.floor(this.easting / 100e3).toInt()
+    val col = floor(this.easting / 100e3).toInt()
     val e100k = Mgrs.e100kLetters[(zone-1)%3][col-1] // col-1 since 1*100e3 -> A (index 0), 2*100e3 -> B (index 1), etc.
 
     // rows in even zones are A-V, in odd zones are F-E
-    val row = Math.floor(this.northing / 100e3).toInt() % 20
+    val row = floor(this.northing / 100e3).toInt() % 20
     val n100k = Mgrs.n100kLetters[(zone-1)%2][row]
 
     // truncate easting/northing to within 100km grid square
@@ -167,7 +169,7 @@ fun Mgrs.toUtm(): Utm {
 
     // northing of bottom of band, extended to include entirety of bottommost 100km square
     // (100km square boundaries are aligned with 100km UTM northing intervals)
-    val nBand = Math.floor(LatLon(latBand, 0.0).toUtm().northing/100e3)*100e3
+    val nBand = floor(LatLon(latBand, 0.0).toUtm().northing/100e3) *100e3
     // 100km grid square row letters repeat every 2,000km north; add enough 2,000km blocks to get
     // into required band
     var n2M = 0.0 // northing of 2,000km block
@@ -204,7 +206,7 @@ fun String.parseToMgsr(): Mgrs?{
         // check for military-style grid reference with no separators
         if (!Regex("\\s").containsMatchIn(str)) {
             val en = str.substring(5) // get easting/northing following zone/band/100ksq
-            val newStr = str.substring(0..2) + " " + str.substring(3..4) + " " + en.substring(0..(en.length / 2)-1) + " " + en.substring(en.length / 2) // separate easting/northing
+            val newStr = str.substring(0..2) + " " + str.substring(3..4) + " " + en.substring(0 until (en.length / 2)) + " " + en.substring(en.length / 2) // separate easting/northing
 
             //en = en.slice(0, en.length/2)+' '+en.slice(-en.length/2); // separate easting/northing
             //mgrsGridRef = mgrsGridRef.slice(0, 3)+' '+mgrsGridRef.slice(3, 5)+' '+en; // insert spaces
@@ -214,11 +216,11 @@ fun String.parseToMgsr(): Mgrs?{
         // match separate elements (separated by whitespace)
         val mgrsGridRef = Regex("""\S+""").findAll(str).toList()
 
-        if (mgrsGridRef.size != 4) throw Exception("Invalid UTM coordinate ‘" + this + "’")
+        if (mgrsGridRef.size != 4) throw Exception("Invalid UTM coordinate ‘$this’")
 
         //mgrsGridRef = mgrsGridRef.match("""\S+/g""");
 
-        if (mgrsGridRef.size != 4) throw Exception("Invalid MGRS grid reference ‘" + mgrsGridRef + "’")
+        if (mgrsGridRef.size != 4) throw Exception("Invalid MGRS grid reference ‘$mgrsGridRef’")
 
         // split gzd into zone/band
         val gzd = mgrsGridRef[0].value
@@ -234,7 +236,7 @@ fun String.parseToMgsr(): Mgrs?{
             val trimmed = input.trim()
             val standardised = if (trimmed.length>=5) trimmed else (trimmed + "00000").substring(0..4)
             val zeroTrimmed = standardised.trimStart('0')
-            return if (zeroTrimmed.length == 0) standardised.substring(0..1).toDouble() else zeroTrimmed.toDouble()
+            return if (zeroTrimmed.isEmpty()) standardised.substring(0..1).toDouble() else zeroTrimmed.toDouble()
         }
 
         return Mgrs(zone, band, e100k, n100k,

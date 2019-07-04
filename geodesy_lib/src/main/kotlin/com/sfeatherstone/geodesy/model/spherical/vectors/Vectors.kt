@@ -6,6 +6,7 @@ import com.sfeatherstone.geodesy.toDegrees
 import com.sfeatherstone.geodesy.toRadians
 import com.sfeatherstone.geodesy.Vector3d
 import java.util.*
+import kotlin.math.*
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /*  Vector-based spherical geodetic (latitude/longitude) functions    (c) Chris Veness 2011-2017  */
@@ -45,9 +46,9 @@ fun LatLon.toVector(): Vector3d {
     val λ = lon.toRadians()
 
     // right-handed vector: x -> 0°E,0°N; y -> 90°E,0°N, z -> 90°N
-    val x = Math.cos(φ) * Math.cos(λ)
-    val y = Math.cos(φ) * Math.sin(λ)
-    val z = Math.sin(φ)
+    val x = cos(φ) * cos(λ)
+    val y = cos(φ) * sin(λ)
+    val z = sin(φ)
 
     return Vector3d(x, y, z)
 }
@@ -63,8 +64,8 @@ fun LatLon.toVector(): Vector3d {
  *   var p = v.com.sfeatherstone.geodesy.model.spherical.vectors.toLatLonS(); // 45.0°N, 45.0°E
  */
 fun Vector3d.toLatLonS(): LatLon {
-    val φ = Math.atan2(this.z, Math.sqrt(this.x*this.x + this.y*this.y))
-    val λ = Math.atan2(this.y, this.x)
+    val φ = atan2(this.z, sqrt(this.x*this.x + this.y*this.y))
+    val λ = atan2(this.y, this.x)
 
     return LatLon(φ.toDegrees(), λ.toDegrees())
 }
@@ -87,9 +88,9 @@ fun LatLon.greatCircle(bearing: Double): Vector3d {
     val λ = this.lon.toRadians()
     val θ = bearing.toRadians()
 
-    val x =  Math.sin(λ) * Math.cos(θ) - Math.sin(φ) * Math.cos(λ) * Math.sin(θ)
-    val y = -Math.cos(λ) * Math.cos(θ) - Math.sin(φ) * Math.sin(λ) * Math.sin(θ)
-    val z =  Math.cos(φ) * Math.sin(θ)
+    val x =  sin(λ) * cos(θ) - sin(φ) * cos(λ) * sin(θ)
+    val y = -cos(λ) * cos(θ) - sin(φ) * sin(λ) * sin(θ)
+    val z =  cos(φ) * sin(θ)
 
     return Vector3d(x, y, z)
 }
@@ -114,8 +115,8 @@ fun Vector3d.greatCircle(bearing : Double): Vector3d {
     val N = Vector3d(0.0, 0.0, 1.0)
     val e = N.cross(this) // easting
     val n = this.cross(e) // northing
-    val eʹ = e.times(Math.cos(θ)/e.length)
-    val nʹ = n.times(Math.sin(θ)/n.length)
+    val eʹ = e.times(cos(θ) /e.length)
+    val nʹ = n.times(sin(θ) /n.length)
     val c = nʹ.minus(eʹ)
 
     return c
@@ -214,12 +215,12 @@ fun LatLon.intermediatePointTo(point: LatLon, fraction: Double): LatLon {
     val n2 = point.toVector()
     val sinθ = n1.cross(n2).length
     val cosθ = n1.dot(n2)
-    val δ = Math.atan2(sinθ, cosθ)
+    val δ = atan2(sinθ, cosθ)
 
     // interpolated angular distance on straight line between points
     val δi = δ * fraction
-    val sinδi = Math.sin(δi)
-    val cosδi = Math.cos(δi)
+    val sinδi = sin(δi)
+    val cosδi = cos(δi)
 
     // direction vector (perpendicular to n1 in plane of n2)
     val d = n1.cross(n2).unit().cross(n1) // unit(n₁×n₂) × n₁
@@ -278,13 +279,13 @@ fun LatLon.destinationPoint(distance: Double, bearing: Double, radius: Double = 
     val de = N.cross(n1).unit()   // east direction vector @ n1
     val dn = n1.cross(de)         // north direction vector @ n1
 
-    val deSinθ = de.times(Math.sin(θ))
-    val dnCosθ = dn.times(Math.cos(θ))
+    val deSinθ = de.times(sin(θ))
+    val dnCosθ = dn.times(cos(θ))
 
     val d = dnCosθ.plus(deSinθ)   // direction vector @ n1 (≡ C×n1; C = great circle)
 
-    val x = n1.times(Math.cos(δ)) // component of n2 parallel to n1
-    val y = d.times(Math.sin(δ))  // component of n2 perpendicular to n1
+    val x = n1.times(cos(δ)) // component of n2 parallel to n1
+    val y = d.times(sin(δ))  // component of n2 perpendicular to n1
 
     val n2 = x.plus(y)
 
@@ -563,7 +564,7 @@ fun LatLon.enclosedBy(polygon_: Array<LatLon>): Boolean {
         prevValue = value
     }
 
-    val enclosed = Math.abs(Σθ) > Math.PI
+    val enclosed = abs(Σθ) > Math.PI
 
     return enclosed
 }
@@ -612,7 +613,7 @@ fun areaOf(polygon_: Array<LatLon>, radius: Double = 6371e3):Double {
         prevValue = value
     }
 
-    val Σθ = n*Math.PI - Math.abs(Σα)
+    val Σθ = n*Math.PI - abs(Σα)
 
     val E = (Σθ - (n-2)*Math.PI) // spherical excess (in steradians)
     val A = E * radius*radius              // area in units of R²

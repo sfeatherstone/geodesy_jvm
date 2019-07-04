@@ -1,6 +1,6 @@
 package com.sfeatherstone.geodesy
 
-import kotlin.math.sign
+import kotlin.math.*
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /* Vector handling functions                                          (c) Chris Veness 2011-2016  */
@@ -105,7 +105,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      *
      * @returns {Vector3d} Negated vector.
      */
-    val negate by lazy({ Vector3d(-this.x, -this.y, -this.z) })
+    val negate by lazy { Vector3d(-this.x, -this.y, -this.z) }
 
 
     /**
@@ -113,7 +113,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
      *
      * @returns {number} Magnitude of this vector.
      */
-    var length : Double = Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z)
+    var length : Double = sqrt(this.x * this.x + this.y * this.y + this.z * this.z)
 
 
     /**
@@ -148,7 +148,7 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
         val sinθ = this.cross(v).length * sign
         val cosθ = this.dot(v)
 
-        return Math.atan2(sinθ, cosθ)
+        return atan2(sinθ, cosθ)
     }
 
 
@@ -166,8 +166,8 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
         val p1 = this.unit()
         val p = arrayOf(p1.x, p1.y, p1.z) // the point being rotated
         val a = axis.unit()          // the axis being rotated around
-        val s = Math.sin(thetaRadians)
-        val c = Math.cos(thetaRadians)
+        val s = sin(thetaRadians)
+        val c = cos(thetaRadians)
         // quaternion-derived rotation matrix
         val q = arrayOf(
                 arrayOf(a.x * a.x * (1 - c) + c, a.x * a.y * (1 - c) - a.z * s, a.x * a.z * (1 - c) + a.y * s),
@@ -199,24 +199,24 @@ data class Vector3d(val x: Double , val y : Double , val z : Double) {
 
         val e2 = 2*f - f*f   // 1st eccentricity squared ≡ (a²-b²)/a²
         val ε2 = e2 / (1-e2) // 2nd eccentricity squared ≡ (a²-b²)/b²
-        val p = Math.sqrt(x*x + y*y) // distance from minor axis
-        val R = Math.sqrt(p*p + z*z) // polar radius
+        val p = sqrt(x*x + y*y) // distance from minor axis
+        val R = sqrt(p*p + z*z) // polar radius
 
         // parametric latitude (Bowring eqn 17, replacing tanβ = z·a / p·b)
         val tanβ = (b*z)/(a*p) * (1+ε2*b/R)
-        val sinβ = tanβ / Math.sqrt(1+tanβ*tanβ)
+        val sinβ = tanβ / sqrt(1+tanβ*tanβ)
         val cosβ = sinβ / tanβ
 
         // geodetic latitude (Bowring eqn 18: tanφ = z+ε²bsin³β / p−e²cos³β)
-        val φ = if (Double.NaN == cosβ) 0.0 else Math.atan2(z + ε2*b*sinβ*sinβ*sinβ, p - e2*a*cosβ*cosβ*cosβ)
+        val φ = if (cosβ.isNaN()) 0.0 else atan2(z + ε2*b*sinβ*sinβ*sinβ, p - e2*a*cosβ*cosβ*cosβ)
 
         // longitude
-        val λ = Math.atan2(y, x)
+        val λ = atan2(y, x)
 
         // height above ellipsoid (Bowring eqn 7) [not currently used]
-        val sinφ = Math.sin(φ)
-        val cosφ = Math.cos(φ)
-        val ν = a/Math.sqrt(1-e2*sinφ*sinφ) // length of the normal terminated by the minor axis
+        val sinφ = sin(φ)
+        val cosφ = cos(φ)
+        val ν = a/ sqrt(1-e2*sinφ*sinφ) // length of the normal terminated by the minor axis
         var h = p*cosφ + z*sinφ - (a*a/ν)
 
         return LatLon(φ.toDegrees(), λ.toDegrees(), datum)

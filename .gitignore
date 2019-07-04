@@ -1,6 +1,9 @@
 /build
+/out
 /.idea
 /.gradle
 /local.properties
 /projectFilesBackup/**
 /geodesy_lib/build/**
+/geodesy_lib/out
+/samples/out

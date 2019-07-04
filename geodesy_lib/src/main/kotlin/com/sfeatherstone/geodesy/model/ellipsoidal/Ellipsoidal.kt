@@ -2,6 +2,9 @@ package com.sfeatherstone.geodesy.model.ellipsoidal
 
 import com.sfeatherstone.geodesy.*
 import com.sfeatherstone.geodesy.Vector3d
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 
 /**
@@ -53,13 +56,13 @@ fun LatLon.toCartesian(): Vector3d {
     val a = this.datum.ellipsoid.a
     val f = this.datum.ellipsoid.f
 
-    val sinφ = Math.sin(φ)
-    val cosφ = Math.cos(φ)
-    val sinλ = Math.sin(λ)
-    val cosλ = Math.cos(λ)
+    val sinφ = sin(φ)
+    val cosφ = cos(φ)
+    val sinλ = sin(λ)
+    val cosλ = cos(λ)
 
     val eSq = 2 * f - f * f                      // 1st eccentricity squared ≡ (a²-b²)/a²
-    val ν = a / Math.sqrt(1 - eSq * sinφ * sinφ) // radius of curvature in prime vertical
+    val ν = a / sqrt(1 - eSq * sinφ * sinφ) // radius of curvature in prime vertical
 
     val x = (ν + h) * cosφ * cosλ
     val y = (ν + h) * cosφ * sinλ

@@ -5,7 +5,7 @@ import com.sfeatherstone.geodesy.LatLon
 import com.sfeatherstone.geodesy.toDegrees
 import com.sfeatherstone.geodesy.toNormalisedDegrees
 import com.sfeatherstone.geodesy.toRadians
-import kotlin.math.sign
+import kotlin.math.*
 
 /**
  * Library of geodesy functions for operations on a spherical earth model.
@@ -43,8 +43,8 @@ fun LatLon.distanceTo(point : LatLon, radius : Double = 6371e3):Double {
     val Δφ = φ2 - φ1
     val Δλ = λ2 - λ1
 
-    val a = Math.sin(Δφ/2) * Math.sin(Δφ/2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) * Math.sin(Δλ/2)
-    val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+    val a = sin(Δφ/2) * sin(Δφ/2) + cos(φ1) * cos(φ2) * sin(Δλ/2) * sin(Δλ/2)
+    val c = 2 * atan2(sqrt(a), sqrt(1-a))
     val d = R * c
 
     return d
@@ -70,10 +70,10 @@ fun LatLon.bearingTo(point : LatLon): Double {
     val φ1 = this.lat.toRadians()
     val φ2 = point.lat.toRadians()
     val Δλ = (point.lon-this.lon).toRadians()
-    val y = Math.sin(Δλ) * Math.cos(φ2)
-    val x = Math.cos(φ1)*Math.sin(φ2) -
-            Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ)
-    val θ = Math.atan2(y, x)
+    val y = sin(Δλ) * cos(φ2)
+    val x = cos(φ1) * sin(φ2) -
+            sin(φ1) * cos(φ2) * cos(Δλ)
+    val θ = atan2(y, x)
 
     return (θ.toDegrees()+360) % 360
 }
@@ -119,14 +119,14 @@ fun LatLon.midpointTo(point: LatLon): LatLon {
     val φ2 = point.lat.toRadians()
     val Δλ = (point.lon-this.lon).toRadians()
 
-    val Bx = Math.cos(φ2) * Math.cos(Δλ)
-    val By = Math.cos(φ2) * Math.sin(Δλ)
+    val Bx = cos(φ2) * cos(Δλ)
+    val By = cos(φ2) * sin(Δλ)
 
-    val x = Math.sqrt((Math.cos(φ1) + Bx) * (Math.cos(φ1) + Bx) + By * By)
-    val y = Math.sin(φ1) + Math.sin(φ2)
-    val φ3 = Math.atan2(y, x)
+    val x = sqrt((cos(φ1) + Bx) * (cos(φ1) + Bx) + By * By)
+    val y = sin(φ1) + sin(φ2)
+    val φ3 = atan2(y, x)
 
-    val λ3 = λ1 + Math.atan2(By, Math.cos(φ1) + Bx)
+    val λ3 = λ1 + atan2(By, cos(φ1) + Bx)
 
     return LatLon(φ3.toDegrees(), λ3.toNormalisedDegrees()) // normalise to −180..+180°
 }
@@ -149,30 +149,30 @@ fun LatLon.intermediatePointTo(point : LatLon, fraction: Double): LatLon {
     val λ1 = this.lon.toRadians()
     val φ2 = point.lat.toRadians()
     val λ2 = point.lon.toRadians()
-    val sinφ1 = Math.sin(φ1)
-    val cosφ1 = Math.cos(φ1)
-    val sinλ1 = Math.sin(λ1)
-    val cosλ1 = Math.cos(λ1)
-    val sinφ2 = Math.sin(φ2)
-    val cosφ2 = Math.cos(φ2)
-    val sinλ2 = Math.sin(λ2)
-    val cosλ2 = Math.cos(λ2)
+    val sinφ1 = sin(φ1)
+    val cosφ1 = cos(φ1)
+    val sinλ1 = sin(λ1)
+    val cosλ1 = cos(λ1)
+    val sinφ2 = sin(φ2)
+    val cosφ2 = cos(φ2)
+    val sinλ2 = sin(λ2)
+    val cosλ2 = cos(λ2)
 
     // distance between points
     val Δφ = φ2 - φ1
     val Δλ = λ2 - λ1
-    val a = Math.sin(Δφ/2.0) * Math.sin(Δφ/2.0) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2.0) * Math.sin(Δλ/2.0)
-    val δ = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1.0-a))
+    val a = sin(Δφ/2.0) * sin(Δφ/2.0) + cos(φ1) * cos(φ2) * sin(Δλ/2.0) * sin(Δλ/2.0)
+    val δ = 2.0 * atan2(sqrt(a), sqrt(1.0-a))
 
-    val A = Math.sin((1.0-fraction)*δ) / Math.sin(δ)
-    val B = Math.sin(fraction*δ) / Math.sin(δ)
+    val A = sin((1.0-fraction)*δ) / sin(δ)
+    val B = sin(fraction*δ) / sin(δ)
 
     val x = A * cosφ1 * cosλ1 + B * cosφ2 * cosλ2
     val y = A * cosφ1 * sinλ1 + B * cosφ2 * sinλ2
     val z = A * sinφ1 + B * sinφ2
 
-    val φ3 = Math.atan2(z, Math.sqrt(x*x + y*y))
-    val λ3 = Math.atan2(y, x)
+    val φ3 = atan2(z, sqrt(x*x + y*y))
+    val λ3 = atan2(y, x)
 
     return LatLon(φ3.toDegrees(), λ3.toNormalisedDegrees()) // normalise lon to −180..+180°
 }
@@ -202,18 +202,18 @@ fun LatLon.destinationPoint(distance: Double, bearing: Double, radius :Double = 
     val φ1 = this.lat.toRadians()
     val λ1 = this.lon.toRadians()
 
-    val sinφ1 = Math.sin(φ1)
-    val cosφ1 = Math.cos(φ1)
-    val sinδ = Math.sin(δ)
-    val cosδ = Math.cos(δ)
-    val sinθ = Math.sin(θ)
-    val cosθ = Math.cos(θ)
+    val sinφ1 = sin(φ1)
+    val cosφ1 = cos(φ1)
+    val sinδ = sin(δ)
+    val cosδ = cos(δ)
+    val sinθ = sin(θ)
+    val cosθ = cos(θ)
 
     val sinφ2 = sinφ1*cosδ + cosφ1*sinδ*cosθ
-    val φ2 = Math.asin(sinφ2)
+    val φ2 = asin(sinφ2)
     val y = sinθ * sinδ * cosφ1
     val x = cosδ - sinφ1 * sinφ2
-    val λ2 = λ1 + Math.atan2(y, x)
+    val λ2 = λ1 + atan2(y, x)
 
     return LatLon(φ2.toDegrees(), λ2.toNormalisedDegrees()) // normalise to −180..+180°
 }
@@ -247,29 +247,29 @@ fun intersection(p1: LatLon, bearing1: Double, p2: LatLon, bearing2: Double): La
     val Δλ = λ2-λ1
 
     // angular distance p1-p2
-    val δ12 = 2.0*Math.asin( Math.sqrt( Math.sin(Δφ/2.0)*Math.sin(Δφ/2.0)
-            + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2.0)*Math.sin(Δλ/2.0) ) )
+    val δ12 = 2.0* asin(sqrt(sin(Δφ/2.0)*sin(Δφ/2.0)
+            + cos(φ1)*cos(φ2)*sin(Δλ/2.0)*sin(Δλ/2.0)))
 
     if (δ12 == 0.0) return null
 
     // initial/final bearings between points
-    var θa = Math.acos( ( Math.sin(φ2) - Math.sin(φ1)*Math.cos(δ12) ) / ( Math.sin(δ12)*Math.cos(φ1) ) )
+    var θa = acos(( sin(φ2) - sin(φ1)*cos(δ12) ) / ( sin(δ12)*cos(φ1) ))
     if (java.lang.Double.isNaN(θa)) θa = 0.0 // protect against rounding
-    val θb = Math.acos( ( Math.sin(φ1) - Math.sin(φ2)*Math.cos(δ12) ) / ( Math.sin(δ12)*Math.cos(φ2) ) )
+    val θb = acos(( sin(φ1) - sin(φ2)*cos(δ12) ) / ( sin(δ12)*cos(φ2) ))
 
-    val θ12 = if (Math.sin(λ2-λ1)>0.0) θa else 2.0*Math.PI-θa
-    val θ21 = if (Math.sin(λ2-λ1)>0.0) 2.0*Math.PI-θb else θb
+    val θ12 = if (sin(λ2-λ1) >0.0) θa else 2.0*Math.PI-θa
+    val θ21 = if (sin(λ2-λ1) >0.0) 2.0*Math.PI-θb else θb
 
     val α1 = θ13 - θ12 // angle 2-1-3
     val α2 = θ21 - θ23 // angle 1-2-3
 
-    if (Math.sin(α1)==0.0 && Math.sin(α2)==0.0) return null // infinite intersections
-    if (Math.sin(α1)*Math.sin(α2) < 0.0) return null      // ambiguous intersection
+    if (sin(α1) ==0.0 && sin(α2) ==0.0) return null // infinite intersections
+    if (sin(α1) * sin(α2) < 0.0) return null      // ambiguous intersection
 
-    val α3 = Math.acos( -Math.cos(α1)*Math.cos(α2) + Math.sin(α1)*Math.sin(α2)*Math.cos(δ12) )
-    val δ13 = Math.atan2( Math.sin(δ12)*Math.sin(α1)*Math.sin(α2), Math.cos(α2)+Math.cos(α1)*Math.cos(α3) )
-    val φ3 = Math.asin( Math.sin(φ1)*Math.cos(δ13) + Math.cos(φ1)*Math.sin(δ13)*Math.cos(θ13) )
-    val Δλ13 = Math.atan2( Math.sin(θ13)*Math.sin(δ13)*Math.cos(φ1), Math.cos(δ13)-Math.sin(φ1)*Math.sin(φ3) )
+    val α3 = acos(-cos(α1)*cos(α2) + sin(α1)*sin(α2)*cos(δ12))
+    val δ13 = atan2(sin(δ12)*sin(α1)*sin(α2), cos(α2)+cos(α1)*cos(α3))
+    val φ3 = asin(sin(φ1)*cos(δ13) + cos(φ1)*sin(δ13)*cos(θ13))
+    val Δλ13 = atan2(sin(θ13)*sin(δ13)*cos(φ1), cos(δ13)-sin(φ1)*sin(φ3))
     val λ3 = λ1 + Δλ13
 
     return LatLon(φ3.toDegrees(), λ3.toNormalisedDegrees()) // normalise to −180..+180°
@@ -295,7 +295,7 @@ fun LatLon.crossTrackDistanceTo(pathStart: LatLon, pathEnd: LatLon, radius: Doub
     val θ13 = pathStart.bearingTo(this).toRadians()
     val θ12 = pathStart.bearingTo(pathEnd).toRadians()
 
-    val δxt = Math.asin(Math.sin(δ13) * Math.sin(θ13-θ12))
+    val δxt = asin(sin(δ13) * sin(θ13-θ12))
 
     return δxt * radius
 }
@@ -322,11 +322,11 @@ fun LatLon.alongTrackDistanceTo(pathStart : LatLon, pathEnd : LatLon, radius :Do
     val θ13 = pathStart.bearingTo(this).toRadians()
     val θ12 = pathStart.bearingTo(pathEnd).toRadians()
 
-    val δxt = Math.asin(Math.sin(δ13) * Math.sin(θ13-θ12))
+    val δxt = asin(sin(δ13) * sin(θ13-θ12))
 
-    val δat = Math.acos(Math.cos(δ13) / Math.abs(Math.cos(δxt)))
+    val δat = acos(cos(δ13) / abs(cos(δxt)))
 
-    return δat*(Math.cos(θ12-θ13)).sign * radius
+    return δat*(cos(θ12-θ13)).sign * radius
 }
 
 
@@ -346,7 +346,7 @@ fun LatLon.maxLatitude(bearing: Double): Double {
 
     val φ = this.lat.toRadians()
 
-    val φMax = Math.acos(Math.abs(Math.sin(θ)*Math.cos(φ)))
+    val φMax = acos(abs(sin(θ)*cos(φ)))
 
     return φMax.toDegrees()
 }
@@ -371,14 +371,14 @@ fun crossingParallels(point1: LatLon, point2: LatLon, latitude: Double): Pair<Do
 
     val Δλ = λ2 - λ1
 
-    val x = Math.sin(φ1) * Math.cos(φ2) * Math.cos(φ) * Math.sin(Δλ)
-    val y = Math.sin(φ1) * Math.cos(φ2) * Math.cos(φ) * Math.cos(Δλ) - Math.cos(φ1) * Math.sin(φ2) * Math.cos(φ)
-    val z = Math.cos(φ1) * Math.cos(φ2) * Math.sin(φ) * Math.sin(Δλ)
+    val x = sin(φ1) * cos(φ2) * cos(φ) * sin(Δλ)
+    val y = sin(φ1) * cos(φ2) * cos(φ) * cos(Δλ) - cos(φ1) * sin(φ2) * cos(φ)
+    val z = cos(φ1) * cos(φ2) * sin(φ) * sin(Δλ)
 
     if (z*z > x*x + y*y) return null // great circle doesn't reach latitude
 
-    val λm = Math.atan2(-y, x)                  // longitude at max latitude
-    val Δλi = Math.acos(z / Math.sqrt(x*x+y*y)) // Δλ from λm to intersection points
+    val λm = atan2(-y, x)                  // longitude at max latitude
+    val Δλi = acos(z / sqrt(x*x+y*y)) // Δλ from λm to intersection points
 
     val λi1 = λ1 + λm - Δλi
     val λi2 = λ1 + λm + Δλi
@@ -408,17 +408,17 @@ fun LatLon.rhumbDistanceTo(point: LatLon, radius: Double = 6371e3): Double {
     val φ1 = this.lat.toRadians()
     val φ2 = point.lat.toRadians()
     val Δφ = φ2 - φ1
-    var Δλ = Math.abs(point.lon-this.lon).toRadians()
+    var Δλ = abs(point.lon-this.lon).toRadians()
     // if dLon over 180° take shorter rhumb line across the anti-meridian:
     if (Δλ > Math.PI) Δλ -= 2.0*Math.PI
 
     // on Mercator projection, longitude distances shrink by latitude; q is the 'stretch factor'
     // q becomes ill-conditioned along E-W line (0/0); use empirical tolerance to avoid it
-    val Δψ = Math.log(Math.tan(φ2/2+Math.PI/4)/Math.tan(φ1/2+Math.PI/4))
-    val q = if (Math.abs(Δψ) > 10e-12) Δφ/Δψ else Math.cos(φ1)
+    val Δψ = ln(tan(φ2/2+Math.PI/4)/tan(φ1/2+Math.PI/4))
+    val q = if (abs(Δψ) > 10e-12) Δφ/Δψ else cos(φ1)
 
     // distance is pythagoras on 'stretched' Mercator projection
-    val δ = Math.sqrt(Δφ*Δφ + q*q*Δλ*Δλ) // angular distance in radians
+    val δ = sqrt(Δφ*Δφ + q*q*Δλ*Δλ) // angular distance in radians
     val dist = δ * R
 
     return dist
@@ -445,9 +445,9 @@ fun LatLon.rhumbBearingTo(point: LatLon): Double {
     if (Δλ >  Math.PI) Δλ -= 2*Math.PI
     if (Δλ < -Math.PI) Δλ += 2*Math.PI
 
-    val Δψ = Math.log(Math.tan(φ2/2+Math.PI/4)/Math.tan(φ1/2+Math.PI/4))
+    val Δψ = ln(tan(φ2/2+Math.PI/4)/tan(φ1/2+Math.PI/4))
 
-    val θ = Math.atan2(Δλ, Δψ)
+    val θ = atan2(Δλ, Δψ)
 
     return (θ.toDegrees()+360) % 360
 }
@@ -472,18 +472,18 @@ fun LatLon.rhumbDestinationPoint(distance: Double, bearing: Double, radius: Doub
     val λ1 = this.lon.toRadians()
     val θ = bearing.toRadians()
 
-    val Δφ = δ * Math.cos(θ)
+    val Δφ = δ * cos(θ)
     var φ2 = φ1 + Δφ
 
     // check for some daft bugger going past the pole, normalise latitude if so
-    if (Math.abs(φ2) > Math.PI/2){
+    if (abs(φ2) > Math.PI/2){
         φ2 = if (φ2>0) Math.PI-φ2 else -Math.PI-φ2
     }
 
-    val Δψ = Math.log(Math.tan(φ2/2+Math.PI/4)/Math.tan(φ1/2+Math.PI/4))
-    val q = if (Math.abs(Δψ) > 10e-12) Δφ / Δψ else Math.cos(φ1) // E-W course becomes ill-conditioned with 0/0
+    val Δψ = ln(tan(φ2/2+Math.PI/4)/tan(φ1/2+Math.PI/4))
+    val q = if (abs(Δψ) > 10e-12) Δφ / Δψ else cos(φ1) // E-W course becomes ill-conditioned with 0/0
 
-    val Δλ = δ*Math.sin(θ)/q
+    val Δλ = δ* sin(θ) /q
     val λ2 = λ1 + Δλ
 
     return LatLon(φ2.toDegrees(), (λ2.toDegrees() + 540.0) % 360.0 - 180.0) // normalise to −180..+180°
@@ -510,13 +510,13 @@ fun LatLon.rhumbMidpointTo(point: LatLon): LatLon {
     val φ2 = point.lat.toRadians()
     val λ2 = point.lon.toRadians()
 
-    if (Math.abs(λ2-λ1) > Math.PI) λ1 += 2*Math.PI // crossing anti-meridian
+    if (abs(λ2-λ1) > Math.PI) λ1 += 2*Math.PI // crossing anti-meridian
 
     val φ3 = (φ1+φ2)/2
-    val f1 = Math.tan(Math.PI/4 + φ1/2)
-    val f2 = Math.tan(Math.PI/4 + φ2/2)
-    val f3 = Math.tan(Math.PI/4 + φ3/2)
-    var λ3 = ( (λ2-λ1)*Math.log(f3) + λ1*Math.log(f2) - λ2*Math.log(f1) ) / Math.log(f2/f1)
+    val f1 = tan(Math.PI/4 + φ1/2)
+    val f2 = tan(Math.PI/4 + φ2/2)
+    val f3 = tan(Math.PI/4 + φ3/2)
+    var λ3 = ( (λ2-λ1)* ln(f3) + λ1* ln(f2) - λ2* ln(f1) ) / ln(f2/f1)
 
     if (!java.lang.Double.isFinite(λ3)) λ3 = (λ1+λ2)/2 // parallel of latitude
 
@@ -548,7 +548,7 @@ fun areaOf(polygonInput: Array<LatLon>, radius: Double = 6371e3):Double {
 
     // close polygon so that last point equals first point
     val closed = polygonInput[0]==polygonInput[polygonInput.size-1]
-    val polygon = if (closed) polygonInput else Array(polygonInput.size+1, { if (it < polygonInput.size) polygonInput[it] else polygonInput[0]})
+    val polygon = if (closed) polygonInput else Array(polygonInput.size+1) { if (it < polygonInput.size) polygonInput[it] else polygonInput[0]}
 
     if (polygon.size < 4) return 0.0
 
@@ -559,7 +559,7 @@ fun areaOf(polygonInput: Array<LatLon>, radius: Double = 6371e3):Double {
         val φ1 = polygon[v].lat.toRadians()
         val φ2 = polygon[v+1].lat.toRadians()
         val Δλ = (polygon[v+1].lon - polygon[v].lon).toRadians()
-        val E = 2 * Math.atan2(Math.tan(Δλ/2) * (Math.tan(φ1/2)+Math.tan(φ2/2)), 1 + Math.tan(φ1/2)*Math.tan(φ2/2))
+        val E = 2 * atan2(tan(Δλ/2) * (tan(φ1/2)+tan(φ2/2)), 1 + tan(φ1/2)*tan(φ2/2))
         S += E
     }
 
@@ -579,13 +579,13 @@ fun areaOf(polygonInput: Array<LatLon>, radius: Double = 6371e3):Double {
         val initBrng = polygon[0].bearingTo(polygon[1])
         ΣΔ += (initBrng - prevBrng + 540) % 360 - 180
         // TODO: fix (intermittant) edge crossing pole - eg (85,90), (85,0), (85,-90)
-        val enclosed = Math.abs(ΣΔ) < 90 // 0°-ish
+        val enclosed = abs(ΣΔ) < 90 // 0°-ish
         return enclosed
     }
 
-    if (isPoleEnclosedBy(polygon)) S = Math.abs(S) - 2*Math.PI
+    if (isPoleEnclosedBy(polygon)) S = abs(S) - 2*Math.PI
 
-    val A = Math.abs(S * radius*radius) // area in units of R
+    val A = abs(S * radius*radius) // area in units of R
 
     return A
 }

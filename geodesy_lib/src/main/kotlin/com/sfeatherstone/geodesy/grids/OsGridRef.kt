@@ -3,6 +3,7 @@ package com.sfeatherstone.geodesy.grids
 
 import com.sfeatherstone.geodesy.*
 import com.sfeatherstone.geodesy.model.ellipsoidal.convertDatum
+import kotlin.math.*
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /* Ordnance Survey Grid Reference functions                           (c) Chris Veness 2005-2017  */
@@ -60,24 +61,24 @@ data class OsGridRef(val easting : Double, val northing: Double) {
 
         var e = this.easting
         var n = this.northing
-        if ( e == Double.NaN || n == Double.NaN) throw IllegalArgumentException("Invalid grid reference")
+        if ( e.isNaN() || n.isNaN() ) throw IllegalArgumentException("Invalid grid reference")
 
         // use digits = 0 to return numeric format (in metres, allowing for decimals & for northing > 1e6)
         if (digits == 0) {
             //Format "000000.010,1000000.010" or "000000,000000" if whole numbers
-            return (if (Math.floor(e)==e) "%06d".format(Math.floor(e).toInt()) else "%010.3f".format(e)) +
+            return (if (floor(e) ==e) "%06d".format(floor(e).toInt()) else "%010.3f".format(e)) +
                     "," +
-                    (if (Math.floor(n)==n) "%06d".format(Math.floor(n).toInt()) else "%010.3f".format(n))
+                    (if (floor(n) ==n) "%06d".format(floor(n).toInt()) else "%010.3f".format(n))
         }
 
         // get the 100km-grid indices
-        val e100k = Math.floor(e / 100000)
-        val n100k = Math.floor(n / 100000)
+        val e100k = floor(e / 100000)
+        val n100k = floor(n / 100000)
 
         if (e100k < 0 || e100k > 6 || n100k < 0 || n100k > 12) return ""
 
         // translate those into numeric equivalents of the grid letters
-        var l1 = (19 - n100k) - (19 - n100k) % 5 + Math.floor((e100k + 10) / 5)
+        var l1 = (19 - n100k) - (19 - n100k) % 5 + floor((e100k + 10) / 5)
         var l2 = (19 - n100k) * 5 % 25 + e100k % 5
 
         // compensate for skipped 'I' and build grid letter-pairs
@@ -87,8 +88,8 @@ data class OsGridRef(val easting : Double, val northing: Double) {
 
         // strip 100km-grid indices from easting & northing, and reduce precision
         val halfDigits : Int = digits / 2
-        e = Math.floor((e % 100000) / Math.pow(10.0, 5.0 - halfDigits))
-        n = Math.floor((n % 100000) / Math.pow(10.0, 5.0 - halfDigits))
+        e = floor((e % 100000) / 10.0.pow(5.0 - halfDigits))
+        n = floor((n % 100000) / 10.0.pow(5.0 - halfDigits))
 
         // pad eastings & northings with leading zeros (just in case, allow up to 16-digit (mm) refs)
         val formatString = "%0$halfDigits.0f"
@@ -140,20 +141,20 @@ data class OsGridRef(val easting : Double, val northing: Double) {
             φ += (this.northing - N0 - M) / (a * F0)
 
             val Ma = (1.0 + n + (5.0 / 4.0) * n2 + (5.0 / 4.0) * n3) * (φ - φ0)
-            val Mb = (3.0 * n + 3.0 * n * n + (21.0 / 8.0) * n3) * Math.sin(φ - φ0) * Math.cos(φ + φ0)
-            val Mc = ((15.0 / 8.0) * n2 + (15.0 / 8.0) * n3) * Math.sin(2.0 * (φ - φ0)) * Math.cos(2.0 * (φ + φ0))
-            val Md = (35.0 / 24.0) * n3 * Math.sin(3.0 * (φ - φ0)) * Math.cos(3.0 * (φ + φ0))
+            val Mb = (3.0 * n + 3.0 * n * n + (21.0 / 8.0) * n3) * sin(φ - φ0) * cos(φ + φ0)
+            val Mc = ((15.0 / 8.0) * n2 + (15.0 / 8.0) * n3) * sin(2.0 * (φ - φ0)) * cos(2.0 * (φ + φ0))
+            val Md = (35.0 / 24.0) * n3 * sin(3.0 * (φ - φ0)) * cos(3.0 * (φ + φ0))
             M = b * F0 * (Ma - Mb + Mc - Md)              // meridional arc
 
         } while ((this.northing - N0 - M) >= 0.00001)  // ie until < 0.01mm
 
-        val cosφ = Math.cos(φ)
-        val sinφ = Math.sin(φ)
-        val ν = a * F0 / Math.sqrt(1.0 - (e2 * sinφ * sinφ))            // nu = transverse radius of curvature
-        val ρ = a * F0 * (1.0 - e2) / Math.pow(1.0 - (e2 * sinφ * sinφ), 1.5) // rho = meridional radius of curvature
+        val cosφ = cos(φ)
+        val sinφ = sin(φ)
+        val ν = a * F0 / sqrt(1.0 - (e2 * sinφ * sinφ))            // nu = transverse radius of curvature
+        val ρ = a * F0 * (1.0 - e2) / (1.0 - (e2 * sinφ * sinφ)).pow(1.5) // rho = meridional radius of curvature
         val η2 = ν / ρ - 1.0                                    // eta = ?
 
-        val tanφ = Math.tan(φ)
+        val tanφ = tan(φ)
         val tan2φ = tanφ * tanφ
         val tan4φ = tan2φ*tan2φ
         val tan6φ = tan4φ*tan2φ
@@ -221,15 +222,15 @@ fun String.parseOsGridReference() : OsGridRef
     // get numeric values of letter references, mapping A->0, B->1, C->2, etc:
     val gridRefUpper = gridref.toUpperCase()
     val AasInt = 'A'.toInt()
-    var l1: Int = gridRefUpper.get(0).toInt() - AasInt
-    var l2: Int = gridRefUpper.get(1).toInt() - AasInt
+    var l1: Int = gridRefUpper[0].toInt() - AasInt
+    var l2: Int = gridRefUpper[1].toInt() - AasInt
     // shuffle down letters after 'I' since 'I' is not used in grid:
     if (l1 > 7) l1--
     if (l2 > 7) l2--
 
     // convert grid letters into 100km-square indexes from false origin (grid square SV):
     val e100km :Int = ((l1 - 2) % 5) * 5 + (l2 % 5)
-    val n100km :Int = (19 - Math.floor(l1 / 5.0).toInt() * 5) - Math.floor(l2 / 5.0).toInt()
+    val n100km :Int = (19 - floor(l1 / 5.0).toInt() * 5) - floor(l2 / 5.0).toInt()
 
     // skip grid letters to get numeric (easting/northing) part of ref
     var en = gridref.substring(2).trim().split(Regex("\\s+"))
@@ -288,21 +289,21 @@ fun LatLon.toOsGrid(): OsGridRef {
     val n2 = n * n
     val n3 = n * n * n         // n, n², n³
 
-    val cosφ = Math.cos(φ)
-    val sinφ = Math.sin(φ)
-    val ν = a * F0 / Math.sqrt(1 - e2 * sinφ * sinφ)            // nu = transverse radius of curvature
-    val ρ = a * F0 * (1.0 - e2) / Math.pow(1.0 - e2 * sinφ * sinφ, 1.5) // rho = meridional radius of curvature
+    val cosφ = cos(φ)
+    val sinφ = sin(φ)
+    val ν = a * F0 / sqrt(1 - e2 * sinφ * sinφ)            // nu = transverse radius of curvature
+    val ρ = a * F0 * (1.0 - e2) / (1.0 - e2 * sinφ * sinφ).pow(1.5) // rho = meridional radius of curvature
     val η2 = ν / ρ - 1.0                                    // eta = ?
 
     val Ma = (1.0 + n + (5.0 / 4.0) * n2 + (5.0 / 4.0) * n3) * (φ - φ0)
-    val Mb = (3.0 * n + 3.0 * n * n + (21.0 / 8.0) * n3) * Math.sin(φ - φ0) * Math.cos(φ + φ0)
-    val Mc = ((15.0 / 8.0) * n2 + (15.0 / 8.0) * n3) * Math.sin(2.0 * (φ - φ0)) * Math.cos(2 * (φ + φ0))
-    val Md = (35.0 / 24.0) * n3 * Math.sin(3.0 * (φ - φ0)) * Math.cos(3.0 * (φ + φ0))
+    val Mb = (3.0 * n + 3.0 * n * n + (21.0 / 8.0) * n3) * sin(φ - φ0) * cos(φ + φ0)
+    val Mc = ((15.0 / 8.0) * n2 + (15.0 / 8.0) * n3) * sin(2.0 * (φ - φ0)) * cos(2 * (φ + φ0))
+    val Md = (35.0 / 24.0) * n3 * sin(3.0 * (φ - φ0)) * cos(3.0 * (φ + φ0))
     val M = b * F0 * (Ma - Mb + Mc - Md)              // meridional arc
 
     val cos3φ = cosφ * cosφ * cosφ
     val cos5φ = cos3φ * cosφ * cosφ
-    val tan2φ = Math.tan(φ) * Math.tan(φ)
+    val tan2φ = tan(φ) * tan(φ)
     val tan4φ = tan2φ * tan2φ
 
     val I = M + N0

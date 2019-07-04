@@ -1,9 +1,7 @@
 package com.sfeatherstone.geodesy.grids
 
 import com.sfeatherstone.geodesy.*
-import kotlin.math.asinh
-import kotlin.math.atanh
-import kotlin.math.sqrt
+import kotlin.math.*
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /* UTM / WGS-84 Conversion Functions                                  (c) Chris Veness 2014-2017  */
@@ -101,13 +99,13 @@ fun LatLon.toUtm(): Utm {
 //    val falseEasting = 500e3
   //  val falseNorthing = 10000e3;
 
-    var zone = Math.floor((this.lon+180.0)/6.0).toInt() + 1 // longitudinal zone
+    var zone = floor((this.lon+180.0)/6.0).toInt() + 1 // longitudinal zone
     var λ0 = ((zone-1.0)*6.0 - 180.0 + 3.0).toRadians() // longitude of central meridian
 
     // ---- handle Norway/Svalbard exceptions
     // grid zones are 8° tall; 0°N is offset 10 into latitude bands array
     val mgrsLatBands = "CDEFGHJKLMNPQRSTUVWXX" // X is repeated for 80-84°N
-    val latBand = mgrsLatBands[Math.floor(this.lat/8.0+10.0).toInt()]
+    val latBand = mgrsLatBands[floor(this.lat/8.0+10.0).toInt()]
     // adjust zone & central meridian for Norway
     if (zone==31 && latBand=='V' && this.lon>= 3) { zone++; λ0 += (6.0).toRadians(); }
     // adjust zone & central meridian for Svalbard
@@ -129,7 +127,7 @@ fun LatLon.toUtm(): Utm {
 
     // ---- easting, northing: Karney 2011 Eq 7-14, 29, 35:
 
-    val e = Math.sqrt(f*(2.0-f)) // eccentricity
+    val e = sqrt(f*(2.0-f)) // eccentricity
     val n = f / (2.0 - f)        // 3rd flattening
     val n2 = n*n
     val n3 = n*n2
@@ -137,16 +135,16 @@ fun LatLon.toUtm(): Utm {
     val n5 = n*n4
     val n6 = n*n5 // TODO: compare Horner-form accuracy?
 
-    val cosλ = Math.cos(λ)
-    val sinλ = Math.sin(λ)
-    val tanλ = Math.tan(λ)
+    val cosλ = cos(λ)
+    val sinλ = sin(λ)
+    val tanλ = tan(λ)
 
-    val τ = Math.tan(φ) // τ ≡ tanφ, τʹ ≡ tanφʹ; prime (ʹ) indicates angles on the conformal sphere
-    val σ = Math.sinh(e*atanh(e*τ/ sqrt(1.0+τ*τ)))
+    val τ = tan(φ) // τ ≡ tanφ, τʹ ≡ tanφʹ; prime (ʹ) indicates angles on the conformal sphere
+    val σ = sinh(e*atanh(e*τ/ sqrt(1.0+τ*τ)))
 
-    val τʹ = τ*Math.sqrt(1.0+σ*σ) - σ* sqrt(1.0+τ*τ)
+    val τʹ = τ* sqrt(1.0+σ*σ) - σ* sqrt(1.0+τ*τ)
 
-    val ξʹ = Math.atan2(τʹ, cosλ)
+    val ξʹ = atan2(τʹ, cosλ)
     val ηʹ = asinh(sinλ / sqrt(τʹ*τʹ + cosλ*cosλ))
 
     val A = a/(1.0+n) * (1.0 + 1.0/4.0*n2 + 1.0/64.0*n4 + 1.0/256.0*n6) // 2πA is the circumference of a meridian
@@ -160,10 +158,10 @@ fun LatLon.toUtm(): Utm {
                                                                                   212378941.0/319334400.0*n6 )
 
     var ξ = ξʹ
-    for (j in 1..6) ξ += α[j] * Math.sin(2.0*j.toDouble()*ξʹ) * Math.cosh(2.0*j.toDouble()*ηʹ)
+    for (j in 1..6) ξ += α[j] * sin(2.0*j.toDouble()*ξʹ) * cosh(2.0*j.toDouble()*ηʹ)
 
     var η = ηʹ
-    for (j in 1..6) η += α[j] * Math.cos(2.0*j.toDouble()*ξʹ) * Math.sinh(2.0*j.toDouble()*ηʹ)
+    for (j in 1..6) η += α[j] * cos(2.0*j.toDouble()*ξʹ) * sinh(2.0*j.toDouble()*ηʹ)
 
     var x = k0 * A * η
     var y = k0 * A * ξ
@@ -171,20 +169,20 @@ fun LatLon.toUtm(): Utm {
     // ---- convergence: Karney 2011 Eq 23, 24
 
     var pʹ = 1.0
-    for (j in 1..6) pʹ += 2.0*j.toDouble()*α[j] * Math.cos(2.0*j.toDouble()*ξʹ) * Math.cosh(2.0*j.toDouble()*ηʹ)
+    for (j in 1..6) pʹ += 2.0*j.toDouble()*α[j] * cos(2.0*j.toDouble()*ξʹ) * cosh(2.0*j.toDouble()*ηʹ)
     var qʹ = 0.0
-    for (j in 1..6) qʹ += 2.0*j.toDouble()*α[j] * Math.sin(2.0*j.toDouble()*ξʹ) * Math.sinh(2.0*j.toDouble()*ηʹ)
+    for (j in 1..6) qʹ += 2.0*j.toDouble()*α[j] * sin(2.0*j.toDouble()*ξʹ) * sinh(2.0*j.toDouble()*ηʹ)
 
-    val γʹ = Math.atan(τʹ / Math.sqrt(1.0+τʹ*τʹ)*tanλ)
-    val γʺ = Math.atan2(qʹ, pʹ)
+    val γʹ = atan(τʹ / sqrt(1.0+τʹ*τʹ)*tanλ)
+    val γʺ = atan2(qʹ, pʹ)
 
     val γ = γʹ + γʺ
 
     // ---- scale: Karney 2011 Eq 25
 
-    val sinφ = Math.sin(φ)
-    val kʹ = Math.sqrt(1.0 - e*e*sinφ*sinφ) * Math.sqrt(1.0 + τ*τ) / Math.sqrt(τʹ*τʹ + cosλ*cosλ)
-    val kʺ = A / a * Math.sqrt(pʹ*pʹ + qʹ*qʹ)
+    val sinφ = sin(φ)
+    val kʹ = sqrt(1.0 - e*e*sinφ*sinφ) * sqrt(1.0 + τ*τ) / sqrt(τʹ*τʹ + cosλ*cosλ)
+    val kʺ = A / a * sqrt(pʹ*pʹ + qʹ*qʹ)
 
     val k = k0 * kʹ * kʺ
 
@@ -236,7 +234,7 @@ fun Utm.toLatLonE(datum: Datum = WGS84):LatLon {
 
     // ---- from Karney 2011 Eq 15-22, 36:
 
-    val e = Math.sqrt(f*(2-f)) // eccentricity
+    val e = sqrt(f*(2-f)) // eccentricity
     val n = f / (2 - f)        // 3rd flattening
     val n2 = n*n
     val n3 = n*n2
@@ -258,48 +256,48 @@ fun Utm.toLatLonE(datum: Datum = WGS84):LatLon {
                                                                                  20648693.0/638668800.0*n6 )
 
     var ξʹ = ξ
-    for (j in 1..6) ξʹ -= β[j] * Math.sin(2.0*j.toDouble()*ξ) * Math.cosh(2.0*j.toDouble()*η)
+    for (j in 1..6) ξʹ -= β[j] * sin(2.0*j.toDouble()*ξ) * cosh(2.0*j.toDouble()*η)
 
     var ηʹ = η
-    for (j in 1..6) ηʹ -= β[j] * Math.cos(2.0*j.toDouble()*ξ) * Math.sinh(2.0*j.toDouble()*η)
+    for (j in 1..6) ηʹ -= β[j] * cos(2.0*j.toDouble()*ξ) * sinh(2.0*j.toDouble()*η)
 
-    val sinhηʹ = Math.sinh(ηʹ)
-    val sinξʹ = Math.sin(ξʹ)
-    val cosξʹ = Math.cos(ξʹ)
+    val sinhηʹ = sinh(ηʹ)
+    val sinξʹ = sin(ξʹ)
+    val cosξʹ = cos(ξʹ)
 
-    val τʹ = sinξʹ / Math.sqrt(sinhηʹ*sinhηʹ + cosξʹ*cosξʹ)
+    val τʹ = sinξʹ / sqrt(sinhηʹ*sinhηʹ + cosξʹ*cosξʹ)
 
     var τi = τʹ
     do {
-        val σi = Math.sinh(e* atanh(e*τi/Math.sqrt(1+τi*τi)))
-        val τiʹ = τi * Math.sqrt(1+σi*σi) - σi * Math.sqrt(1+τi*τi)
-        val δτi = (τʹ - τiʹ)/Math.sqrt(1.0+τiʹ*τiʹ) * (1.0 + (1.0-e*e)*τi*τi) / ((1.0-e*e)*Math.sqrt(1.0+τi*τi))
+        val σi = sinh(e* atanh(e*τi/sqrt(1+τi*τi)))
+        val τiʹ = τi * sqrt(1+σi*σi) - σi * sqrt(1+τi*τi)
+        val δτi = (τʹ - τiʹ)/ sqrt(1.0+τiʹ*τiʹ) * (1.0 + (1.0-e*e)*τi*τi) / ((1.0-e*e)* sqrt(1.0+τi*τi))
         τi += δτi
-    } while (Math.abs(δτi) > 1e-12) // using IEEE 754 δτi -> 0 after 2-3 iterations
+    } while (abs(δτi) > 1e-12) // using IEEE 754 δτi -> 0 after 2-3 iterations
     // note relatively large convergence test as δτi toggles on ±1.12e-16 for eg 31 N 400000 5000000
     val τ = τi
 
-    val φ = Math.atan(τ)
+    val φ = atan(τ)
 
-    var λ = Math.atan2(sinhηʹ, cosξʹ)
+    var λ = atan2(sinhηʹ, cosξʹ)
 
     // ---- convergence: Karney 2011 Eq 26, 27
 
     var p = 1.0
-    for (j in 1..6) p -= 2*j*β[j] * Math.cos(2*j*ξ) * Math.cosh(2*j*η)
+    for (j in 1..6) p -= 2*j*β[j] * cos(2*j*ξ) * cosh(2*j*η)
     var q = 0.0
-    for (j in 1..6) q += 2*j*β[j] * Math.sin(2*j*ξ) * Math.sinh(2*j*η)
+    for (j in 1..6) q += 2*j*β[j] * sin(2*j*ξ) * sinh(2*j*η)
 
-    val γʹ = Math.atan(Math.tan(ξʹ) * Math.tanh(ηʹ))
-    val γʺ = Math.atan2(q, p)
+    val γʹ = atan(tan(ξʹ) * tanh(ηʹ))
+    val γʺ = atan2(q, p)
 
     val γ = γʹ + γʺ
 
     // ---- scale: Karney 2011 Eq 28
 
-    val sinφ = Math.sin(φ)
-    val kʹ = Math.sqrt(1 - e*e*sinφ*sinφ) * Math.sqrt(1 + τ*τ) * Math.sqrt(sinhηʹ*sinhηʹ + cosξʹ*cosξʹ)
-    val kʺ = A / a / Math.sqrt(p*p + q*q)
+    val sinφ = sin(φ)
+    val kʹ = sqrt(1 - e*e*sinφ*sinφ) * sqrt(1 + τ*τ) * sqrt(sinhηʹ*sinhηʹ + cosξʹ*cosξʹ)
+    val kʺ = A / a / sqrt(p*p + q*q)
 
     val k = k0 * kʹ * kʺ
 
@@ -340,7 +338,7 @@ fun String.parseUtm(): Utm {
     // match separate elements (separated by whitespace)
     val utmCoord = Regex("""\S+""").findAll(this.trim()).toList()
 
-    if (utmCoord.size!=4) throw Exception("Invalid UTM coordinate ‘"+this+"’")
+    if (utmCoord.size!=4) throw Exception("Invalid UTM coordinate ‘${this}’")
 
     val zone = utmCoord[0].value.toInt()
     val hemisphere = charToHemisphere(utmCoord[1].value[0])

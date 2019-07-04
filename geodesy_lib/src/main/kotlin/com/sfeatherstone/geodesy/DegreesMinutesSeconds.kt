@@ -1,5 +1,7 @@
 @file:JvmName("Conversion")
 package com.sfeatherstone.geodesy
+import kotlin.math.abs
+import kotlin.math.floor
 import kotlin.math.roundToInt
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -53,17 +55,17 @@ fun String.parseDegreesMinutesSeconds(): Double {
 
     // and convert to decimal degrees...
     val deg : Double
-    when(dms.size) {
-        3 ->  // interpret 3-part result as d/m/s
-            deg = (dms[0].toDouble() / 1.0) + (dms[1].toDouble() / 60.0) + (dms[2].toDouble() / 3600)
-        2 ->  // interpret 2-part result as d/m
-            deg = (dms[0].toDouble() / 1.0) + (dms[1].toDouble() / 60.0)
-        1 ->  // just d (possibly decimal) or non-separated dddmmss
-            deg = dms[0].toDouble()
-        // check for fixed-width unseparated format eg 0033709W
-        else ->
-            return Double.NaN
-    }
+        deg = when(dms.size) {
+            3 ->  // interpret 3-part result as d/m/s
+                (dms[0].toDouble() / 1.0) + (dms[1].toDouble() / 60.0) + (dms[2].toDouble() / 3600)
+            2 ->  // interpret 2-part result as d/m
+                (dms[0].toDouble() / 1.0) + (dms[1].toDouble() / 60.0)
+            1 ->  // just d (possibly decimal) or non-separated dddmmss
+                dms[0].toDouble()
+            // check for fixed-width unseparated format eg 0033709W
+            else ->
+                return Double.NaN
+        }
     return if ( Regex("^-|[WSws]$").containsMatchIn(this.trim())) -deg else deg // take '-', west and south as -ve
 }
 
@@ -78,7 +80,7 @@ fun String.parseDegreesMinutesSeconds(): Double {
      *   Dms.separator = '\u202f';        // narrow no-break space
      *   var pʹ = new LatLon(51.2, 0.33); // 51° 12′ 00.0″ N, 000° 19′ 48.0″ E
      */
-val narrowNoBreakSeparator = "\u202f"
+const val narrowNoBreakSeparator = "\u202f"
 
 
 /**
@@ -95,18 +97,16 @@ val narrowNoBreakSeparator = "\u202f"
 @JvmOverloads
 fun Double.toDMS(format: String = "dms", dp: Int? = null, separator : String = ""): String?
 {
-    if (this == Double.NaN) return null  // give up here if we can't make a number from deg
+    if (this.isNaN()) return null  // give up here if we can't make a number from deg
 
-    val _dp = if (dp == null) {
-        when(format) {
-            "d", "deg" -> 4
-            "dm","deg+min" -> 2
-            "dms", "deg+min+sec" -> 0
-            else -> 0
-        }
-    } else dp
+    val _dp = dp ?: when(format) {
+        "d", "deg" -> 4
+        "dm","deg+min" -> 2
+        "dms", "deg+min+sec" -> 0
+        else -> 0
+    }
 
-    val degrees : Double = Math.abs(this % 360.0)  // (unsigned result ready for appending compass dir'n)
+    val degrees : Double = abs(this % 360.0)  // (unsigned result ready for appending compass dir'n)
 
     return when (format) {
         "dm","deg+min" -> toDegreesMinutes(degrees, _dp, separator)
@@ -122,7 +122,7 @@ internal fun toDegrees(degrees: Double, dp: Int) : String {
 }
 
 internal fun toDegreesMinutes(degrees: Double, dp: Int, separator : String) : String {
-    var d = Math.floor(degrees).toInt()                // get component deg
+    var d = floor(degrees).toInt()                // get component deg
     var m = ((degrees * 60.0) % 60.0).toFixed(dp)           // get component min & round/right-pad
     if (m == 60.0) {
         m = 0.0
@@ -132,8 +132,8 @@ internal fun toDegreesMinutes(degrees: Double, dp: Int, separator : String) : St
 }
 
 internal fun toDegreesMinutesSeconds(degrees: Double, dp: Int, separator: String) : String {
-    var d = Math.floor(degrees).toInt()                       // get component deg
-    var m = (Math.floor((degrees * 3600.0) / 60.0) % 60.0).toInt()  // get component min
+    var d = floor(degrees).toInt()                       // get component deg
+    var m = (floor((degrees * 3600.0) / 60.0) % 60.0).toInt()  // get component min
     var s = (degrees * 3600.0 % 60.0).toFixed(dp)           // get component sec & round/right-pad
     if (s == 60.0) {
         s = 0.0
@@ -193,7 +193,7 @@ fun Double.toLongitude(format: String, dp: Int? = null, separator : String = "")
 fun Double.toBearing(format: String = "dms", dp: Int = 0, separator : String = ""): String {
     val degNormalised = (this + 360) % 360  // normalise -ve values to 180°..360°
     val brng = degNormalised.toDMS(format, dp, separator)
-    return if (brng == null) "–" else brng.replace("360", "0")  // just in case rounding took us up to 360°!
+    return brng?.replace("360", "0") ?: "–"  // just in case rounding took us up to 360°!
 }
 
 

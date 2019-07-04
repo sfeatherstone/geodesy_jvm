@@ -2,6 +2,7 @@
 package com.sfeatherstone.geodesy.model.ellipsoidal
 
 import com.sfeatherstone.geodesy.*
+import kotlin.math.*
 
 /**
  * Direct and com.sfeatherstone.geodesy.model.ellipsoidal.inverse solutions of geodesics on the ellipsoid using Vincenty formulae.
@@ -146,13 +147,13 @@ internal fun LatLon.direct(distance: Double, initialBearing: Double): directResu
     val b = this.datum.ellipsoid.b
     val f = this.datum.ellipsoid.f
 
-    val sinα1 = Math.sin(α1)
-    val cosα1 = Math.cos(α1)
+    val sinα1 = sin(α1)
+    val cosα1 = cos(α1)
 
-    val tanU1 = (1-f) * Math.tan(φ1)
-    val cosU1 = 1 / Math.sqrt((1 + tanU1*tanU1))
+    val tanU1 = (1-f) * tan(φ1)
+    val cosU1 = 1 / sqrt((1 + tanU1*tanU1))
     val sinU1 = tanU1 * cosU1
-    val σ1 = Math.atan2(tanU1, cosα1)
+    val σ1 = atan2(tanU1, cosα1)
     val sinα = cosU1 * sinα1
     val cosSqα = 1 - sinα*sinα
     val uSq = cosSqα * (a*a - b*b) / (b*b)
@@ -168,25 +169,25 @@ internal fun LatLon.direct(distance: Double, initialBearing: Double): directResu
     var iterations = 0
 
     do {
-        cos2σM = Math.cos(2*σ1 + σ)
-        sinσ = Math.sin(σ)
-        cosσ = Math.cos(σ)
+        cos2σM = cos(2*σ1 + σ)
+        sinσ = sin(σ)
+        cosσ = cos(σ)
         val Δσ = B*sinσ*(cos2σM+B/4*(cosσ*(-1+2*cos2σM*cos2σM)-
                 B/6*cos2σM*(-3+4*sinσ*sinσ)*(-3+4*cos2σM*cos2σM)))
         σʹ = σ
         σ = s / (b*A) + Δσ
-    } while (Math.abs(σ-σʹ) > 1e-12 && ++iterations<100)
+    } while (abs(σ-σʹ) > 1e-12 && ++iterations<100)
     if (iterations >= 100) throw Exception("Formula failed to converge") // not possible!
 
     val x = sinU1*sinσ - cosU1*cosσ*cosα1
-    val φ2 = Math.atan2(sinU1*cosσ + cosU1*sinσ*cosα1, (1-f)*Math.sqrt(sinα*sinα + x*x))
-    val λ = Math.atan2(sinσ*sinα1, cosU1*cosσ - sinU1*sinσ*cosα1)
+    val φ2 = atan2(sinU1*cosσ + cosU1*sinσ*cosα1, (1-f)*sqrt(sinα*sinα + x*x))
+    val λ = atan2(sinσ*sinα1, cosU1*cosσ - sinU1*sinσ*cosα1)
     val C = f/16*cosSqα*(4+f*(4-3*cosSqα))
     val L = λ - (1-C) * f * sinα *
             (σ + C*sinσ*(cos2σM+C*cosσ*(-1+2*cos2σM*cos2σM)))
     val λ2 = (λ1+L+3*Math.PI)%(2*Math.PI) - Math.PI  // normalise to -180..+180
 
-    var α2 = Math.atan2(sinα, -x)
+    var α2 = atan2(sinα, -x)
     α2 = (α2 + 2*Math.PI) % (2*Math.PI) // normalise to 0..360
 
     return directResult(point = LatLon(φ2.toDegrees(), λ2.toDegrees(), this.datum),
@@ -220,11 +221,11 @@ internal fun LatLon.inverse(point: LatLon): inverseResult {
     val f = this.datum.ellipsoid.f
 
     val L = λ2 - λ1
-    val tanU1 = (1-f) * Math.tan(φ1)
-    val cosU1 = 1 / Math.sqrt((1 + tanU1*tanU1))
+    val tanU1 = (1-f) * tan(φ1)
+    val cosU1 = 1 / sqrt((1 + tanU1*tanU1))
     val sinU1 = tanU1 * cosU1
-    val tanU2 = (1-f) * Math.tan(φ2)
-    val cosU2 = 1 / Math.sqrt((1 + tanU2*tanU2))
+    val tanU2 = (1-f) * tan(φ2)
+    val cosU2 = 1 / sqrt((1 + tanU2*tanU2))
     val sinU2 = tanU2 * cosU2
 
     var sinλ = 0.0
@@ -242,21 +243,21 @@ internal fun LatLon.inverse(point: LatLon): inverseResult {
     //var λʹ =
     var iterations = 0
     do {
-        sinλ = Math.sin(λ)
-        cosλ = Math.cos(λ)
+        sinλ = sin(λ)
+        cosλ = cos(λ)
         val sinSqσ = (cosU2*sinλ) * (cosU2*sinλ) + (cosU1*sinU2-sinU1*cosU2*cosλ) * (cosU1*sinU2-sinU1*cosU2*cosλ)
         if (sinSqσ == 0.0) break // co-incident points
-        sinσ = Math.sqrt(sinSqσ)
+        sinσ = sqrt(sinSqσ)
         cosσ = sinU1*sinU2 + cosU1*cosU2*cosλ
-        σ = Math.atan2(sinσ, cosσ)
+        σ = atan2(sinσ, cosσ)
         val sinα = cosU1 * cosU2 * sinλ / sinσ
         cosSqα = 1 - sinα*sinα
         cos2σM = if (cosSqα != 0.0) (cosσ - 2*sinU1*sinU2/cosSqα) else 0.0  // equatorial line: cosSqα=0 (§6)
         val C = f/16*cosSqα*(4+f*(4-3*cosSqα))
         val λʹ = λ
         λ = L + (1-C) * f * sinα * (σ + C*sinσ*(cos2σM+C*cosσ*(-1+2*cos2σM*cos2σM)))
-        if (Math.abs(λ) > Math.PI) throw Exception("λ > π")
-    } while (Math.abs(λ-λʹ) > 1e-12 && ++iterations<1000)
+        if (abs(λ) > Math.PI) throw Exception("λ > π")
+    } while (abs(λ-λʹ) > 1e-12 && ++iterations<1000)
     if (iterations >= 1000) throw Exception("Formula failed to converge")
 
     val uSq = cosSqα * (a*a - b*b) / (b*b)
@@ -267,8 +268,8 @@ internal fun LatLon.inverse(point: LatLon): inverseResult {
 
     val s = b*A*(σ-Δσ)
 
-    var α1 = Math.atan2(cosU2*sinλ,  cosU1*sinU2-sinU1*cosU2*cosλ)
-    var α2 = Math.atan2(cosU1*sinλ, -sinU1*cosU2+cosU1*sinU2*cosλ)
+    var α1 = atan2(cosU2*sinλ, cosU1*sinU2-sinU1*cosU2*cosλ)
+    var α2 = atan2(cosU1*sinλ, -sinU1*cosU2+cosU1*sinU2*cosλ)
 
     α1 = (α1 + 2*Math.PI) % (2*Math.PI) // normalise to 0..360
     α2 = (α2 + 2*Math.PI) % (2*Math.PI) // normalise to 0..360
